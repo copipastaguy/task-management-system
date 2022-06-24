@@ -5,6 +5,8 @@ const cors = require("cors");
 
 const connection = require("./connection");
 const login = require("../controller/login");
+const add = require("../controller/add");
+const update = require("../controller/update");
 
 // port for localhost
 const port = 3002;
@@ -24,8 +26,10 @@ app.use(bodyParser.json());
 login(app);
 
 // - - - ADD USER - - -
+add(app);
 
 // - - - UPDATE USER - - -
+update(app);
 
 // GET ALL ACCOUNTS
 app.get("/accounts", (req, res) => {

@@ -15,12 +15,12 @@ const UpdateUser = () => {
     }
   };
   return (
-    <>
-      <h2>Update Account</h2>
-      <form onSubmit={handleSubmit}>
+    <div>
+      <form className="form-container" onSubmit={handleSubmit}>
+        <h2>Update Account</h2>
         <div>
           <label htmlFor="UpdatePassword">
-            <p>new password</p>
+            <p>password</p>
           </label>
           <input
             type="password"
@@ -34,7 +34,7 @@ const UpdateUser = () => {
 
         <div>
           <label htmlFor="updateEmail">
-            <p>new email</p>
+            <p>email</p>
           </label>
           <input
             type="email"
@@ -48,7 +48,7 @@ const UpdateUser = () => {
 
         <div>
           <label htmlFor="updateGroup">
-            <p>user group</p>
+            <p>group</p>
           </label>
           <input
             type="text"
@@ -64,7 +64,7 @@ const UpdateUser = () => {
           <input type="submit" value="Update Account" />
         </div>
       </form>
-    </>
+    </div>
   );
 };
 

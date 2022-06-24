@@ -20,14 +20,19 @@ const UserManagement = () => {
   return (
     <div>
       <div className="manage">
-        <h1>User management</h1>
-        <a href="/">
-          <h2>Sign out</h2>
-        </a>
+        <div>
+          <h1>Admin management</h1>
+          <a href="/">
+            <h2>Sign out</h2>
+          </a>
+        </div>
 
+        {/* display if admin */}
         <AddUser />
+
+        {/* display if user */}
         <UpdateUser />
-        <DisplayUsers />
+        {/* <DisplayUsers /> */}
       </div>
     </div>
   );

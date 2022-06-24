@@ -27,14 +27,19 @@ const Login = () => {
   return (
     <div className="login">
       <h1>Login</h1>
-      <form action="/auth" method="post" onSubmit={handleSubmit}>
+      <form
+        className="form-container"
+        action="/auth"
+        method="post"
+        onSubmit={handleSubmit}
+      >
         <label>
           <i className="fas fa-user"></i>
         </label>
         <input
           type="text"
           placeholder="Username"
-          value={username}
+          value="test"
           required
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -44,7 +49,7 @@ const Login = () => {
         <input
           type="password"
           placeholder="Password"
-          value={password}
+          value="test"
           required
           onChange={(e) => setPassword(e.target.value)}
         />

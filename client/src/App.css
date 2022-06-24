@@ -26,26 +26,30 @@ body {
   border-bottom: 1px solid #dee0e4;
 }
 
-.login form {
+.form-container {
   display: flex;
-  /* flex-direction: column; */
   flex-wrap: wrap;
   justify-content: center;
   padding-top: 20px;
 }
 
-.login form label {
+.form-container div {
+  display: flex;
+}
+
+.form-container label {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
+  width: 80px;
   height: 50px;
   background-color: #3274d6;
   color: #ffffff;
 }
 
-.login form input[type="password"],
-.login form input[type="text"] {
+.form-container input[type="password"],
+.form-container input[type="text"],
+.form-container input[type="email"] {
   width: 310px;
   height: 50px;
   border: 1px solid #dee0e4;
@@ -53,8 +57,7 @@ body {
   padding: 0 15px;
 }
 
-.login form input[type="submit"],
-.manage form input[type="submit"] {
+.form-container input[type="submit"] {
   width: 100%;
   padding: 15px;
   margin-top: 20px;
@@ -66,26 +69,25 @@ body {
   transition: background-color 0.2s;
 }
 
-.login form input[type="submit"]:hover {
+.form-container input[type="submit"]:hover {
   background-color: #2868c7;
   transition: background-color 0.2s;
 }
 
 .manage {
+  display: flex;
+  flex-direction: row;
   width: 1000px;
   padding: 10px;
 }
 
-.manage input {
+.manage h1 {
+  font-size: 24px;
+}
+
+/* .manage input {
   width: 200px;
 }
-
-.manage form {
-  display: flex;
-  flex-direction: row;
-  padding: 5px;
-}
-
 .manage form div {
   height: 80px;
   display: flex;
@@ -94,4 +96,4 @@ body {
   flex-direction: column;
   margin: 0 auto;
   align-self: flex-end;
-}
+} */

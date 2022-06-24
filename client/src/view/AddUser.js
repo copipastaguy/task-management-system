@@ -10,6 +10,7 @@ const AddUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log(username, password, email, group);
       // fetch POST statement to add new user to database with form data
       // await Axios.post (backend url, {data to be sent username, password, email, group})
       console.log("added user");
@@ -18,9 +19,9 @@ const AddUser = () => {
     }
   };
   return (
-    <>
-      <h2>Add a new user</h2>
-      <form onSubmit={handleSubmit}>
+    <div>
+      <form className="form-container" onSubmit={handleSubmit}>
+        <h2>Add user</h2>
         <div>
           <label htmlFor="newUsername">
             <p>username</p>
@@ -64,7 +65,7 @@ const AddUser = () => {
 
         <div>
           <label htmlFor="newGroup">
-            <p>user group</p>
+            <p>group</p>
           </label>
           <input
             type="text"
@@ -79,7 +80,7 @@ const AddUser = () => {
           <input type="submit" value="Add User" />
         </div>
       </form>
-    </>
+    </div>
   );
 };
 
