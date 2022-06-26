@@ -1,8 +1,3 @@
-// Handle the login function and route
-
-// routes
-// /auth the user inputs
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,13 +8,22 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // try {
-    //   // fetch POST statement to localhost:3002/login
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    try {
+      // fetch POST statement to localhost:3002/login and data to send
+      const response = await fetch("http://localhost:3002/login", {
+        username,
+        password,
+      });
+      if (response.data) {
+        // logged in
+        // localstorage for username password
+        console.log("logged in");
+      }
+    } catch (e) {
+      console.log(e);
+    }
     console.log(username, password);
     navigate("/user-management");
   };

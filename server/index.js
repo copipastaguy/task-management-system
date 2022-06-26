@@ -31,12 +31,19 @@ add(app);
 // - - - UPDATE USER - - -
 update(app);
 
+// localhost:3000/
+app.get("/", (req, res) => {
+  // redirect users to login page
+  res.redirect("/login");
+});
+
 // GET ALL ACCOUNTS
 app.get("/accounts", (req, res) => {
   query = "SELECT * FROM accounts";
   connection.query(query, (error, result) => {
     if (error) console.log(error);
-    res.send(result);
+    // res.send(result);
+    res.send(result[0]);
   });
 });
 

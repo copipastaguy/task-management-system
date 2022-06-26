@@ -7,7 +7,6 @@ const login = function (app) {
     res.json({
       message: "Logged in",
     });
-    // console.log(req.body);
   });
 
   // auth the log in user
@@ -27,7 +26,7 @@ const login = function (app) {
           req.session.username = username;
 
           // redirect user to the next page
-          res.redirect("/management");
+          res.redirect("/user-management");
         } else {
           // invalid user/ no account
           // redirect user back to login page
