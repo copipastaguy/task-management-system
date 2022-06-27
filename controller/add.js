@@ -13,6 +13,7 @@ const add = function (app) {
         // same data exist in database
         if (result.length > 0) {
           console.log("user exist in database");
+          return res.redirect("/management");
         } else {
           // all fields entered
           query = `INSERT INTO accounts (ugroup, username, password, email) VALUES (?, ?, ?, ?)`;
@@ -26,7 +27,6 @@ const add = function (app) {
           );
         }
       });
-      // res.redirect("/management");
     }
     //  redirect user back to management page after adding
     res.redirect("/management");

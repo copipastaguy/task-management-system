@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Axios from "axios";
 
 const AddUser = () => {
   // handle change in form fields
@@ -10,9 +11,11 @@ const AddUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const url = "http://localhost:3002/add";
+      const response = Axios.post(url, { username, password, email, group })
+        .then((response) => console.log(response))
+        .then(() => console.log(response));
       console.log(username, password, email, group);
-      // fetch POST statement to add new user to database with form data
-      // await Axios.post (backend url, {data to be sent username, password, email, group})
       console.log("added user");
     } catch (e) {
       console.log(e);
@@ -20,7 +23,7 @@ const AddUser = () => {
   };
   return (
     <div>
-      <form className="form-container" onSubmit={handleSubmit}>
+      <form action="/add" className="form-container" onSubmit={handleSubmit}>
         <h2>Add user</h2>
         <div>
           <label htmlFor="newUsername">
@@ -32,7 +35,7 @@ const AddUser = () => {
             placeholder="Username"
             id="newUsername"
             onChange={(e) => setUsername(e.target.value)}
-            required
+            // required
           />
         </div>
 
@@ -46,7 +49,7 @@ const AddUser = () => {
             placeholder="Password"
             id="newPassword"
             onChange={(e) => setPassword(e.target.value)}
-            required
+            // required
           />
         </div>
 

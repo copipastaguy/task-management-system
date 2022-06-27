@@ -8,7 +8,8 @@ const login = require("../controller/login");
 const add = require("../controller/add");
 const update = require("../controller/update");
 
-// port for localhost
+// server port
+// http://localhost:3002
 const port = 3002;
 
 const app = express();
@@ -20,7 +21,7 @@ app.use(
   })
 );
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 // - - - LOGIN AND AUTH - - -
 login(app);
@@ -31,9 +32,10 @@ add(app);
 // - - - UPDATE USER - - -
 update(app);
 
-// localhost:3000/
+// localhost:3002/
 app.get("/", (req, res) => {
   // redirect users to login page
+  console.log("log in page");
   res.redirect("/login");
 });
 
@@ -43,7 +45,7 @@ app.get("/accounts", (req, res) => {
   connection.query(query, (error, result) => {
     if (error) console.log(error);
     // res.send(result);
-    res.send(result[0]);
+    res.send(result);
   });
 });
 

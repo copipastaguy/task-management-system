@@ -12,7 +12,7 @@ const UserManagement = () => {
   // fetch api from localhost:3000/login
   // const [data, setData] = useState();
   // useEffect(() => {
-  //   fetch("http://localhost:3001/login")
+  //   fetch("http://localhost:3002/login")
   //     .then((res) => res.json())
   //     .then((data) => setData(data.message));
   // });
