@@ -21,6 +21,7 @@ app.use(
   })
 );
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // - - - LOGIN AND AUTH - - -
@@ -35,7 +36,6 @@ update(app);
 // localhost:3002/
 app.get("/", (req, res) => {
   // redirect users to login page
-  console.log("log in page");
   res.redirect("/login");
 });
 
@@ -44,7 +44,6 @@ app.get("/accounts", (req, res) => {
   query = "SELECT * FROM accounts";
   connection.query(query, (error, result) => {
     if (error) console.log(error);
-    // res.send(result);
     res.send(result);
   });
 });

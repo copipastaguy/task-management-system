@@ -5,38 +5,23 @@ import axios from "axios";
 const Login = () => {
   const navigate = useNavigate();
 
-  // user login details
-  // const [userdetails, setUserDetails] = useState({
-  //   username: "",
-  //   password: "",
-  // });
-
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // post request not working
-    // const url = "/auth";
-    // fetch POST statement to url and data to send
-    // axios
-    //   .post("http://localhost:3002/auth", {
-    //     username: "admin ",
-    //     password: "admin",
-    //   })
-    //   .then((response) => {
-    //     console.log(response);
-    //     // setData(response.data);
-    //   })
-    //   .catch((error) => console.log(error));
-
-    // get request works
+    // POST request for user database
     try {
-      const response = await axios.get("/accounts");
-      console.log(response);
+      const response = await axios.post("/auth", {
+        username: "admin",
+        password: "admin",
+      });
+      console.log("user login");
+      // console.log(response.data);
+      navigate("/management");
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 
@@ -50,7 +35,7 @@ const Login = () => {
       <form
         className="form-container"
         // action="/auth"
-        method="post"
+        // method="post"
         onSubmit={handleSubmit}
       >
         <label>

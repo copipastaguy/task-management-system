@@ -7,36 +7,32 @@ const login = function (app) {
     res.redirect("/auth");
   });
 
-  app.get("/auth", (req, res) => {
-    // res.redirect("/auth");
+  app.post("/auth", (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
-    if (username && password) {
+    if (username.length > 0 && password.length > 0) {
       // - - - CHECK IF USER EXIST - - -
       query = `SELECT * FROM accounts WHERE username = ? and password = ? `;
       connection.query(query, [username, password], (error, result) => {
         if (error) throw error;
 
         // - - - VALID - - -
-        if (result) {
+        if (result.length > 0) {
           req.session.loggedIn = true;
           req.session.username = username;
 
           // fetch the exact user match
-          console.log(result);
-          res.send("valid user");
-          // redirect user to the next page
-          res.redirect("/management");
+          res.send(result);
+          // console.log("logged in successfully");
         } else {
           // - - - INVALID USER - - -
-          res.send("invalid user");
-          // res.redirect("/login");
+          console.log("USER NOT FOUND");
         }
       });
     } else {
-      res.redirect("/");
+      // res.redirect("/login");
     }
   });
 

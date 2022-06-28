@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import Axios from "axios";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AddUser = () => {
+  const navigate = useNavigate();
+
   // handle change in form fields
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -10,20 +13,36 @@ const AddUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // POST request for user database
     try {
-      const url = "http://localhost:3002/add";
-      const response = Axios.post(url, { username, password, email, group })
-        .then((response) => console.log(response))
-        .then(() => console.log(response));
-      console.log(username, password, email, group);
-      console.log("added user");
-    } catch (e) {
-      console.log(e);
+      // const response = await axios.get("/accounts");
+
+      const response = await axios.post("/add", {
+        username,
+        password,
+        email,
+        group,
+      });
+      console.log(response);
+      if (response) {
+        console.log("user added");
+        navigate("/management");
+
+        // reset form field
+        setUsername("");
+        setPassword("");
+        setEmail("");
+        setGroup("");
+      }
+    } catch (error) {
+      console.log(error.response);
     }
   };
+
   return (
     <div>
-      <form action="/add" className="form-container" onSubmit={handleSubmit}>
+      <form className="form-container" onSubmit={handleSubmit}>
         <h2>Add user</h2>
         <div>
           <label htmlFor="newUsername">
@@ -34,6 +53,7 @@ const AddUser = () => {
             name="newUsername"
             placeholder="Username"
             id="newUsername"
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
             // required
           />
@@ -48,6 +68,7 @@ const AddUser = () => {
             name="newPassword"
             placeholder="Password"
             id="newPassword"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             // required
           />
@@ -62,6 +83,7 @@ const AddUser = () => {
             name="newEmail"
             placeholder="Email"
             id="newEmail"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -75,6 +97,7 @@ const AddUser = () => {
             name="newGroup"
             placeholder="User Group"
             id="newGroup"
+            value={group}
             onChange={(e) => setGroup(e.target.value)}
           />
         </div>
