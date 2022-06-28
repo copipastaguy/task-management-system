@@ -19,7 +19,7 @@ const add = function (app) {
       check = `SELECT * from accounts WHERE username = ? AND email = ?`;
       connection.query(check, [username, email], (error, result) => {
         if (error) throw error;
-        console.log(result);
+        // console.log(result);
 
         // - - - USER EXIST (INVALID INPUT)- - -
         if (result.length > 0) {

@@ -12,12 +12,20 @@ const UpdateUser = () => {
     try {
       //  fetch POST statement to update user detail
       const response = await axios.post("/update-user", {
-        password: "test",
-        email: "test@123.com",
-        // group: "admin",
+        password,
+        email,
+        group,
       });
       console.log(response);
-      console.log("updated");
+
+      if (response) {
+        console.log("updated");
+
+        // RESET FIELDS
+        setPassword("");
+        setEmail("");
+        setGroup("");
+      }
     } catch (e) {
       console.log(e);
     }
@@ -58,14 +66,13 @@ const UpdateUser = () => {
           <label htmlFor="updateGroup">
             <p>group</p>
           </label>
-          <input
-            type="text"
-            name="updateGroup"
-            placeholder="User Group"
-            id="updateGroup"
-            value={group}
-            onChange={(e) => setGroup(e.target.value)}
-          />
+
+          <select onChange={(e) => setGroup(e.target.value)}>
+            <option></option>
+            <option value="project_lead">Project Lead</option>
+            <option value="project_manager">Project Manager</option>
+            <option value="team_member">Team Member</option>
+          </select>
         </div>
 
         <div>

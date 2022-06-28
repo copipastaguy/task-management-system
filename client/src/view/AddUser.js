@@ -100,7 +100,8 @@ const AddUser = () => {
             value={group}
             onChange={(e) => setGroup(e.target.value)}
           /> */}
-          <select>
+          <select onChange={(e) => setGroup(e.target.value)}>
+            <option></option>
             <option value="project_lead">Project Lead</option>
             <option value="project_manager">Project Manager</option>
             <option value="team_member">Team Member</option>

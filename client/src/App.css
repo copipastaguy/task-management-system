@@ -49,7 +49,8 @@ body {
 
 .form-container input[type="password"],
 .form-container input[type="text"],
-.form-container input[type="email"] {
+.form-container input[type="email"],
+.form-container select {
   width: 310px;
   height: 50px;
   border: 1px solid #dee0e4;
@@ -84,16 +85,3 @@ body {
 .manage h1 {
   font-size: 24px;
 }
-
-/* .manage input {
-  width: 200px;
-}
-.manage form div {
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  flex-direction: column;
-  margin: 0 auto;
-  align-self: flex-end;
-} */

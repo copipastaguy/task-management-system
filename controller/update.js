@@ -6,62 +6,72 @@ const update = function (app) {
 
   app.post("/update-user", (req, res) => {
     // - - - GET USERNAME - - -
-    username = req.session.username;
+    const username = "admin";
     console.log(username);
 
-    // - - - GET INPUTS - - -
+    // - - - INPUTS - - -
     const { password, email, group } = req.body;
     console.log(req.body);
 
-    if (password || email || group) {
-      //only password entered
-      query = `UPDATE accounts SET ugroup = ?, password = ?, email = ? WHERE username = ?`;
-      connection.query(
-        query,
-        [group, password, email, username],
-        (error, result) => {
-          if (error) throw error;
-          res.send(result);
-        }
-      );
-    }
-    // else if (email) {
-    //   query = `UPDATE accounts set email = ? WHERE username = ?`;
-    //   connection.query(query, [email, username], (error) => {
-    //     if (error) throw error;
-    //     console.log(`email updated to ${email}`);
-    //   });
-    // } else if (group) {
-    //   query = `UPDATE accounts set user_group = ? WHERE username = ?`;
-    //   connection.query(query, [group, username], (error) => {
-    //     if (error) throw error;
-    //     console.log(`added user ${username} into ${group}`);
-    //   });
-    // } else if ((password, email, group)) {
-    //   // all field entered
-    //   query = `UPDATE accounts set password = ?, email = ? WHERE username = ?`;
-    //   connection.query(query, [password, email, username], (error) => {
-    //     if (error) throw errors;
-    //     console.log(
-    //       `password updated to ${password}, email updated to ${email} for ${username} `
-    //     );
-    //   });
-    // } else {
-    //   // username and email entered
-    //   query = `UPDATE accounts set password = ?, email = ? WHERE username = ?`;
-    //   connection.query(
-    //     query,
-    //     [password, email, username],
-    //     (error, accounts) => {
-    //       if (error) throw errors;
-    //       console.log(
-    //         `password updated to ${password}, email updated to ${email} for ${username} `
-    //       );
-    //     }
-    //   );
-    // }
+    // - - - CHECK IF EMAIL COLUMN VALUE IS EMPTY - - -
+    if (email.length > 0) {
+      query = `SELECT email from accounts WHERE username = ?`;
+      connection.query(query, [username], (error, result) => {
+        if (error) throw error;
 
-    // res.redirect("/management");
+        // - - - RETURNS A VALUE - - -
+        // - - - UPDATE VALUE - - -
+        if (result) {
+          // returns exact match
+          console.log(result);
+          query = `UPDATE accounts SET email = ? WHERE username = ?`;
+          connection.query(query, [email, username], (error, result) => {
+            if (error) throw error;
+            res.send(result);
+          });
+        }
+      });
+    }
+
+    // - - - CHECK IF PASSWORD COLUMN VALUE IS EMPTY - - -
+    if (password.length > 0) {
+      query = `SELECT password from accounts WHERE username = ?`;
+      connection.query(query, [password], (error, result) => {
+        if (error) throw error;
+
+        // - - - RETURNS A VALUE - - -
+        // - - - UPDATE VALUE - - -
+        if (result) {
+          // returns exact match
+          console.log(result);
+          query = `UPDATE accounts SET password = ? WHERE username = ?`;
+          connection.query(query, [password, username], (error, result) => {
+            if (error) throw error;
+            res.send(result);
+          });
+        }
+      });
+    }
+
+    // - - - CHECK IF GROUP COLUMN VALUE IS EMPTY - - -
+    if (group.length > 0) {
+      query = `SELECT ugroup from accounts WHERE username = ?`;
+      connection.query(query, [group], (error, result) => {
+        if (error) throw error;
+
+        // - - - RETURNS A VALUE - - -
+        // - - - UPDATE VALUE - - -
+        if (result) {
+          // returns exact match
+          console.log(result);
+          query = `UPDATE accounts SET ugroup = ? WHERE username = ?`;
+          connection.query(query, [group, username], (error, result) => {
+            if (error) throw error;
+            res.send(result);
+          });
+        }
+      });
+    }
   });
 };
 module.exports = update;
