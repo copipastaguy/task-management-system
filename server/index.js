@@ -9,8 +9,8 @@ const add = require("../controller/add");
 const update = require("../controller/update");
 
 // server port
-// http://localhost:3002
-const port = 3002;
+// http://localhost:3001
+const port = 3001;
 
 const app = express();
 app.use(
@@ -33,7 +33,7 @@ add(app);
 // - - - UPDATE USER - - -
 update(app);
 
-// localhost:3002/
+// localhost:3001/
 app.get("/", (req, res) => {
   // redirect users to login page
   res.redirect("/login");
