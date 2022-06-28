@@ -92,14 +92,19 @@ const AddUser = () => {
           <label htmlFor="newGroup">
             <p>group</p>
           </label>
-          <input
+          {/* <input
             type="text"
             name="newGroup"
             placeholder="User Group"
             id="newGroup"
             value={group}
             onChange={(e) => setGroup(e.target.value)}
-          />
+          /> */}
+          <select>
+            <option value="project_lead">Project Lead</option>
+            <option value="project_manager">Project Manager</option>
+            <option value="team_member">Team Member</option>
+          </select>
         </div>
 
         <div>

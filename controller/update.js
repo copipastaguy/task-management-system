@@ -1,63 +1,67 @@
 const connection = require("../server/connection");
 
 const update = function (app) {
-  // UPDATE USER
-  // CONDITIONAL QUERY BASED ON ENTERED FIELDS
+  //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
+  //    - - - ROUTING FOR LOGIN AND AUTH - - -
+
   app.post("/update-user", (req, res) => {
-    // get username of logged in user
+    // - - - GET USERNAME - - -
     username = req.session.username;
+    console.log(username);
 
-    // capture input fields
-    const { updatePassword, updateEmail, updateGroup } = req.body;
+    // - - - GET INPUTS - - -
+    const { password, email, group } = req.body;
+    console.log(req.body);
 
-    if (updatePassword) {
+    if (password || email || group) {
       //only password entered
-      query = `UPDATE accounts set password = ? WHERE username = ?`;
-      connection.query(query, [updatePassword, username], (error, accounts) => {
-        if (error) throw error;
-        console.log(`password updated to ${updatePassword}`);
-      });
-    } else if (updateEmail) {
-      query = `UPDATE accounts set email = ? WHERE username = ?`;
-      connection.query(query, [updateEmail, username], (error, accounts) => {
-        if (error) throw error;
-        console.log(`email updated to ${updateEmail}`);
-      });
-    } else if (updateGroup) {
-      query = `UPDATE accounts set user_group = ? WHERE username = ?`;
-      connection.query(query, [updateGroup, username], (error) => {
-        if (error) throw error;
-        console.log(`added user ${username} into ${updateGroup}`);
-      });
-    } else if ((updatePassword, updateEmail, updateGroup)) {
-      // all field entered
-      query = `UPDATE accounts set password = ?, email = ? WHERE username = ?`;
+      query = `UPDATE accounts SET ugroup = ?, password = ?, email = ? WHERE username = ?`;
       connection.query(
         query,
-        [updatePassword, updateEmail, username],
-        (error) => {
-          if (error) throw errors;
-          console.log(
-            `password updated to ${updatePassword}, email updated to ${email} for ${username} `
-          );
-        }
-      );
-    } else {
-      // username and email entered
-      query = `UPDATE accounts set password = ?, email = ? WHERE username = ?`;
-      connection.query(
-        query,
-        [updatePassword, updateEmail, username],
-        (error, accounts) => {
-          if (error) throw errors;
-          console.log(
-            `password updated to ${updatePassword}, email updated to ${email} for ${username} `
-          );
+        [group, password, email, username],
+        (error, result) => {
+          if (error) throw error;
+          res.send(result);
         }
       );
     }
+    // else if (email) {
+    //   query = `UPDATE accounts set email = ? WHERE username = ?`;
+    //   connection.query(query, [email, username], (error) => {
+    //     if (error) throw error;
+    //     console.log(`email updated to ${email}`);
+    //   });
+    // } else if (group) {
+    //   query = `UPDATE accounts set user_group = ? WHERE username = ?`;
+    //   connection.query(query, [group, username], (error) => {
+    //     if (error) throw error;
+    //     console.log(`added user ${username} into ${group}`);
+    //   });
+    // } else if ((password, email, group)) {
+    //   // all field entered
+    //   query = `UPDATE accounts set password = ?, email = ? WHERE username = ?`;
+    //   connection.query(query, [password, email, username], (error) => {
+    //     if (error) throw errors;
+    //     console.log(
+    //       `password updated to ${password}, email updated to ${email} for ${username} `
+    //     );
+    //   });
+    // } else {
+    //   // username and email entered
+    //   query = `UPDATE accounts set password = ?, email = ? WHERE username = ?`;
+    //   connection.query(
+    //     query,
+    //     [password, email, username],
+    //     (error, accounts) => {
+    //       if (error) throw errors;
+    //       console.log(
+    //         `password updated to ${password}, email updated to ${email} for ${username} `
+    //       );
+    //     }
+    //   );
+    // }
 
-    res.redirect("/management");
+    // res.redirect("/management");
   });
 };
 module.exports = update;

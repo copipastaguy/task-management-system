@@ -1,15 +1,23 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const UpdateUser = () => {
   //   update user fields
-  const [updatePassword, setUpdatePassword] = useState("");
-  const [updateEmail, setUpdateEmail] = useState("");
-  const [updateGroup, setUpdateGroup] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [group, setGroup] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       //  fetch POST statement to update user detail
+      const response = await axios.post("/update-user", {
+        password: "test",
+        email: "test@123.com",
+        // group: "admin",
+      });
+      console.log(response);
+      console.log("updated");
     } catch (e) {
       console.log(e);
     }
@@ -27,8 +35,8 @@ const UpdateUser = () => {
             name="updatePassword"
             placeholder="Password"
             id="updatePassword"
-            value={updatePassword}
-            onChange={(e) => setUpdatePassword(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
@@ -41,8 +49,8 @@ const UpdateUser = () => {
             name="updateEmail"
             placeholder="Email"
             id="updateEmail"
-            value={updateEmail}
-            onChange={(e) => setUpdateEmail(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
@@ -55,8 +63,8 @@ const UpdateUser = () => {
             name="updateGroup"
             placeholder="User Group"
             id="updateGroup"
-            value={updateGroup}
-            onChange={(e) => setUpdateGroup(e.target.value)}
+            value={group}
+            onChange={(e) => setGroup(e.target.value)}
           />
         </div>
 
