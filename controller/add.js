@@ -27,7 +27,7 @@ const add = function (app) {
         } else {
           res.send(result);
           // - - - USER DONT EXIST - - -
-          query = `INSERT INTO accounts (ugroup, username, password, email) VALUES (?, ?, ?, ?)`;
+          query = `INSERT INTO accounts (user_group, username, password, email) VALUES (?, ?, ?, ?)`;
           connection.query(
             query,
             [group, username, password, email],

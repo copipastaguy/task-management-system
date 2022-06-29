@@ -38,28 +38,33 @@ const Login = () => {
         // method="post"
         onSubmit={handleSubmit}
       >
-        <label>
-          <i className="fas fa-user"></i>
-        </label>
-        <input
-          id="username"
-          type="text"
-          placeholder="Username"
-          value={username}
-          // required
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <label>
-          <i className="fas fa-lock"></i>
-        </label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Password"
-          value={password}
-          // required
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div>
+          <label>
+            <i className="fas fa-user"></i>
+          </label>
+          <input
+            id="username"
+            type="text"
+            placeholder="Username"
+            value={username}
+            // required
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label>
+            <i className="fas fa-lock"></i>
+          </label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Password"
+            value={password}
+            // required
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
         <input type="submit" value="Login" />
       </form>

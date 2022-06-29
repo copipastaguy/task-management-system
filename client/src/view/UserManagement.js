@@ -19,20 +19,19 @@ const UserManagement = () => {
 
   return (
     <div>
+      <div className="header">
+        <h1>Welcome Admin</h1>
+        <a href="/">
+          <h2>Sign out</h2>
+        </a>
+      </div>
       <div className="manage">
-        <div>
-          <h1>Admin management</h1>
-          <a href="/">
-            <h2>Sign out</h2>
-          </a>
-        </div>
-
         {/* display if admin */}
         <AddUser />
 
         {/* display if user */}
         <UpdateUser />
-        {/* <DisplayUsers /> */}
+        <DisplayUsers />
       </div>
     </div>
   );

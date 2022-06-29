@@ -16,7 +16,7 @@
 <h2>Login</h2> 
 POST request to send input to database and check
 
-http://localhost:3000/login
+route: /login
 
 - [x] login screen
 - [x] validate if user exist
@@ -24,14 +24,16 @@ http://localhost:3000/login
 <h2>User Management</h2>
 POST request to add users from input
 
-http://localhost:3000/management
+route: /management
 
-- [x] add user
+- [x] add user route: /add
 - [x] validate if user exist
 - [x] add username, password, email, group
 
 run database for login user  
 check if column value is empty
+
+route: /update
 
 - [x] update password for current user
 - [x] update email for current user
@@ -45,8 +47,9 @@ check if column value is empty
 <h2>Privilege User Management & Security</h2>
 
 - [] admin account
-  - [] create user
+  - [x] create user
   - [] disable user
   - [] reset account details
+  - [] display users
 - [] password encryption
 - [] 8-10 characters (numbers, alphabets, special characters)

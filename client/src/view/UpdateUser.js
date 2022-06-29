@@ -3,37 +3,52 @@ import axios from "axios";
 
 const UpdateUser = () => {
   //   update user fields
+
+  // array of usernames fetched
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [group, setGroup] = useState("");
+  const [group, setGroup] = useState();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      //  fetch POST statement to update user detail
-      const response = await axios.post("/update-user", {
+      //  POST request to update user detail
+      await axios.post("/update-user", {
+        username,
         password,
         email,
         group,
       });
-      console.log(response);
 
-      if (response) {
-        console.log("updated");
-
-        // RESET FIELDS
-        setPassword("");
-        setEmail("");
-        setGroup("");
-      }
+      // RESET FIELDS
+      setUsername("");
+      setPassword("");
+      setEmail("");
+      setGroup("");
     } catch (e) {
       console.log(e);
     }
   };
   return (
-    <div>
-      <form className="form-container" onSubmit={handleSubmit}>
+    <div className="form-container">
+      <form onSubmit={handleSubmit}>
         <h2>Update Account</h2>
+
+        <div>
+          <label htmlFor="username">
+            <p>user</p>
+          </label>
+          <input
+            type="text"
+            name="updateUsername"
+            placeholder="username"
+            id="updateUsername"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+
         <div>
           <label htmlFor="UpdatePassword">
             <p>password</p>
@@ -68,7 +83,7 @@ const UpdateUser = () => {
           </label>
 
           <select onChange={(e) => setGroup(e.target.value)}>
-            <option></option>
+            <option value="select"></option>
             <option value="project_lead">Project Lead</option>
             <option value="project_manager">Project Manager</option>
             <option value="team_member">Team Member</option>

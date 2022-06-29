@@ -7,6 +7,7 @@ const connection = require("./connection");
 const login = require("../controller/login");
 const add = require("../controller/add");
 const update = require("../controller/update");
+const accounts = require("../controller/accounts");
 
 // server port
 // http://localhost:3002
@@ -24,6 +25,9 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// - - - ALL ACCOUNTS - - -
+accounts(app);
+
 // - - - LOGIN AND AUTH - - -
 login(app);
 
@@ -37,15 +41,6 @@ update(app);
 app.get("/", (req, res) => {
   // redirect users to login page
   res.redirect("/login");
-});
-
-// GET ALL ACCOUNTS
-app.get("/accounts", (req, res) => {
-  query = "SELECT * FROM accounts";
-  connection.query(query, (error, result) => {
-    if (error) console.log(error);
-    res.send(result);
-  });
 });
 
 app.listen(port, () => {

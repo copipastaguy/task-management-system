@@ -17,12 +17,11 @@ const AddUser = () => {
     // POST request for user database
     try {
       // const response = await axios.get("/accounts");
-
       const response = await axios.post("/add", {
-        username,
-        password,
-        email,
-        group,
+        username: "admin2",
+        password: "admin2",
+        email: "test@test.com",
+        group: "Project Lead",
       });
       console.log(response);
       if (response) {
@@ -45,14 +44,14 @@ const AddUser = () => {
       <form className="form-container" onSubmit={handleSubmit}>
         <h2>Add user</h2>
         <div>
-          <label htmlFor="newUsername">
+          <label htmlFor="username">
             <p>username</p>
           </label>
           <input
             type="text"
-            name="newUsername"
+            name="username"
             placeholder="Username"
-            id="newUsername"
+            id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             // required
@@ -65,9 +64,9 @@ const AddUser = () => {
           </label>
           <input
             type="password"
-            name="newPassword"
-            placeholder="Password"
-            id="newPassword"
+            name="password"
+            placeholder="password"
+            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             // required
@@ -75,14 +74,14 @@ const AddUser = () => {
         </div>
 
         <div>
-          <label htmlFor="newEmail">
+          <label htmlFor="email">
             <p>email</p>
           </label>
           <input
             type="email"
-            name="newEmail"
+            name="email"
             placeholder="Email"
-            id="newEmail"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -101,7 +100,7 @@ const AddUser = () => {
             onChange={(e) => setGroup(e.target.value)}
           /> */}
           <select onChange={(e) => setGroup(e.target.value)}>
-            <option></option>
+            <option value="select"></option>
             <option value="project_lead">Project Lead</option>
             <option value="project_manager">Project Manager</option>
             <option value="team_member">Team Member</option>

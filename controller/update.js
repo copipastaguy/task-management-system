@@ -1,16 +1,13 @@
 const connection = require("../server/connection");
 
 const update = function (app) {
-  //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
-  //    - - - ROUTING FOR LOGIN AND AUTH - - -
+  //    - - - CONTROLLER LOGIC FOR UPDATE - - -
+  //    - - - ROUTING FOR UPDATE - - -
 
   app.post("/update-user", (req, res) => {
-    // - - - GET USERNAME - - -
-    const username = "admin";
-    console.log(username);
-
     // - - - INPUTS - - -
-    const { password, email, group } = req.body;
+    const { username, password, email, group } = req.body;
+    console.log(username);
     console.log(req.body);
 
     // - - - CHECK IF EMAIL COLUMN VALUE IS EMPTY - - -
@@ -22,8 +19,6 @@ const update = function (app) {
         // - - - RETURNS A VALUE - - -
         // - - - UPDATE VALUE - - -
         if (result) {
-          // returns exact match
-          console.log(result);
           query = `UPDATE accounts SET email = ? WHERE username = ?`;
           connection.query(query, [email, username], (error, result) => {
             if (error) throw error;
@@ -42,8 +37,6 @@ const update = function (app) {
         // - - - RETURNS A VALUE - - -
         // - - - UPDATE VALUE - - -
         if (result) {
-          // returns exact match
-          console.log(result);
           query = `UPDATE accounts SET password = ? WHERE username = ?`;
           connection.query(query, [password, username], (error, result) => {
             if (error) throw error;
@@ -54,7 +47,7 @@ const update = function (app) {
     }
 
     // - - - CHECK IF GROUP COLUMN VALUE IS EMPTY - - -
-    if (group.length > 0) {
+    if (group) {
       query = `SELECT ugroup from accounts WHERE username = ?`;
       connection.query(query, [group], (error, result) => {
         if (error) throw error;
@@ -62,8 +55,6 @@ const update = function (app) {
         // - - - RETURNS A VALUE - - -
         // - - - UPDATE VALUE - - -
         if (result) {
-          // returns exact match
-          console.log(result);
           query = `UPDATE accounts SET ugroup = ? WHERE username = ?`;
           connection.query(query, [group, username], (error, result) => {
             if (error) throw error;
@@ -73,5 +64,7 @@ const update = function (app) {
       });
     }
   });
+
+  
 };
 module.exports = update;

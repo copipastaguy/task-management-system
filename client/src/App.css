@@ -7,12 +7,16 @@
 }
 
 body {
-  background-color: #435165;
+  height: 100%;
+  width: 100%;
+  /* background-color: #435165; */
 }
 
 .login,
 .manage {
   width: 400px;
+  height: 400px;
+  max-width: 100%;
   background-color: #ffffff;
   box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
   margin: 100px auto;
@@ -31,6 +35,8 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   padding-top: 20px;
+  margin: 0 100px;
+  /* box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3); */
 }
 
 .form-container div {
@@ -51,7 +57,7 @@ body {
 .form-container input[type="text"],
 .form-container input[type="email"],
 .form-container select {
-  width: 310px;
+  width: 300px;
   height: 50px;
   border: 1px solid #dee0e4;
   margin-bottom: 20px;
@@ -76,12 +82,53 @@ body {
 }
 
 .manage {
+  height: 100vh;
   display: flex;
   flex-direction: row;
-  width: 1000px;
+  flex-wrap: wrap;
+  width: 100vw;
   padding: 10px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.manage form {
+  flex-direction: column;
 }
 
 .manage h1 {
   font-size: 24px;
+}
+
+.displayContainer {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.user-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-heading {
+  display: flex;
+  justify-content: space-around;
+}
+
+.user-info {
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.user-info p {
+  width: 100px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
