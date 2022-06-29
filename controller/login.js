@@ -9,7 +9,7 @@ const login = function (app) {
 
   app.post("/auth", (req, res) => {
     const { username, password } = req.body;
-    // console.log(req.body);
+    console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
     if (username.length > 0 && password.length > 0) {

@@ -19,7 +19,7 @@ const Login = () => {
       });
       console.log("user login");
       // console.log(response.data);
-      navigate("/management");
+      // navigate("/management");
     } catch (error) {
       console.log(error.response);
     }
