@@ -1,11 +1,12 @@
 const connection = require("../server/connection");
+const argon2 = require("argon2");
 
 const add = function (app) {
   //    - - - CONTROLLER LOGIC FOR ADDING USER - - -
   //    - - - ROUTING FOR ADD - - -
   app.post("/add", (req, res) => {
     //  - - - INPUT - - -
-    const { username, password, email, group } = req.body;
+    const { username, password, email, group, enable } = req.body;
     console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
@@ -13,7 +14,8 @@ const add = function (app) {
       username.length > 0 ||
       password.length > 0 ||
       email.length > 0 ||
-      group.length > 0
+      group.length > 0 ||
+      enable.length > 0
     ) {
       //   - - - CHECK IF USER EXIST - - -
       check = `SELECT * from accounts WHERE username = ? AND email = ?`;
@@ -24,13 +26,19 @@ const add = function (app) {
         // - - - USER EXIST (INVALID INPUT)- - -
         if (result.length > 0) {
           console.log("user exist in database");
+          return;
         } else {
           res.send(result);
           // - - - USER DONT EXIST - - -
-          query = `INSERT INTO accounts (user_group, username, password, email) VALUES (?, ?, ?, ?)`;
+          try {
+            
+          } catch (e) {
+            
+          }
+          query = `INSERT INTO accounts (user_group, username, password, email, isEnabled) VALUES (?, ?, ?, ?, ?)`;
           connection.query(
             query,
-            [group, username, password, email],
+            [group, username, password, email, enable],
             (error, response) => {
               if (error) throw error;
             }

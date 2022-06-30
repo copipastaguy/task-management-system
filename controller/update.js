@@ -6,7 +6,7 @@ const update = function (app) {
 
   app.post("/update-user", (req, res) => {
     // - - - INPUTS - - -
-    const { username, password, email, group } = req.body;
+    const { username, password, email, group, enable } = req.body;
     console.log(username);
     console.log(req.body);
 
@@ -63,8 +63,23 @@ const update = function (app) {
         }
       });
     }
-  });
 
-  
+    if (enable) {
+      query = `SELECT isEnabled from accounts WHERE username = ?`;
+      connection.query(query, [enable], (error, result) => {
+        if (error) throw error;
+
+        // - - - RETURNS A VALUE - - -
+        // - - - UPDATE VALUE - - -
+        if (result) {
+          query = `UPDATE accounts SET isEnabled = ? WHERE username = ?`;
+          connection.query(query, [enable, username], (error, result) => {
+            if (error) throw error;
+            res.send(result);
+          });
+        }
+      });
+    }
+  });
 };
 module.exports = update;

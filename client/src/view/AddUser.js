@@ -10,6 +10,7 @@ const AddUser = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [group, setGroup] = useState("");
+  const [enable, setEnable] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,30 +19,33 @@ const AddUser = () => {
     try {
       // const response = await axios.get("/accounts");
       const response = await axios.post("/add", {
-        username: "admin2",
-        password: "admin2",
-        email: "test@test.com",
-        group: "Project Lead",
+        // username: "project_lead",
+        // password: "lead!123",
+        // email: "lead@gmail.com",
+        // group: 1,
+        username,
+        password,
+        email,
+        group,
+        enable,
       });
       console.log(response);
-      if (response) {
-        console.log("user added");
-        navigate("/management");
 
-        // reset form field
-        setUsername("");
-        setPassword("");
-        setEmail("");
-        setGroup("");
-      }
+      navigate("/management");
+
+      // reset form field
+      setUsername("");
+      setPassword("");
+      setEmail("");
+      setGroup("");
     } catch (error) {
       console.log(error.response);
     }
   };
 
   return (
-    <div>
-      <form className="form-container" onSubmit={handleSubmit}>
+    <div className="form-container">
+      <form onSubmit={handleSubmit}>
         <h2>Add user</h2>
         <div>
           <label htmlFor="username">
@@ -91,20 +95,26 @@ const AddUser = () => {
           <label htmlFor="newGroup">
             <p>group</p>
           </label>
-          {/* <input
-            type="text"
-            name="newGroup"
-            placeholder="User Group"
-            id="newGroup"
-            value={group}
-            onChange={(e) => setGroup(e.target.value)}
-          /> */}
+
           <select onChange={(e) => setGroup(e.target.value)}>
             <option value="select"></option>
-            <option value="project_lead">Project Lead</option>
-            <option value="project_manager">Project Manager</option>
-            <option value="team_member">Team Member</option>
+            <option value="1">Project Lead</option>
+            <option value="2">Project Manager</option>
+            <option value="3">Team Member</option>
           </select>
+          {group}
+        </div>
+
+        <div>
+          <label htmlFor="disable">
+            <p>Enable ?</p>
+          </label>
+          <select value={enable} onChange={(e) => setEnable(e.target.value)}>
+            <option></option>
+            <option value="1">Enable</option>
+            <option value="false">Disable</option>
+          </select>
+          <p>{enable}</p>
         </div>
 
         <div>

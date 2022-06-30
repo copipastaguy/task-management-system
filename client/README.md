@@ -13,6 +13,8 @@
 - [ ] Reactjs VIEW
 - [x] Nodejs SERVER
 
+- import connection module into every CONTROLLER file
+
 <h2>Login</h2> 
 POST request to send input to database and check
 
@@ -50,6 +52,16 @@ route: /update
   - [x] create user
   - [] disable user
   - [] reset account details
-  - [] display users
-- [] password encryption
+  - [x] display users
+  - [] enable/disable users (POST request to update)
+- [] argon2 password encryption
 - [] 8-10 characters (numbers, alphabets, special characters)
+
+<h2>Conditional Rendering based on user group</h2>
+
+admin:
+
+- [] management page
+- change password
+- change email
+- disable account 

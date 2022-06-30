@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -14,20 +14,28 @@ const Login = () => {
     // POST request for user database
     try {
       const response = await axios.post("/auth", {
-        username: "admin",
-        password: "admin",
+        username,
+        password,
       });
-      console.log("user login");
-      // console.log(response.data);
-      // navigate("/management");
+      if (response.data) {
+        console.log(response.data);
+        const isAdmin = response.data[0].admin_privilege;
+        localStorage.setItem("username", response.data[0].username);
+
+        if (isAdmin === 1) {
+          console.log("directing to management page");
+          navigate("/management");
+        } else {
+          console.log("directing to task page");
+          navigate("/tasks");
+        }
+      }
     } catch (error) {
-      console.log(error.response);
+      throw error;
     }
   };
 
-  // const handleChange = (e) => {
-  //   setUserDetails({ [e.target.id]: e.target.value });
-  // };
+  // CONDITIONAL RENDERING BASED ON USER GROUP
 
   return (
     <div className="login">

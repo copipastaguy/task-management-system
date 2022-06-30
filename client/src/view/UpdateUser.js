@@ -9,6 +9,7 @@ const UpdateUser = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [group, setGroup] = useState();
+  const [enable, setEnable] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,6 +20,7 @@ const UpdateUser = () => {
         password,
         email,
         group,
+        enable,
       });
 
       // RESET FIELDS
@@ -87,6 +89,17 @@ const UpdateUser = () => {
             <option value="project_lead">Project Lead</option>
             <option value="project_manager">Project Manager</option>
             <option value="team_member">Team Member</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="disable">
+            <p>Enable ?</p>
+          </label>
+          <select value={enable} onChange={(e) => setEnable(e.target.value)}>
+            <option></option>
+            <option value="1">Enable</option>
+            <option value="0">Disable</option>
           </select>
         </div>
 
