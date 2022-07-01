@@ -8,7 +8,8 @@ const UpdateUser = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [group, setGroup] = useState();
+  const [role, setRole] = useState();
+  const [group, setGroup] = useState("");
   const [enable, setEnable] = useState("");
 
   const handleSubmit = async (e) => {
@@ -19,7 +20,7 @@ const UpdateUser = () => {
         username,
         password,
         email,
-        group,
+        role,
         enable,
       });
 
@@ -27,7 +28,7 @@ const UpdateUser = () => {
       setUsername("");
       setPassword("");
       setEmail("");
-      setGroup("");
+      setRole("");
     } catch (e) {
       console.log(e);
     }
@@ -79,20 +80,34 @@ const UpdateUser = () => {
           />
         </div>
 
-        <div>
-          <label htmlFor="updateGroup">
-            <p>group</p>
+        {/* <div>
+          <label htmlFor="updateRole">
+            <p>role</p>
           </label>
 
-          <select onChange={(e) => setGroup(e.target.value)}>
+          <select onChange={(e) => setRole(e.target.value)}>
             <option value="select"></option>
             <option value="project_lead">Project Lead</option>
             <option value="project_manager">Project Manager</option>
             <option value="team_member">Team Member</option>
           </select>
-        </div>
+        </div> */}
 
         <div>
+          <label htmlFor="updateGroup">
+            <p>group</p>
+          </label>
+
+          <input
+            type="text"
+            name="updateGroup"
+            id="updateGroup"
+            value={group}
+            onChange={(e) => setGroup(e.target.value)}
+          />
+        </div>
+
+        {/* <div>
           <label htmlFor="disable">
             <p>Enable ?</p>
           </label>
@@ -101,7 +116,7 @@ const UpdateUser = () => {
             <option value="1">Enable</option>
             <option value="0">Disable</option>
           </select>
-        </div>
+        </div> */}
 
         <div>
           <input type="submit" value="Update Account" />

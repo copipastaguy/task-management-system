@@ -1,7 +1,12 @@
 import React from "react";
+import Header from "./Header";
 
 const Tasks = () => {
-  return <div>Tasks</div>;
+  return (
+    <div>
+      <Header />
+    </div>
+  );
 };
 
 export default Tasks;

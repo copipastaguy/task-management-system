@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Header from "./view/Header";
 import Login from "./view/Login";
 import UserManagement from "./view/UserManagement";
 import Tasks from "./view/Tasks";
@@ -7,13 +8,16 @@ import Tasks from "./view/Tasks";
 function App() {
   return (
     <BrowserRouter>
-      <div className="App"></div>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Login />} />
+          {/* admin page */}
+          <Route path="/management" element={<UserManagement />} />
 
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/management" element={<UserManagement />} />
-        <Route path="/tasks" element={<Tasks />} />
-      </Routes>
+          {/* user page */}
+          <Route path="/tasks" element={<Tasks />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }

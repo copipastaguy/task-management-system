@@ -16,13 +16,13 @@ const connection = mysql.createConnection({
 //   USE nodelogin
 
 //   CREATE TABLE accounts (
-//     id INT()
-//     username VARCHAR(255),
-//     password VARCHAR(255),
+//     id INT(),
+//     username VARCHAR(255) NOT NULL,
+//     password VARCHAR(255) NOT NULL,
 //     email VARCHAR(255),
-//     user_group ENUM("Project Manager", "Project Lead", "Team Member"),
-//     isAdmin TINYINT,
-//     isEnabled TINYINT
+//     roles ENUM("Admin", "Project Manager", "Project Lead", "Team Member"),
+//     admin_privilege TINYINT,
+//     isEnabled ENUM("True", "False") NOT NULL
 //   )`
 // );
 

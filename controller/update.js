@@ -1,4 +1,5 @@
 const connection = require("../server/connection");
+const bcrypt = require("bcrypt");
 
 const update = function (app) {
   //    - - - CONTROLLER LOGIC FOR UPDATE - - -
@@ -37,8 +38,12 @@ const update = function (app) {
         // - - - RETURNS A VALUE - - -
         // - - - UPDATE VALUE - - -
         if (result) {
+          // - - - HASH PASSWORD - - -
+          const hashPassword = bcrypt.hashSync(password, 10);
+          console.log(hashPassword);
+
           query = `UPDATE accounts SET password = ? WHERE username = ?`;
-          connection.query(query, [password, username], (error, result) => {
+          connection.query(query, [hashPassword, username], (error, result) => {
             if (error) throw error;
             res.send(result);
           });

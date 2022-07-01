@@ -1,7 +1,7 @@
 import React from "react";
 
 const NavBar = () => {
-  const pages = ["view users", "add users"];
+  const pages = ["view users", "add users", "sign out"];
   return (
     <div className="navigation">
       <div className="menuIcon">

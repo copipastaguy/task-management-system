@@ -1,5 +1,5 @@
-const { query } = require("express");
 const connection = require("../server/connection");
+const bcrypt = require("bcrypt");
 
 const login = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
@@ -10,25 +10,36 @@ const login = function (app) {
 
   app.post("/auth", (req, res) => {
     const { username, password } = req.body;
-    // console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
     if (username.length > 0 && password.length > 0) {
       // - - - CHECK IF USER EXIST - - -
-      const query = `SELECT * FROM accounts WHERE username = ? and password = ? `;
-      connection.query(query, [username, password], (error, result) => {
+      // - - - FETCH HASHED PASSWORD OF USER - - -
+      const query = `SELECT username, password, admin_privilege FROM accounts WHERE username = ? `;
+      connection.query(query, [username], (error, result) => {
         if (error) throw error;
 
         // - - - VALID - - -
         if (result.length > 0) {
+          const hashPassword = result[0].password;
+          // res.send(hashPassword);
           // fetch the exact user match
-          res.send(result);
-          console.log("logged in successfully");
+          // decrypt password from database
+
+          bcrypt.compare(password, hashPassword, (error, result) => {
+            // returns boolean
+            if (result == true) {
+              console.log("logged in successfully");
+            } else {
+              console.log("wrong login details");
+            }
+          });
         } else {
           // - - - INVALID USER - - -
           // res.redirect("/login");
           console.log("USER NOT FOUND");
         }
+        res.send(result);
       });
     } else if (username.length == 0 || password.length == 0) {
       // res.redirect("/login");

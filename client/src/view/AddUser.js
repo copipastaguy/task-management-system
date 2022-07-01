@@ -9,7 +9,7 @@ const AddUser = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [group, setGroup] = useState("");
+  const [role, SetRole] = useState("");
   const [enable, setEnable] = useState("");
 
   const handleSubmit = async (e) => {
@@ -17,30 +17,24 @@ const AddUser = () => {
 
     // POST request for user database
     try {
-      // const response = await axios.get("/accounts");
       const response = await axios.post("/add", {
-        // username: "project_lead",
-        // password: "lead!123",
-        // email: "lead@gmail.com",
-        // group: 1,
         username,
         password,
         email,
-        group,
-        enable,
+        role,
       });
       console.log(response);
-
-      navigate("/management");
 
       // reset form field
       setUsername("");
       setPassword("");
       setEmail("");
-      setGroup("");
+      SetRole("");
     } catch (error) {
+      console.log(error);
       console.log(error.response);
     }
+    navigate("/management");
   };
 
   return (
@@ -57,8 +51,8 @@ const AddUser = () => {
             placeholder="Username"
             id="username"
             value={username}
+            required
             onChange={(e) => setUsername(e.target.value)}
-            // required
           />
         </div>
 
@@ -72,8 +66,8 @@ const AddUser = () => {
             placeholder="password"
             id="password"
             value={password}
+            required
             onChange={(e) => setPassword(e.target.value)}
-            // required
           />
         </div>
 
@@ -93,19 +87,21 @@ const AddUser = () => {
 
         <div>
           <label htmlFor="newGroup">
-            <p>group</p>
+            <p>role</p>
           </label>
 
-          <select onChange={(e) => setGroup(e.target.value)}>
-            <option value="select"></option>
-            <option value="1">Project Lead</option>
-            <option value="2">Project Manager</option>
-            <option value="3">Team Member</option>
+          <select value={role} onChange={(e) => SetRole(e.target.value)}>
+            <option></option>
+            <option value="Admin" selected>
+              Admin
+            </option>
+            <option value="Project Lead">Project Lead</option>
+            <option value="Project Manager">Project Manager</option>
+            <option value="Team Member">Team Member</option>
           </select>
-          {group}
         </div>
 
-        <div>
+        {/* <div>
           <label htmlFor="disable">
             <p>Enable ?</p>
           </label>
@@ -114,8 +110,7 @@ const AddUser = () => {
             <option value="1">Enable</option>
             <option value="false">Disable</option>
           </select>
-          <p>{enable}</p>
-        </div>
+        </div> */}
 
         <div>
           <input type="submit" value="Add User" />

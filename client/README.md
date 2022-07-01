@@ -49,12 +49,16 @@ route: /update
 <h2>Privilege User Management & Security</h2>
 
 - [] admin account
+
   - [x] create user
   - [] disable user
-  - [] reset account details
+  - [] update account password, email, group details
   - [x] display users
-  - [] enable/disable users (POST request to update)
-- [] argon2 password encryption
+
+- [] enable/disable users (POST request to update)
+- [] password validation
+- [x] bcrypt password encryption
+- [x] decrypt password for compare
 - [] 8-10 characters (numbers, alphabets, special characters)
 
 <h2>Conditional Rendering based on user group</h2>
@@ -64,4 +68,4 @@ admin:
 - [] management page
 - change password
 - change email
-- disable account 
+- disable account

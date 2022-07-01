@@ -3,7 +3,6 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-const connection = require("./connection");
 const login = require("../controller/login");
 const add = require("../controller/add");
 const update = require("../controller/update");
@@ -43,7 +42,7 @@ app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/all", (req, res) => {
+app.get("/test", (req, res) => {
   res.send("hello this is testing page");
 });
 
