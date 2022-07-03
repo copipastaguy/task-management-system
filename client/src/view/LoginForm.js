@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import FlashMessages from "./FlashMessages";
 
-const Login = () => {
-  const navigate = useNavigate();
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
+const LoginForm = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -44,9 +46,7 @@ const Login = () => {
 
   return (
     <div>
-      <FlashMessages />
-
-      <div className="login">
+      {/* <div className="login">
         <h1>Login</h1>
         <form
           className="form-container"
@@ -84,9 +84,36 @@ const Login = () => {
 
           <input type="submit" value="Login" />
         </form>
+      </div> */}
+      <div className="login-header">
+        <h2>TASKY</h2>
+        <Form onSubmit={handleSubmit} className="login-form">
+          <Form.Group>
+            <Form.Control
+              type="text"
+              placeholder="username"
+              value={username}
+              id="username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Control
+              type="password"
+              placeholder="password"
+              value={password}
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
+
+          <Button variant="primary" type="submit">
+            Login
+          </Button>
+        </Form>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default LoginForm;

@@ -3,7 +3,18 @@ import React, { useEffect, useState } from "react";
 
 const DisplayUsers = () => {
   // state to store database after FETCH
-  const [users, setUsers] = useState();
+  // const [users, setUsers] = useState();
+  const [users, setUsers] = useState([
+    {
+      username: "admin",
+      email: "admin@admin.com",
+      user_group: "apple",
+    },
+    {
+      username: "test",
+      email: "test@test.com",
+    },
+  ]);
 
   // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
@@ -15,18 +26,13 @@ const DisplayUsers = () => {
   const getUsers = async () => {
     const response = await axios.get("/accounts");
     // store array in state
-    setUsers(response.data);
+    // setUsers(response.data);
     // console.log(response.data);
   };
 
   return (
-    <div className="displayContainer">
-      <button onClick={getUsers}>Refresh</button>
-      {/* <form>
-        <input type="text" placeholder="Search"></input>
-        <input type="submit"></input>
-      </form> */}
-      <h2>Display Users</h2>
+    <div className="displayContainer ">
+      {/* <button onClick={getUsers}>Refresh</button> */}
 
       <div className="user-table">
         <table>
@@ -39,7 +45,7 @@ const DisplayUsers = () => {
             </tr>
           </thead>
 
-          {users?.map((user) => {
+          {users.map((user) => {
             return (
               <tbody key={user.username}>
                 <tr>

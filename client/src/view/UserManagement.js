@@ -3,60 +3,32 @@ import Header from "./Header";
 import AddUser from "./AddUser";
 import UpdateUser from "./UpdateUser";
 import DisplayUsers from "./DisplayUsers";
+import LoggedIn from "./LoggedIn";
+
+import Form from "react-bootstrap/Form";
 
 const UserManagement = () => {
-  const [showAdd, setShowAdd] = useState(false);
-  const [showUpdate, setShowUpdate] = useState(false);
-  const [showDisable, setShowDisable] = useState(false);
-
-  // const actions = [
-  //   "Add User",
-  //   "Update account information",
-  //   "Enable/Disable accounts",
-  // ];
+  const [actions, setActions] = useState("add");
 
   return (
-    <div className="container">
-      <Header />
-      <h1>User Management</h1>
+    <div className="main-container">
+      <LoggedIn />
+      {/* <h3>User Management</h3> */}
       <div className="manage">
         <div className="actions_menu">
-          <h2
-            onClick={() => {
-              setShowAdd(true);
-              setShowUpdate(false);
-              setShowDisable(false);
-            }}
-          >
-            Add User
-          </h2>
-          <h2
-            onClick={() => {
-              setShowAdd(false);
-              setShowUpdate(true);
-              setShowDisable(false);
-            }}
-          >
-            Update account information
-          </h2>
-          <h2
-            onClick={() => {
-              setShowAdd(false);
-              setShowUpdate(false);
-              setShowDisable(true);
-            }}
-          >
-            Enable/Disable accounts
-          </h2>
+          <p>What would you like to do today?</p>
+          <Form.Select onChange={(e) => setActions(e.target.value)}>
+            {/* <option>What would you like to do today?</option> */}
+            <option value="add">Add user</option>
+            <option value="update">Update user</option>
+            <option value="enable">Enable/Disable user</option>
+            <option value="view">View all users</option>
+          </Form.Select>
         </div>
 
-        {showAdd && <AddUser />}
-        {/* display if admin */}
-        {showUpdate && <UpdateUser />}
-
-        {/* display if user */}
-        {/* <UpdateUser /> */}
-        {/* <DisplayUsers /> */}
+        {actions === "add" && <AddUser />}
+        {actions === "update" && <UpdateUser />}
+        {actions === "view" && <DisplayUsers />}
       </div>
     </div>
   );

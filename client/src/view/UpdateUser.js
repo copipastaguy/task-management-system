@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 const UpdateUser = () => {
   //   update user fields
@@ -35,7 +37,7 @@ const UpdateUser = () => {
   };
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit}>
+      {/* <form onSubmit={handleSubmit}>
         <h2>Update Account</h2>
 
         <div>
@@ -80,19 +82,6 @@ const UpdateUser = () => {
           />
         </div>
 
-        {/* <div>
-          <label htmlFor="updateRole">
-            <p>role</p>
-          </label>
-
-          <select onChange={(e) => setRole(e.target.value)}>
-            <option value="select"></option>
-            <option value="project_lead">Project Lead</option>
-            <option value="project_manager">Project Manager</option>
-            <option value="team_member">Team Member</option>
-          </select>
-        </div> */}
-
         <div>
           <label htmlFor="updateGroup">
             <p>group</p>
@@ -107,21 +96,75 @@ const UpdateUser = () => {
           />
         </div>
 
-        {/* <div>
-          <label htmlFor="disable">
-            <p>Enable ?</p>
-          </label>
-          <select value={enable} onChange={(e) => setEnable(e.target.value)}>
-            <option></option>
-            <option value="1">Enable</option>
-            <option value="0">Disable</option>
-          </select>
-        </div> */}
-
         <div>
           <input type="submit" value="Update Account" />
         </div>
-      </form>
+      </form> */}
+
+      <Form onSubmit={handleSubmit} className="login-form form">
+        <h3>UPDATE USER</h3>
+        <Form.Group>
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="username"
+            value={username}
+            id="username"
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          {/* <Form.Text>Enter account username</Form.Text> */}
+        </Form.Group>
+
+        <Form.Group>
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="password"
+            value={password}
+            id="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {/* <Form.Text muted>
+            Your password must be 8-20 characters long
+          </Form.Text> */}
+        </Form.Group>
+
+        <Form.Group>
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="email"
+            value={email}
+            id="email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group>
+          <Form.Label>Group</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="group"
+            value={group}
+            id="group"
+            onChange={(e) => setGroup(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group>
+          {/* <Form.Label>Role</Form.Label> */}
+          <Form.Select value={role} onChange={(e) => setRole(e.target.value)}>
+            <option>Choose a role</option>
+            <option value="Project Manager">Project Manager</option>
+            <option value="Project Lead">Project Lead</option>
+            <option value="Team Member">Team Member</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Add user
+        </Button>
+      </Form>
     </div>
   );
 };
