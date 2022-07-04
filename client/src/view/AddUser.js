@@ -19,8 +19,8 @@ const AddUser = () => {
     // POST request for user database
     try {
       const response = await axios.post("/add", {
-        username: "admin1",
-        password: "Aaaaaaadmin!123",
+        username: "admin",
+        password: "",
         email: "admin@gmail.com",
         role: "Project Manager",
       });
@@ -32,7 +32,6 @@ const AddUser = () => {
       SetRole("");
     } catch (error) {
       console.log(error);
-      console.log(error.response);
     }
     navigate("/management");
   };

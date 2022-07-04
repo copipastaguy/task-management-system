@@ -1,12 +1,24 @@
 const connection = require("../server/connection");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const { response } = require("express");
 const saltRounds = 10;
 
 const add = function (app) {
+  const errorLogger = (error, request, response, next) => {
+    console.log(`error ${error.message}`);
+    next(error); // calling next middleware
+  };
+
+  const errorResponder = (error, request, response, next) => {
+    response.header("Content-Type", "application/json");
+    const status = error.status || 400;
+    response.status(status).send(error.message);
+  };
+
   //    - - - CONTROLLER LOGIC FOR ADDING USER - - -
   //    - - - ROUTING FOR ADD - - -
-  app.post("/add", (req, res, next) => {
+  app.post("/add", async (req, res) => {
     //  - - - INPUT - - -
     const { username, password, email, role } = req.body;
     console.log(req.body);
@@ -24,52 +36,56 @@ const add = function (app) {
           return;
         } else {
           // - - - NEW USER - - -
-
-          if (!password) {
-            console.log("invalid password length");
-            return;
-          } else {
-            // VALIDATE PASSWORD
-            if (validator.isStrongPassword(password) && password.length <= 10) {
-              console.log("valid password");
-            } else {
-              // console.log("invalid password format");
-              return next();
-            }
-
-            // VALIDATE EMAIL
-            if (validator.isEmail(email) || email.length == 0) {
-              console.log("valid email");
-            } else {
-              return;
-            }
-
-            // encrypt password and save into database
-            // HASH PASSWORD
-            bcrypt.hash(password, saltRounds, (err, hashPassword) => {
-              console.log(`hashed pw: ${hashPassword}`);
-              addUser = `INSERT INTO accounts (roles, username, password, email) VALUES (?, ?, ?, ?)`;
-              // connection.query(
-              //   addUser,
-              //   [role, username, hashPassword, email],
-              //   (error, result) => {
-              //     if (error) throw error;
-              //     res.send(result);
-              //   }
-              // );
-              console.log("added user");
+          // if (password.length < 8 || password.length > 10) {
+          //   console.log("invalid password length");
+          //   next(error);
+          // }
+          try {
+            if (password) {
+              console.log("valid password length");
               res.send(result);
-            });
-            return;
+            }
+          } catch (error) {
+            next(error);
           }
+          // else {
+          //   // VALIDATE PASSWORD
+          //   if (validator.isStrongPassword(password) && password.length <= 10) {
+          //     console.log("valid password");
+          //   } else {
+          //     // console.log("invalid password format");
+          //     return next();
+          //   }
+
+          //   // VALIDATE EMAIL
+          //   if (validator.isEmail(email) || email.length == 0) {
+          //     console.log("valid email");
+          //   } else {
+          //     return;
+          //   }
+
+          //   // encrypt password and save into database
+          //   // HASH PASSWORD
+          //   bcrypt.hash(password, saltRounds, (err, hashPassword) => {
+          //     console.log(`hashed pw: ${hashPassword}`);
+          //     addUser = `INSERT INTO accounts (roles, username, password, email) VALUES (?, ?, ?, ?)`;
+          //     // connection.query(
+          //     //   addUser,
+          //     //   [role, username, hashPassword, email],
+          //     //   (error, result) => {
+          //     //     if (error) throw error;
+          //     //     res.send(result);
+          //     //   }
+          //     // );
+          //     console.log("added user");
+          //     res.send(result);
+          //   });
+          //   return;
+          // }
         }
       });
     }
   });
-
-  const errorHandler = (err, req, res, next) => {
-    console.log("invalid password format");
-  };
 };
 
 module.exports = add;
