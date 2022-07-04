@@ -8,6 +8,8 @@ const add = require("../controller/add");
 const update = require("../controller/update");
 const accounts = require("../controller/accounts");
 
+const errorHandler = require("../controller/errorHandler");
+
 // server port
 // http://localhost:3002
 const port = 3002;
@@ -45,6 +47,9 @@ app.get("/", (req, res) => {
 app.get("/test", (req, res) => {
   res.send("hello this is testing page");
 });
+
+// error handle
+// app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);

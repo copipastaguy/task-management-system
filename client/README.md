@@ -21,7 +21,7 @@ POST request to send input to database and check
 route: /login
 
 - [x] login screen
-- [] conditional login header
+- [x] conditional login header
 - [x] validate if user exist
 
 <h2>User Management</h2>
@@ -31,7 +31,14 @@ route: /management
 
 - [x] add user route: /add
 - [x] validate if user exist
-- [x] add username, password, email, group
+
+- [] validate password
+- [] validate email
+- validator returns True/False
+- if all is True -> send query
+- if any field is False -> dont send query
+
+- [] add username, password, email, role
 
 run database for login user  
 check if column value is empty
@@ -52,7 +59,7 @@ route: /update
 - [] admin account
 
   - [x] create user
-  - [] disable user
+  - [] disable user == no login
   - [] update account password, email, group details
   - [x] display users
 

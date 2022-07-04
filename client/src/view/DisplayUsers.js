@@ -3,18 +3,18 @@ import React, { useEffect, useState } from "react";
 
 const DisplayUsers = () => {
   // state to store database after FETCH
-  // const [users, setUsers] = useState();
-  const [users, setUsers] = useState([
-    {
-      username: "admin",
-      email: "admin@admin.com",
-      user_group: "apple",
-    },
-    {
-      username: "test",
-      email: "test@test.com",
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([
+  //   {
+  //     username: "admin",
+  //     email: "admin@admin.com",
+  //     user_group: "apple",
+  //   },
+  //   {
+  //     username: "test",
+  //     email: "test@test.com",
+  //   },
+  // ]);
 
   // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
@@ -26,8 +26,8 @@ const DisplayUsers = () => {
   const getUsers = async () => {
     const response = await axios.get("/accounts");
     // store array in state
-    // setUsers(response.data);
     // console.log(response.data);
+    setUsers(response.data);
   };
 
   return (
