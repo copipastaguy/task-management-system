@@ -32,13 +32,13 @@ route: /management
 - [x] add user route: /add
 - [x] validate if user exist
 
-- [] validate password
-- [] validate email
+- [x] validate password
+- [x] validate email
 - validator returns True/False
 - if all is True -> send query
 - if any field is False -> dont send query
 
-- [] add username, password, email, role
+- [x] add username, password, email, role
 
 run database for login user  
 check if column value is empty

@@ -8,10 +8,7 @@ const add = require("../controller/add");
 const update = require("../controller/update");
 const accounts = require("../controller/accounts");
 
-const errorHandler = require("../controller/errorHandler");
-
 // server port
-// http://localhost:3002
 const port = 3002;
 
 const app = express();
@@ -23,8 +20,8 @@ app.use(
   })
 );
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // - - - ALL ACCOUNTS - - -
 accounts(app);
@@ -38,7 +35,8 @@ add(app);
 // - - - UPDATE USER - - -
 update(app);
 
-// localhost:3002/
+// app.use(errorHandler);
+
 app.get("/", (req, res) => {
   // redirect users to login page
   res.redirect("/login");
@@ -47,9 +45,6 @@ app.get("/", (req, res) => {
 app.get("/test", (req, res) => {
   res.send("hello this is testing page");
 });
-
-// error handle
-// app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);

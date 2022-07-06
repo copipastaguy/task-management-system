@@ -1,89 +1,112 @@
 const connection = require("../server/connection");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const { response } = require("express");
 const saltRounds = 10;
 
+const errorHandler = require("./errorHandler");
+
 const add = function (app) {
-  const errorLogger = (error, request, response, next) => {
-    console.log(`error ${error.message}`);
-    next(error); // calling next middleware
-  };
-
-  const errorResponder = (error, request, response, next) => {
-    response.header("Content-Type", "application/json");
-    const status = error.status || 400;
-    response.status(status).send(error.message);
-  };
-
   //    - - - CONTROLLER LOGIC FOR ADDING USER - - -
   //    - - - ROUTING FOR ADD - - -
-  app.post("/add", async (req, res) => {
+  app.post("/add", (req, res, next) => {
     //  - - - INPUT - - -
-    const { username, password, email, role } = req.body;
+    const { username, password, email, userGroup } = req.body;
     console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
-    if (username || password || email || role) {
-      //   - - - CHECK IF USER EXIST - - -
-      check = `SELECT * from accounts WHERE username = ? AND email = ?`;
-      connection.query(check, [username, email], (error, result) => {
-        if (error) throw error;
-
-        // - - - USER EXIST (INVALID INPUT) - - -
-        if (result.length > 0) {
-          console.log("user exist in database");
-          return;
-        } else {
-          // - - - NEW USER - - -
-          // if (password.length < 8 || password.length > 10) {
-          //   console.log("invalid password length");
-          //   next(error);
-          // }
-          try {
-            if (password) {
-              console.log("valid password length");
-              res.send(result);
+    if (username || password || userGroup || email) {
+      // CHECK IF EMAIL EXIST
+      if (email) {
+        query = `SELECT * FROM accounts WHERE email = ?`;
+        connection.query(query, [email], (error, result) => {
+          if (error) throw error;
+          else if (result.length > 0) {
+            return next(errorHandler("Email already exist", req, res));
+          } else {
+            // VALIDATE EMAIL
+            console.log("Validating email. . . ");
+            if (validator.isEmail(email) || email.length == 0) {
+              console.log("Valid email !");
+            } else {
+              // console.log("invalid email format");
+              return next(
+                errorHandler("Email should include a domain!", req, res)
+              );
             }
-          } catch (error) {
-            next(error);
           }
-          // else {
-          //   // VALIDATE PASSWORD
-          //   if (validator.isStrongPassword(password) && password.length <= 10) {
-          //     console.log("valid password");
-          //   } else {
-          //     // console.log("invalid password format");
-          //     return next();
-          //   }
+        });
+      }
 
-          //   // VALIDATE EMAIL
-          //   if (validator.isEmail(email) || email.length == 0) {
-          //     console.log("valid email");
-          //   } else {
-          //     return;
-          //   }
-
-          //   // encrypt password and save into database
-          //   // HASH PASSWORD
-          //   bcrypt.hash(password, saltRounds, (err, hashPassword) => {
-          //     console.log(`hashed pw: ${hashPassword}`);
-          //     addUser = `INSERT INTO accounts (roles, username, password, email) VALUES (?, ?, ?, ?)`;
-          //     // connection.query(
-          //     //   addUser,
-          //     //   [role, username, hashPassword, email],
-          //     //   (error, result) => {
-          //     //     if (error) throw error;
-          //     //     res.send(result);
-          //     //   }
-          //     // );
-          //     console.log("added user");
-          //     res.send(result);
-          //   });
-          //   return;
-          // }
-        }
-      });
+      //   - - - CHECK IF USER EXIST - - -
+      if (username) {
+        checkUsername = `SELECT username from accounts WHERE username = ?`;
+        connection.query(checkUsername, [username], (error, result) => {
+          if (error) throw error;
+          // - - - USER EXIST (INVALID INPUT) - - -
+          // SAME USERNAME
+          if (result.length > 0) {
+            // console.log(`Username already exist`);
+            return next(errorHandler("Username already exist", req, res));
+          } else {
+            console.log("New user!");
+            // - - - NEW USER - - -
+            if (password.length < 8 || password.length > 10) {
+              // INVALID LENGTH
+              // console.log(
+              //   "Password length should be min 8 characters, max 10 characters"
+              // );
+              return next(
+                errorHandler(
+                  "Password length should be min 8 characters, max 10 characters",
+                  req,
+                  res
+                )
+              );
+            } else {
+              // VALIDATE PASSWORD
+              console.log("Validating password. . .");
+              if (
+                !validator.isStrongPassword(password) ||
+                password.length > 10 ||
+                /\s/.test(password)
+              ) {
+                // console.log(
+                //   "Password requires min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces"
+                // );
+                return next(
+                  errorHandler(
+                    "Password should include min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces",
+                    req,
+                    res
+                  )
+                );
+              } else {
+                // encrypt password and save into database
+                // HASH PASSWORD
+                bcrypt.hash(password, saltRounds, (err, hashPassword) => {
+                  console.log("Hashing password. . .");
+                  addUser = `INSERT INTO accounts (user_group, username, password, email) VALUES (?, ?, ?, ?)`;
+                  // connection.query(
+                  //   addUser,
+                  //   [userGroup, username, hashPassword, email],
+                  //   (error, result) => {
+                  //     if (error) {
+                  //       throw error;
+                  //     } else {
+                  //       console.log("added user");
+                  //       // res.send({ username, userGroup, password, email });
+                  //     }
+                  //   }
+                  // );
+                  // res.send(
+                  //   `Adding new user to database. . .\n ${username}, ${password}, ${email} \nNew user added`
+                  // );
+                });
+              }
+            }
+          }
+        });
+      }
     }
   });
 };

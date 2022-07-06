@@ -1,89 +1,127 @@
 const connection = require("../server/connection");
 const bcrypt = require("bcrypt");
 
+const errorHandler = require("./errorHandler");
+const validator = require("validator");
+
 const update = function (app) {
   //    - - - CONTROLLER LOGIC FOR UPDATE - - -
   //    - - - ROUTING FOR UPDATE - - -
 
-  app.post("/update-user", (req, res) => {
+  app.post("/update-user", (req, res, next) => {
     // - - - INPUTS - - -
-    const { username, password, email, group, enable } = req.body;
-    console.log(username);
-    console.log(req.body);
+    const { username, password, email, user_group, enable } = req.body;
+    // console.log(req.body);
 
-    // - - - CHECK IF EMAIL COLUMN VALUE IS EMPTY - - -
-    if (email.length > 0) {
-      query = `SELECT email from accounts WHERE username = ?`;
-      connection.query(query, [username], (error, result) => {
-        if (error) throw error;
+    if (email || password || username) {
+      if (email) {
+        // - - - CHECK IF EMAIL EXIST - - -
+        query = `SELECT email FROM accounts WHERE email = ?`;
+        connection.query(query, [email], (error, result) => {
+          if (error) throw error;
+          else if (result.length > 0) {
+            console.log("email exist choose another one");
+            return next(errorHandler("Email exist!", req, res));
+          } else {
+            console.log("Validating email. . .");
+            if (validator.isEmail(email)) {
+              updateEmail = `UPDATE accounts SET email = ? WHERE username = ?`;
+              connection.query(
+                updateEmail,
+                [email, username],
+                (error, result) => {
+                  if (error) throw error;
+                  res.send("Email updated");
+                  console.log("Email updated");
+                }
+              );
+            } else {
+              // console.log("Invalid email format");
+              return next(
+                errorHandler("Email should include a domain!", req, res)
+              );
+            }
+          }
+        });
+      }
 
-        // - - - RETURNS A VALUE - - -
-        // - - - UPDATE VALUE - - -
-        if (result) {
-          query = `UPDATE accounts SET email = ? WHERE username = ?`;
-          connection.query(query, [email, username], (error, result) => {
-            if (error) throw error;
-            res.send(result);
-          });
+      if (password) {
+        if (password.length < 8 || password.length > 10) {
+          return next(
+            errorHandler(
+              "Password length should be min 8 characters, max 10 characters",
+              req,
+              res
+            )
+          );
+        } else {
+          if (
+            !validator.isStrongPassword(password) ||
+            password.length > 10 ||
+            /\s/.test(password)
+          ) {
+            // console.log(
+            //   "Password requires min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces"
+            // );
+            return next(
+              errorHandler(
+                "Password should include min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces",
+                req,
+                res
+              )
+            );
+          } else {
+            // - - - HASH PASSWORD - - -
+            const hashPassword = bcrypt.hashSync(password, 10);
+            console.log(hashPassword);
+
+            query = `UPDATE accounts SET password = ? WHERE username = ?`;
+            connection.query(
+              query,
+              [hashPassword, username],
+              (error, result) => {
+                if (error) throw error;
+                res.send("Password updated");
+              }
+            );
+          }
         }
-      });
-    }
+      }
 
-    // - - - CHECK IF PASSWORD COLUMN VALUE IS EMPTY - - -
-    if (password.length > 0) {
-      query = `SELECT password from accounts WHERE username = ?`;
-      connection.query(query, [password], (error, result) => {
-        if (error) throw error;
+      // - - - CHECK IF GROUP COLUMN VALUE IS EMPTY - - -
+      if (user_group) {
+        query = `SELECT user_group from accounts WHERE username = ?`;
+        connection.query(query, [group], (error, result) => {
+          if (error) throw error;
 
-        // - - - RETURNS A VALUE - - -
-        // - - - UPDATE VALUE - - -
-        if (result) {
-          // - - - HASH PASSWORD - - -
-          const hashPassword = bcrypt.hashSync(password, 10);
-          console.log(hashPassword);
+          // - - - RETURNS A VALUE - - -
+          // - - - UPDATE VALUE - - -
+          if (result) {
+            query = `UPDATE accounts SET user_group = ? WHERE username = ?`;
+            connection.query(query, [user_group, username], (error, result) => {
+              if (error) throw error;
+              res.send(result);
+            });
+          }
+        });
+      }
 
-          query = `UPDATE accounts SET password = ? WHERE username = ?`;
-          connection.query(query, [hashPassword, username], (error, result) => {
-            if (error) throw error;
-            res.send(result);
-          });
-        }
-      });
-    }
+      // if (enable) {
+      //   query = `SELECT isEnabled from accounts WHERE username = ?`;
+      //   connection.query(query, [enable], (error, result) => {
+      //     if (error) throw error;
 
-    // - - - CHECK IF GROUP COLUMN VALUE IS EMPTY - - -
-    if (group) {
-      query = `SELECT ugroup from accounts WHERE username = ?`;
-      connection.query(query, [group], (error, result) => {
-        if (error) throw error;
-
-        // - - - RETURNS A VALUE - - -
-        // - - - UPDATE VALUE - - -
-        if (result) {
-          query = `UPDATE accounts SET ugroup = ? WHERE username = ?`;
-          connection.query(query, [group, username], (error, result) => {
-            if (error) throw error;
-            res.send(result);
-          });
-        }
-      });
-    }
-
-    if (enable) {
-      query = `SELECT isEnabled from accounts WHERE username = ?`;
-      connection.query(query, [enable], (error, result) => {
-        if (error) throw error;
-
-        // - - - RETURNS A VALUE - - -
-        // - - - UPDATE VALUE - - -
-        if (result) {
-          query = `UPDATE accounts SET isEnabled = ? WHERE username = ?`;
-          connection.query(query, [enable, username], (error, result) => {
-            if (error) throw error;
-            res.send(result);
-          });
-        }
-      });
+      //     // - - - RETURNS A VALUE - - -
+      //     // - - - UPDATE VALUE - - -
+      //     if (result) {
+      //       query = `UPDATE accounts SET isEnabled = ? WHERE username = ?`;
+      //       connection.query(query, [enable, username], (error, result) => {
+      //         if (error) throw error;
+      //         res.send(result);
+      //       });
+      //     }
+      //   });
+      // }
     }
   });
 };

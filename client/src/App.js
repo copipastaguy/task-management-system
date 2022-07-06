@@ -1,6 +1,10 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// COMPONENTS
 import Header from "./view/Header";
 import Homepage from "./view/Homepage";
 import UserManagement from "./view/UserManagement";

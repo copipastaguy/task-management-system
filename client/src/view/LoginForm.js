@@ -17,22 +17,29 @@ const LoginForm = () => {
     // POST request for user database
     try {
       const response = await axios.post("/auth", {
-        username,
-        password,
+        username: "admin",
+        password: "Admin123!",
       });
       if (response.data) {
         // returns array of data
-        console.log(response);
-        localStorage.setItem("username", response.data[0].username);
+        // console.log(response.data);
 
-        // CONDITIONAL RENDERING BASED ON USER GROUP
-        const isAdmin = response.data[0].admin_privilege;
-        if (isAdmin === 1) {
-          console.log("directing to management page");
-          navigate("/management");
+        // CHECK IF USER IS DISABLED
+        const isEnabled = response.data[0].isEnabled;
+        if (isEnabled === "True") {
+          localStorage.setItem("username", response.data[0].username);
+          // CONDITIONAL RENDERING BASED ON USER GROUP
+          const isAdmin = response.data[0].admin_privilege;
+          if (isAdmin === 1) {
+            console.log("directing to management page");
+            // navigate("/management");
+          } else {
+            console.log("directing to task page");
+            // navigate("/tasks");
+          }
         } else {
-          console.log("directing to task page");
-          navigate("/tasks");
+          alert("Account disabled");
+          navigate("/");
         }
       } else {
         // RESET FIELDS
@@ -46,48 +53,9 @@ const LoginForm = () => {
 
   return (
     <div>
-      {/* <div className="login">
-        <h1>Login</h1>
-        <form
-          className="form-container"
-          // action="/auth"
-          // method="post"
-          onSubmit={handleSubmit}
-        >
-          <div>
-            <label>
-              <i className="fas fa-user"></i>
-            </label>
-            <input
-              id="username"
-              type="text"
-              placeholder="Username"
-              value={username}
-              // required
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label>
-              <i className="fas fa-lock"></i>
-            </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Password"
-              value={password}
-              // required
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-
-          <input type="submit" value="Login" />
-        </form>
-      </div> */}
       <div className="login-header">
         <h2>TASKY</h2>
-        <Form onSubmit={handleSubmit} className="login-form">
+        <Form onSubmit={handleSubmit} className="login-form form">
           <Form.Group>
             <Form.Control
               type="text"
