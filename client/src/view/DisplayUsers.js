@@ -17,8 +17,11 @@ const DisplayUsers = () => {
     // store array in state
     console.log(response.data);
     setUsers(response.data);
+
+    console.log(users);
+
     users.forEach((user) => {
-      console.log(user[0]);
+      console.log(`user is in: ${user.user_group}`);
     });
   };
 
@@ -27,7 +30,7 @@ const DisplayUsers = () => {
       {/* <button onClick={getUsers}>Refresh</button> */}
 
       <div className="user-table ">
-        <form>
+        {/* <form>
           <table>
             <thead>
               <tr>
@@ -57,7 +60,7 @@ const DisplayUsers = () => {
               );
             })}
           </table>
-        </form>
+        </form> */}
       </div>
     </div>
   );

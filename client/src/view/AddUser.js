@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import { ToastContainer, toast } from "react-toastify";
-import CreatableSelect from "react-select/creatable";
+import CreatableSelect, { useCreatable } from "react-select/creatable";
 
 const AddUser = () => {
   const navigate = useNavigate();
