@@ -4,17 +4,6 @@ import React, { useEffect, useState } from "react";
 const DisplayUsers = () => {
   // state to store database after FETCH
   const [users, setUsers] = useState([]);
-  // const [users, setUsers] = useState([
-  //   {
-  //     username: "admin",
-  //     email: "admin@admin.com",
-  //     user_group: "apple",
-  //   },
-  //   {
-  //     username: "test",
-  //     email: "test@test.com",
-  //   },
-  // ]);
 
   // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
@@ -26,44 +15,49 @@ const DisplayUsers = () => {
   const getUsers = async () => {
     const response = await axios.get("/accounts");
     // store array in state
-    // console.log(response.data);
+    console.log(response.data);
     setUsers(response.data);
+    users.forEach((user) => {
+      console.log(user[0]);
+    });
   };
 
   return (
-    <div className="displayContainer ">
+    <div className=" main-container ">
       {/* <button onClick={getUsers}>Refresh</button> */}
 
-      <div className="user-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Group</th>
-              <th>Enabled</th>
-            </tr>
-          </thead>
+      <div className="user-table ">
+        <form>
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>User Group</th>
+                <th>Enabled</th>
+              </tr>
+            </thead>
 
-          {users.map((user) => {
-            return (
-              <tbody key={user.username}>
-                <tr>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>{user.user_group}</td>
-                  <td>
-                    {user.isEnabled === "False" ? (
-                      <input type="checkbox" value="false" />
-                    ) : (
-                      <input type="checkbox" value="true" defaultChecked />
-                    )}
-                  </td>
-                </tr>
-              </tbody>
-            );
-          })}
-        </table>
+            {users.map((user) => {
+              return (
+                <tbody key={user.id}>
+                  <tr>
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                    <td>{user.user_group}</td>
+                    <td>
+                      {user.isEnabled === "False" ? (
+                        <input type="checkbox" value="false" />
+                      ) : (
+                        <input type="checkbox" value="true" defaultChecked />
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              );
+            })}
+          </table>
+        </form>
       </div>
     </div>
   );

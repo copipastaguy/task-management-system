@@ -22,7 +22,16 @@ const connection = mysql.createConnection({
 //   isEnabled ENUM("True", "False") NOT NULL
 // )`;
 
-// const dummyData = `INSERT INTO accounts `;
+// USER GROUP TABLE
+// CREATE TABLE usergroup (
+// 	id INT NOT NULL AUTO_INCREMENT,
+// 	user_group VARCHAR(255) NOT NULL,
+//     username VARCHAR(255) NOT NULL,
+//     task VARCHAR(255) NOT NULL,
+//     task_description TEXT,
+//     last_updated DATETIME,
+//     PRIMARY KEY (id)
+// )
 
 // connection.query(createSchema);
 

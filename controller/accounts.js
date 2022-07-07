@@ -3,10 +3,11 @@ const connection = require("../server/connection");
 const accounts = function (app) {
   // GET ALL ACCOUNTS
   app.get("/accounts", (req, res) => {
-    query = "SELECT username, email, roles, isEnabled FROM accounts";
-    connection.query(query, (error, result) => {
+    getGroup = `SELECT usergroup.id, usergroup.user_group FROM accounts, usergroup WHERE accounts.username = "admin"`;
+    query = `SELECT accounts.username, accounts.email, accounts.isEnabled, usergroup.user_group FROM accounts, usergroup;`;
+    connection.query(getGroup, (error, result) => {
       if (error) console.log(error);
-      // console.log(result);
+      // console.log(result); 
       res.send(result);
     });
   });

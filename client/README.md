@@ -58,7 +58,9 @@ route: /update
 
 - [] admin account
 
-  - [x] create user
+  - [] create user
+  - [] map out user groups and insert into db
+
   - [] disable user == no login
   - [] update account password, email, group details
   - [x] display users
@@ -77,3 +79,8 @@ admin:
 - change password
 - change email
 - disable account
+
+user:
+
+- [] view tasks
+- [] manage tasks

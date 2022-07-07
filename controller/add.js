@@ -14,13 +14,14 @@ const add = function (app) {
     console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
-    if (username || password || userGroup || email) {
+    if (username && password && userGroup && email) {
       // CHECK IF EMAIL EXIST
       if (email) {
         query = `SELECT * FROM accounts WHERE email = ?`;
         connection.query(query, [email], (error, result) => {
           if (error) throw error;
           else if (result.length > 0) {
+            res.send(result);
             return next(errorHandler("Email already exist", req, res));
           } else {
             // VALIDATE EMAIL
@@ -85,28 +86,39 @@ const add = function (app) {
                 // HASH PASSWORD
                 bcrypt.hash(password, saltRounds, (err, hashPassword) => {
                   console.log("Hashing password. . .");
-                  addUser = `INSERT INTO accounts (user_group, username, password, email) VALUES (?, ?, ?, ?)`;
-                  // connection.query(
-                  //   addUser,
-                  //   [userGroup, username, hashPassword, email],
-                  //   (error, result) => {
-                  //     if (error) {
-                  //       throw error;
-                  //     } else {
-                  //       console.log("added user");
-                  //       // res.send({ username, userGroup, password, email });
-                  //     }
-                  //   }
-                  // );
-                  // res.send(
-                  //   `Adding new user to database. . .\n ${username}, ${password}, ${email} \nNew user added`
-                  // );
+                  addUser = `INSERT INTO accounts ( username, password, email) VALUES (?, ?, ?)`;
+                  connection.query(
+                    addUser,
+                    [username, hashPassword, email],
+                    (error, result) => {
+                      if (error) {
+                        throw error;
+                      } else {
+                        // ADDING USER GROUP TO USER WITH FOR LOOP
+                        userGroup.forEach((group) => {
+                          addUserGroup = `INSERT INTO usergroup (user_group, username) VALUES (? , ?)`;
+                          connection.query(
+                            addUserGroup,
+                            [group, username],
+                            (error, result) => {
+                              if (error) throw error;
+                              // console.log(result);
+                              console.log(`Adding ${username} into ${group}`);
+                            }
+                          );
+                          console.log("added user");
+                        });
+                      }
+                    }
+                  );
                 });
               }
             }
           }
         });
       }
+    } else {
+      return next(errorHandler("Fill in all fields", req, res));
     }
   });
 };

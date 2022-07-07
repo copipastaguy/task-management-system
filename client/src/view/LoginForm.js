@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import FlashMessages from "./FlashMessages";
 
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -20,9 +19,9 @@ const LoginForm = () => {
         username: "admin",
         password: "Admin123!",
       });
-      if (response.data) {
+      console.log(response);
+      if (response) {
         // returns array of data
-        // console.log(response.data);
 
         // CHECK IF USER IS DISABLED
         const isEnabled = response.data[0].isEnabled;
@@ -31,14 +30,16 @@ const LoginForm = () => {
           // CONDITIONAL RENDERING BASED ON USER GROUP
           const isAdmin = response.data[0].admin_privilege;
           if (isAdmin === 1) {
-            console.log("directing to management page");
-            // navigate("/management");
+            console.log("directing to user management page");
+            navigate("/management");
           } else {
             console.log("directing to task page");
             // navigate("/tasks");
           }
         } else {
-          alert("Account disabled");
+          alert("Unable to login");
+          setUsername("");
+          setPassword("");
           navigate("/");
         }
       } else {

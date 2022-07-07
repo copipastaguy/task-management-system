@@ -11,7 +11,7 @@ const update = function (app) {
   app.post("/update-user", (req, res, next) => {
     // - - - INPUTS - - -
     const { username, password, email, user_group, enable } = req.body;
-    // console.log(req.body);
+    console.log(req.body);
 
     if (email || password || username) {
       if (email) {
@@ -89,22 +89,22 @@ const update = function (app) {
       }
 
       // - - - CHECK IF GROUP COLUMN VALUE IS EMPTY - - -
-      if (user_group) {
-        query = `SELECT user_group from accounts WHERE username = ?`;
-        connection.query(query, [group], (error, result) => {
-          if (error) throw error;
+      // if (user_group) {
+      //   query = `SELECT user_group from usergroup WHERE username = ?`;
+      //   connection.query(query, [user_group], (error, result) => {
+      //     if (error) throw error;
 
-          // - - - RETURNS A VALUE - - -
-          // - - - UPDATE VALUE - - -
-          if (result) {
-            query = `UPDATE accounts SET user_group = ? WHERE username = ?`;
-            connection.query(query, [user_group, username], (error, result) => {
-              if (error) throw error;
-              res.send(result);
-            });
-          }
-        });
-      }
+      //     // - - - RETURNS A VALUE - - -
+      //     // - - - UPDATE VALUE - - -
+      //     if (result) {
+      //       query = `UPDATE accounts SET user_group = ? WHERE username = ?`;
+      //       connection.query(query, [user_group, username], (error, result) => {
+      //         if (error) throw error;
+      //         res.send(result);
+      //       });
+      //     }
+      //   });
+      // }
 
       // if (enable) {
       //   query = `SELECT isEnabled from accounts WHERE username = ?`;

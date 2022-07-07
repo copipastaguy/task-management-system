@@ -1,7 +1,6 @@
 const connection = require("../server/connection");
 const bcrypt = require("bcrypt");
 const errorHandler = require("./errorHandler");
-const { reset } = require("nodemon");
 
 const login = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
@@ -18,22 +17,22 @@ const login = function (app) {
     if (username && password) {
       // - - - CHECK IF USER EXIST - - -
       // - - - FETCH HASHED PASSWORD OF USER - - -
-      const query = `SELECT username, password FROM accounts WHERE username = ? `;
+      const query = `SELECT username, password, isEnabled, admin_privilege FROM accounts WHERE username = ? `;
       connection.query(query, [username], (error, result) => {
         if (error) throw error;
         // - - - VALID - - -
         else if (result.length > 0) {
           // console.log(result);
           const hashPassword = result[0].password;
-          // console.log(hashPassword);
+
           // fetch the exact user match
-          // decrypt password from database
-          bcrypt.compare(password, hashPassword, (error, result) => {
+          // compare both passwords
+          bcrypt.compare(password, hashPassword, (error, correctPassword) => {
             if (error) throw error;
             // returns boolean
-            else if (result == true) {
+            else if (correctPassword == true) {
               // console.log("logged in successfully");
-              return res.send("logged in");
+              res.send(result);
             } else {
               // console.log("wrong login details");
               return next(errorHandler("Wrong login details", req, res));

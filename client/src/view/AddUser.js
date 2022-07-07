@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import { ToastContainer, toast } from "react-toastify";
-// import { MultiSelect } from "react-multi-select-component";
+import CreatableSelect from "react-select/creatable";
 
 const AddUser = () => {
   const navigate = useNavigate();
@@ -15,6 +15,23 @@ const AddUser = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [userGroup, setUserGroup] = useState([]);
+  const [selectedOption, setSelectedOption] = useState();
+
+  const UserOptions = [
+    { value: "project manager", label: "Project Manager" },
+    { value: "project lead", label: "Project Lead" },
+    { value: "team member", label: "Team Member" },
+  ];
+
+  const handleUserGroup = (selectedOption) => {
+    setUserGroup(selectedOption);
+
+    // access value from option and push to array
+    selectedOption.forEach((option) => {
+      const value = option.value;
+      setUserGroup([...userGroup, value]);
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,10 +53,9 @@ const AddUser = () => {
         toast.error(response.data.error, {
           position: "top-center",
           autoClose: 700,
-          hideProgressBar: true,
+          hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
-          progress: undefined,
         });
       } else {
         // no errors
@@ -47,8 +63,7 @@ const AddUser = () => {
         setUsername("");
         setPassword("");
         setEmail("");
-        // setUserGroup();
-
+        setUserGroup();
         toast.success("New user successfully added");
       }
     } catch (error) {
@@ -58,7 +73,7 @@ const AddUser = () => {
   };
 
   return (
-    <div>
+    <div className="main-container">
       <ToastContainer />
       <Form onSubmit={handleSubmit} className="login-form form">
         <h3>ADD USER</h3>
@@ -101,32 +116,13 @@ const AddUser = () => {
 
         <Form.Group>
           <Form.Label>User Group</Form.Label>
-          <Form.Select
-            value={userGroup}
-            onChange={(e) => setUserGroup(e.target.value)}
-          >
-            <option>Choose a role</option>
-            <option value="Project Manager">Project Manager</option>
-            <option value="Project Lead">Project Lead</option>
-            <option value="Team Member">Team Member</option>
-          </Form.Select>
-          {userGroup}
 
-          {/* <Form.Check
-            type="checkbox"
-            label="Project Manager"
-            value="Project Manager"
+          <CreatableSelect
+            isMulti={true}
+            value={selectedOption}
+            onChange={handleUserGroup}
+            options={UserOptions}
           />
-          <Form.Check
-            type="checkbox"
-            label="Project Lead"
-            value="Project Lead"
-          />
-          <Form.Check
-            type="checkbox"
-            label="Team Member"
-            value="Team Member"
-          /> */}
         </Form.Group>
 
         <Button className="submitButton" variant="primary" type="submit">
