@@ -16,6 +16,7 @@ const DisplayUsers = () => {
     const response = await axios.get("/accounts");
     // console.log(response.data);
     // store array in state
+<<<<<<< HEAD
 
     // const userObj = [];
     // response.data.map((row) => {
@@ -36,6 +37,16 @@ const DisplayUsers = () => {
     //   userObj.usergroup.push(row.user_group);
     // });
     // console.log(userObj);
+=======
+    console.log(response.data);
+    setUsers(response.data);
+
+    console.log(users);
+
+    users.forEach((user) => {
+      console.log(`user is in: ${user.user_group}`);
+    });
+>>>>>>> 32efe765acdf4e8805e42f06226dc38860d5a7ce
   };
 
   return (
@@ -43,7 +54,7 @@ const DisplayUsers = () => {
       {/* <button onClick={getUsers}>Refresh</button> */}
 
       <div className="user-table ">
-        <form>
+        {/* <form>
           <table>
             <thead>
               <tr>
@@ -74,7 +85,7 @@ const DisplayUsers = () => {
               );
             })}
           </table>
-        </form>
+        </form> */}
       </div>
     </div>
   );
