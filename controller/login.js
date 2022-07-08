@@ -17,7 +17,7 @@ const login = function (app) {
     if (username && password) {
       // - - - CHECK IF USER EXIST - - -
       // - - - FETCH HASHED PASSWORD OF USER - - -
-      const query = `SELECT username, password, isEnabled, admin_privilege FROM accounts WHERE username = ? `;
+      const query = `SELECT username, password, isEnabled, admin_privilege, email FROM accounts WHERE username = ? `;
       connection.query(query, [username], (error, result) => {
         if (error) throw error;
         // - - - VALID - - -
@@ -40,12 +40,13 @@ const login = function (app) {
           });
         } else {
           // - - - INVALID USER - - -
-          console.log("USER NOT FOUND");
+          // console.log("USER NOT FOUND");
+          return next(errorHandler("Wrong login details", req, res));
         }
       });
     } else {
       // console.log("fill up all fields");
-      return next(errorHandler("Fill up all fields", req, res));
+      return next(errorHandler("Please fill up all fields", req, res));
     }
   });
 };

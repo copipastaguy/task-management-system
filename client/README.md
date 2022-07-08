@@ -52,7 +52,7 @@ route: /update
 <h2>User Group Management</h2>
 
 - [x] change input to option for group
-- [] check if user is in a group
+- [] CheckGroup(userid, usergroup)
 
 <h2>Privilege User Management & Security</h2>
 

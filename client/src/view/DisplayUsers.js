@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 
 const DisplayUsers = () => {
   // state to store database after FETCH
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState();
 
   // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
@@ -14,12 +14,28 @@ const DisplayUsers = () => {
   // fetch GET statement for all users in database
   const getUsers = async () => {
     const response = await axios.get("/accounts");
+    // console.log(response.data);
     // store array in state
-    console.log(response.data);
-    setUsers(response.data);
-    users.forEach((user) => {
-      console.log(user[0]);
-    });
+
+    // const userObj = [];
+    // response.data.map((row) => {
+    //   if (!userObj[row.username]) {
+    //     userObj[row.username] = [row.email];
+    //   }
+    //   userObj[row.username].push(row.user_group);
+    //   setUsers(userObj);
+    // });
+    // console.log(userObj);
+
+    // let userObj = {
+    //   username: "",
+    //   usergroup: [],
+    // };
+    // response.data.map((row) => {
+    //   userObj.username = row.username;
+    //   userObj.usergroup.push(row.user_group);
+    // });
+    // console.log(userObj);
   };
 
   return (
@@ -38,10 +54,11 @@ const DisplayUsers = () => {
               </tr>
             </thead>
 
-            {users.map((user) => {
+            {users?.map((user) => {
               return (
-                <tbody key={user.id}>
-                  <tr>
+                <tbody key={`${user.username}`}>
+                  <td>{user.username}</td>
+                  {/* <tr>
                     <td>{user.username}</td>
                     <td>{user.email}</td>
                     <td>{user.user_group}</td>
@@ -52,7 +69,7 @@ const DisplayUsers = () => {
                         <input type="checkbox" value="true" defaultChecked />
                       )}
                     </td>
-                  </tr>
+                  </tr> */}
                 </tbody>
               );
             })}

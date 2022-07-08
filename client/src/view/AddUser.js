@@ -57,7 +57,8 @@ const AddUser = () => {
           closeOnClick: true,
           pauseOnHover: true,
         });
-      } else {
+      }
+      if (!response.data.error) {
         // no errors
         // reset form field
         setUsername("");

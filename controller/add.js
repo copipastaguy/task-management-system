@@ -11,7 +11,7 @@ const add = function (app) {
   app.post("/add", (req, res, next) => {
     //  - - - INPUT - - -
     const { username, password, email, userGroup } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password && userGroup && email) {
@@ -106,9 +106,9 @@ const add = function (app) {
                               console.log(`Adding ${username} into ${group}`);
                             }
                           );
-                          console.log("added user");
                         });
                       }
+                      res.send(result);
                     }
                   );
                 });

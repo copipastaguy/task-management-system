@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { ToastContainer, toast } from "react-toastify";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
@@ -16,36 +17,47 @@ const LoginForm = () => {
     // POST request for user database
     try {
       const response = await axios.post("/auth", {
-        username: "admin",
-        password: "Admin123!",
+        username,
+        password,
       });
       console.log(response);
-      if (response) {
+      if (!response.data.error) {
+        // console.log(response.data);
         // returns array of data
 
         // CHECK IF USER IS DISABLED
-        const isEnabled = response.data[0].isEnabled;
-        if (isEnabled === "True") {
+        const enabled = response.data[0].isEnabled;
+        if (enabled === "True") {
           localStorage.setItem("username", response.data[0].username);
-          // CONDITIONAL RENDERING BASED ON USER GROUP
+          localStorage.setItem("email", response.data[0].email);
+
+          // CONDITIONAL RENDERING BASED ON USER/ ADMIN
           const isAdmin = response.data[0].admin_privilege;
           if (isAdmin === 1) {
-            console.log("directing to user management page");
             navigate("/management");
           } else {
-            console.log("directing to task page");
-            // navigate("/tasks");
+            navigate("/tasks");
           }
-        } else {
-          alert("Unable to login");
-          setUsername("");
-          setPassword("");
-          navigate("/");
         }
       } else {
         // RESET FIELDS
         setUsername("");
         setPassword("");
+        navigate("/");
+      }
+      if (response.data.error) {
+        console.log(response.data.error);
+        toast.error(response.data.error, {
+          position: "top-center",
+          autoClose: 700,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
+        // RESET FIELDS
+        setUsername("");
+        setPassword("");
+        navigate("/");
       }
     } catch (error) {
       throw error;
@@ -54,6 +66,7 @@ const LoginForm = () => {
 
   return (
     <div>
+      <ToastContainer />
       <div className="login-header">
         <h2>TASKY</h2>
         <Form onSubmit={handleSubmit} className="login-form form">
