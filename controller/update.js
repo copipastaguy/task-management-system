@@ -90,19 +90,12 @@ const update = function (app) {
 
       // - - - CHECK IF GROUP COLUMN VALUE IS EMPTY - - -
       // if (user_group) {
-      //   query = `SELECT user_group from usergroup WHERE username = ?`;
-      //   connection.query(query, [user_group], (error, result) => {
-      //     if (error) throw error;
+      //   // - - - UPDATE VALUE - - -
 
-      //     // - - - RETURNS A VALUE - - -
-      //     // - - - UPDATE VALUE - - -
-      //     if (result) {
-      //       query = `UPDATE accounts SET user_group = ? WHERE username = ?`;
-      //       connection.query(query, [user_group, username], (error, result) => {
-      //         if (error) throw error;
-      //         res.send(result);
-      //       });
-      //     }
+      //   query = `UPDATE accounts SET user_group = ? WHERE username = ?`;
+      //   connection.query(query, [user_group, username], (error, result) => {
+      //     if (error) throw error;
+      //     res.send(result);
       //   });
       // }
 

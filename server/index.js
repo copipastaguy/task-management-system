@@ -8,6 +8,7 @@ const add = require("../controller/add");
 const update = require("../controller/update");
 const accounts = require("../controller/accounts");
 const checkGroup = require("../controller/checkGroup");
+const userGroup = require("../controller/userGroup");
 
 // server port
 const port = 3002;
@@ -38,6 +39,8 @@ update(app);
 
 // - - - CHECK GROUP - - -
 checkGroup(app);
+
+userGroup(app);
 
 // app.use(errorHandler);
 
