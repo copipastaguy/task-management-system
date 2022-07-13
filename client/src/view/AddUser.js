@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
@@ -17,11 +17,22 @@ const AddUser = () => {
   const [userGroup, setUserGroup] = useState([]);
   const [selectedOption, setSelectedOption] = useState();
 
-  const UserOptions = [
-    { value: "project manager", label: "Project Manager" },
-    { value: "project lead", label: "Project Lead" },
-    { value: "team member", label: "Team Member" },
-  ];
+  // fetch existing user groups from table
+  const [userOptions, setUserOptions] = useState([]);
+
+  useEffect(() => {
+    const getGroups = async () => {
+      const response = await axios.get("/user-groups");
+      const data = response.data;
+      setUserOptions(data);
+    };
+    getGroups();
+  });
+
+  const options = userOptions.map((option) => {
+    // object for react-select options
+    return { value: option.user_group, label: option.user_group };
+  });
 
   const handleUserGroup = (selectedOption) => {
     setUserGroup(selectedOption);
@@ -49,7 +60,6 @@ const AddUser = () => {
       // FRONTEND ERROR HANDLING
       if (response.data.error) {
         // invalid field
-        console.log(response.data.error);
         toast.error(response.data.error, {
           position: "top-center",
           autoClose: 700,
@@ -64,8 +74,14 @@ const AddUser = () => {
         setUsername("");
         setPassword("");
         setEmail("");
-        setUserGroup();
-        toast.success("New user successfully added");
+        setUserGroup([]);
+        toast.success("New user successfully added", {
+          position: "top-center",
+          autoClose: 700,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
       }
     } catch (error) {
       console.log(error);
@@ -122,7 +138,7 @@ const AddUser = () => {
             isMulti={true}
             value={selectedOption}
             onChange={handleUserGroup}
-            options={UserOptions}
+            options={options}
           />
         </Form.Group>
 

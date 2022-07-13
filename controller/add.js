@@ -86,10 +86,11 @@ const add = function (app) {
                 // HASH PASSWORD
                 bcrypt.hash(password, saltRounds, (err, hashPassword) => {
                   console.log("Hashing password. . .");
-                  addUser = `INSERT INTO accounts ( username, password, email) VALUES (?, ?, ?)`;
+                  addUser = `INSERT INTO accounts ( username, password, email, user_group) VALUES (?, ?, ?, ?)`;
+                  const userString = userGroup.toString();
                   connection.query(
                     addUser,
-                    [username, hashPassword, email],
+                    [username, hashPassword, email, userString],
                     (error, result) => {
                       if (error) {
                         throw error;

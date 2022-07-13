@@ -8,7 +8,7 @@ import LoggedIn from "./LoggedIn";
 import Form from "react-bootstrap/Form";
 
 const UserManagement = () => {
-  const [actions, setActions] = useState("view");
+  const [actions, setActions] = useState("add");
 
   return (
     <div className="main-container">

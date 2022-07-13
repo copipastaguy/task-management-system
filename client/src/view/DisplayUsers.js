@@ -66,15 +66,15 @@ const DisplayUsers = () => {
   };
 
   const showUsers = users.map((user, index) => {
-    console.log(user.user_group);
-    // const groups = user.user_group.split(",");
+    // console.log(user.user_group);
+    const groups = user.user_group.split(",");
 
-    // const currentGroup = groups.map((group) => {
-    //   return {
-    //     value: group.trim(),
-    //     label: group.trim(),
-    //   };
-    // });
+    const currentGroup = groups.map((group) => {
+      return {
+        value: group.trim(),
+        label: group.trim(),
+      };
+    });
 
     return (
       <Form
@@ -96,7 +96,7 @@ const DisplayUsers = () => {
           <Form.Label>user group</Form.Label>
 
           <CreatableSelect
-            // defaultValue={currentGroup}
+            defaultValue={currentGroup}
             isMulti={true}
             value={selectedOption}
             onChange={handleUserGroup}
