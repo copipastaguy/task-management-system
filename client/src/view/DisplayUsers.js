@@ -1,19 +1,94 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import Form from "react-bootstrap/Form";
+// import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import CreatableSelect from "react-select/creatable";
+import MaterialTable from "@material-table/core";
+// import { ThemeProvider } from "@material-ui/core/styles";
 
 const DisplayUsers = () => {
   // state to store database after FETCH
   const [users, setUsers] = useState([]);
 
-  const [userGroup, setUserGroup] = useState([]);
-  const [selectedOption, setSelectedOption] = useState();
+  // const [userGroup, setUserGroup] = useState([]);
+  // const [selectedOption, setSelectedOption] = useState();
 
   // fetch existing user groups from table
   const [userOptions, setUserOptions] = useState([]);
+
+  // render options for material table
+  const RenderOption = (rowData) => {
+    const [userGroup, setUserGroup] = useState([]);
+    const [selectedOption, setSelectedOption] = useState();
+
+    // format usergroup to array
+    let groupArray = rowData.user_group.split(",");
+
+    const handleUserGroup = (selectedOption) => {
+      setUserGroup([...userGroup, selectedOption]);
+
+      // what user has selected. != option that is removed
+      console.log("selected", selectedOption);
+
+      // access value from option and push to array
+      selectedOption.forEach((option) => {
+        const value = option.value;
+
+        // updated groups
+        setUserGroup([...userGroup, value]);
+        console.log(userGroup);
+
+        // groupArray = [value, ...userGroup];
+        // console.log("usergroup", userGroup);
+      });
+    };
+
+    // user groups user exist in
+    const currentGroup = groupArray.map((group) => {
+      return {
+        value: group.trim(),
+        label: group.trim(),
+      };
+    });
+
+    return (
+      <CreatableSelect
+        defaultValue={currentGroup}
+        isMulti={true}
+        value={selectedOption}
+        onChange={handleUserGroup}
+        options={options}
+      />
+    );
+  };
+
+  // render columns for material table
+  const columns = [
+    {
+      title: "username",
+      field: "username",
+    },
+    {
+      title: "email",
+      field: "email",
+    },
+    {
+      title: "user group",
+      field: "usergroup",
+      width: "300px",
+      render: RenderOption,
+    },
+    {
+      title: "status",
+      field: "isEnabled",
+      render: (rowData) => (
+        <div className={rowData.isEnabled ? "inactive" : "active"}>
+          {rowData.isEnabled ? " Inactive" : "Active"}
+        </div>
+      ),
+    },
+  ];
 
   // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
@@ -32,86 +107,84 @@ const DisplayUsers = () => {
     getGroups();
   }, []);
 
+  // map out reactselect options
   const options = userOptions.map((option) => {
-    // console.log(userOptions);
     // object for react-select options
     return { value: option.user_group, label: option.user_group };
   });
 
-  const handleUserGroup = (selectedOption) => {
-    setUserGroup(selectedOption);
+  // const handleUserGroup = (selectedOption) => {
+  //   console.log(selectedOption);
+  //   setUserGroup(selectedOption);
 
-    // access value from option and push to array
-    selectedOption.forEach((option) => {
-      const value = option.value;
-      setUserGroup([...userGroup, value]);
-    });
-  };
+  //   // access value from option and push to array
+  //   selectedOption.forEach((option) => {
+  //     const value = option.value;
+  //     setUserGroup([...userGroup, value]);
+  //   });
+  // };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    alert(userGroup);
+  // const showUsers = users.map((user, index) => {
+  //   const groups = user.user_group.split(",");
 
-    // POST
-    try {
-      await axios.post("/update-user", {
-        // username,
-        // password,
-        // email,
-        userGroup,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //   const currentGroup = groups.map((group) => {
+  //     return {
+  //       value: group.trim(),
+  //       label: group.trim(),
+  //     };
+  //   });
 
-  const showUsers = users.map((user, index) => {
-    // console.log(user.user_group);
-    const groups = user.user_group.split(",");
+  //   return (
+  //     <>
+  //       <CreatableSelect
+  //         defaultValue={currentGroup}
+  //         isMulti={true}
+  //         value={selectedOption}
+  //         onChange={handleUserGroup}
+  //         options={options}
+  //       />
 
-    const currentGroup = groups.map((group) => {
-      return {
-        value: group.trim(),
-        label: group.trim(),
-      };
-    });
+  //       <Button type="submit">Save</Button>
+  //     </>
+  //   );
+  // });
 
-    return (
-      <Form
-        onSubmit={handleSubmit}
-        key={user.username}
-        className="form userTable"
-      >
-        <Form.Group>
-          <Form.Label>username</Form.Label>
-          <p>{user.username}</p>
-        </Form.Group>
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   alert(userGroup);
 
-        <Form.Group>
-          <Form.Label>email</Form.Label>
-          <p>{user.email}</p>
-        </Form.Group>
-
-        <Form.Group>
-          <Form.Label>user group</Form.Label>
-
-          <CreatableSelect
-            defaultValue={currentGroup}
-            isMulti={true}
-            value={selectedOption}
-            onChange={handleUserGroup}
-            options={options}
-          />
-        </Form.Group>
-
-        <Button type="submit">Save</Button>
-      </Form>
-    );
-  });
+  //   // POST
+  //   try {
+  //     await axios.post("/update-user", {
+  //       // username,
+  //       // password,
+  //       // email,
+  //       userGroup,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <div className=" main-container ">
-      <div className="user-table ">{showUsers}</div>
+      {/* <div className="user-table ">{showUsers}</div> */}
+      <MaterialTable
+        title="User Data"
+        columns={columns}
+        data={users}
+        actions={[
+          {
+            icon: "save",
+            tooltip: "Save User",
+            onClick: (event, rowData) =>
+              alert("You saved " + rowData.user_group),
+          },
+        ]}
+        options={{
+          actionsColumnIndex: -1,
+        }}
+      />
     </div>
   );
 };

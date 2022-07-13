@@ -118,6 +118,14 @@ a {
   flex-direction: row;
 }
 
+.inactive {
+  color: red;
+}
+
+.active {
+  color: green;
+}
+
 .signOut {
   background-color: grey;
   width: 100px;
