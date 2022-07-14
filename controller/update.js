@@ -8,7 +8,7 @@ const update = function (app) {
   //    - - - CONTROLLER LOGIC FOR UPDATE - - -
   //    - - - ROUTING FOR UPDATE - - -
 
-  app.post("/update-user", (req, res, next) => {
+  app.put("/update-user", (req, res, next) => {
     // - - - INPUTS - - -
     const { username, password, email, user_group, enable } = req.body;
     console.log(req.body);
@@ -26,15 +26,15 @@ const update = function (app) {
             console.log("Validating email. . .");
             if (validator.isEmail(email)) {
               updateEmail = `UPDATE accounts SET email = ? WHERE username = ?`;
-              connection.query(
-                updateEmail,
-                [email, username],
-                (error, result) => {
-                  if (error) throw error;
-                  res.send("Email updated");
-                  console.log("Email updated");
-                }
-              );
+              // connection.query(
+              //   updateEmail,
+              //   [email, username],
+              //   (error, result) => {
+              //     if (error) throw error;
+              //     res.send("Email updated");
+              //     console.log("Email updated");
+              //   }
+              // );
             } else {
               // console.log("Invalid email format");
               return next(
@@ -76,14 +76,14 @@ const update = function (app) {
             console.log(hashPassword);
 
             query = `UPDATE accounts SET password = ? WHERE username = ?`;
-            connection.query(
-              query,
-              [hashPassword, username],
-              (error, result) => {
-                if (error) throw error;
-                res.send("Password updated");
-              }
-            );
+            // connection.query(
+            //   query,
+            //   [hashPassword, username],
+            //   (error, result) => {
+            //     if (error) throw error;
+            //     res.send("Password updated");
+            //   }
+            // );
           }
         }
       }

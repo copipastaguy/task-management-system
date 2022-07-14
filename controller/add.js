@@ -19,10 +19,13 @@ const add = function (app) {
       if (email) {
         query = `SELECT * FROM accounts WHERE email = ?`;
         connection.query(query, [email], (error, result) => {
-          if (error) throw error;
-          else if (result.length > 0) {
-            res.send(result);
-            return next(errorHandler("Email already exist", req, res));
+          if (error) {
+            console.log(error);
+            return;
+          } else if (result.length > 0) {
+            // res.send(result);
+            next(errorHandler("Email already exist", req, res));
+            return;
           } else {
             // VALIDATE EMAIL
             console.log("Validating email. . . ");
@@ -42,12 +45,16 @@ const add = function (app) {
       if (username) {
         checkUsername = `SELECT username from accounts WHERE username = ?`;
         connection.query(checkUsername, [username], (error, result) => {
-          if (error) throw error;
+          if (error) {
+            console.log(error);
+            return;
+          }
           // - - - USER EXIST (INVALID INPUT) - - -
           // SAME USERNAME
           if (result.length > 0) {
             // console.log(`Username already exist`);
-            return next(errorHandler("Username already exist", req, res));
+            next(errorHandler("Username already exist", req, res));
+            return;
           } else {
             console.log("New user!");
             // - - - NEW USER - - -
@@ -93,7 +100,8 @@ const add = function (app) {
                     [username, hashPassword, email, userString],
                     (error, result) => {
                       if (error) {
-                        throw error;
+                        console.log(error);
+                        return;
                       } else {
                         // ADDING USER GROUP TO USER WITH FOR LOOP
                         userGroup.forEach((group) => {
@@ -102,7 +110,10 @@ const add = function (app) {
                             addUserGroup,
                             [group, username],
                             (error, result) => {
-                              if (error) throw error;
+                              if (error) {
+                                console.log(error);
+                                return;
+                              }
                               // console.log(result);
                               console.log(`Adding ${username} into ${group}`);
                             }
@@ -119,7 +130,8 @@ const add = function (app) {
         });
       }
     } else {
-      return next(errorHandler("Fill in all fields", req, res));
+      next(errorHandler("Fill in all fields", req, res));
+      return;
     }
   });
 };

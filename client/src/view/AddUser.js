@@ -27,7 +27,7 @@ const AddUser = () => {
       setUserOptions(data);
     };
     getGroups();
-  });
+  }, []);
 
   const options = userOptions.map((option) => {
     // object for react-select options
@@ -55,7 +55,7 @@ const AddUser = () => {
         email,
         userGroup,
       });
-      console.log(response);
+      // console.log(response);
 
       // FRONTEND ERROR HANDLING
       if (response.data.error) {
