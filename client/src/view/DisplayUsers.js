@@ -91,7 +91,7 @@ const DisplayUsers = () => {
     );
   };
 
-  const RenderModal = (rowData) => {
+  const RenderModal = ({ rowData }) => {
     const [username, setUsername] = useState(rowData.username);
     const [email, setEmail] = useState(rowData.email);
     const [password, setPassword] = useState(rowData.password);
@@ -273,7 +273,7 @@ const DisplayUsers = () => {
             >
               Edit
             </button>
-            {openModal && <RenderModal />}
+            {openModal && <RenderModal rowData={{ rowData }} />}
             {/* <ToastContainer />
             <Modal open={openModal} onClose={closeModal}>
               <div className="modal-container">
