@@ -91,7 +91,9 @@ const DisplayUsers = () => {
     );
   };
 
-  const RenderModal = ({ rowData }) => {
+  const RenderModal = (rowData) => {
+    // console.log(rowData);
+
     const [username, setUsername] = useState(rowData.username);
     const [email, setEmail] = useState(rowData.email);
     const [password, setPassword] = useState(rowData.password);
@@ -141,10 +143,11 @@ const DisplayUsers = () => {
     };
     return (
       <>
-        {/* <button onClick={(rowData) => setOpenModal(true)}>edit</button> */}
+        <button onClick={() => setOpenModal(true)}>edit</button>
         <ToastContainer />
         <Modal open={openModal} onClose={closeModal}>
           <div className="modal-container">
+            {rowData}
             <Form className="login-form form" onSubmit={handleSubmit}>
               <Form.Label>Edit: {username}</Form.Label>
               <Form.Group>
@@ -223,103 +226,11 @@ const DisplayUsers = () => {
     {
       title: "edit",
       field: "edit",
-      render: (rowData) => {
-        // const RenderModal = () => {
-        //   const [username, setUsername] = useState(rowData.username);
-        //   const [email, setEmail] = useState(rowData.email);
-        //   const [password, setPassword] = useState(rowData.password);
-        //   const [userGroup, setUserGroup] = useState([]);
-        //   const [selectedOption, setSelectedOption] = useState();
-        //   const handleUserGroup = (selectedOption) => {
-        //     console.log(selectedOption);
-        //     setUserGroup(selectedOption);
-        //     // access value from option and push to array
-        //     selectedOption.forEach((option) => {
-        //       const value = option.value;
-        //       setUserGroup([...userGroup, value]);
-        //     });
-        //   };
-        //   const handleSubmit = async (e) => {
-        //     e.preventDefault();
-        //     console.log(username, email);
-        //     try {
-        //       const response = await axios.put("/update-user", {
-        //         username,
-        //         password,
-        //         email,
-        //         userGroup,
-        //       });
-        //       if (response.data.error) {
-        //         toast.error(response.data.error, {
-        //           position: "top-center",
-        //           autoClose: 700,
-        //           hideProgressBar: false,
-        //           closeOnClick: true,
-        //           pauseOnHover: true,
-        //         });
-        //       }
-        //     } catch (error) {
-        //       console.log(error);
-        //     }
-        //   };
-        return (
-          <>
-            <button
-              onClick={() => {
-                setOpenModal(true);
-                console.log(rowData);
-                console.log(openModal);
-              }}
-            >
-              Edit
-            </button>
-            {openModal && <RenderModal rowData={{ rowData }} />}
-            {/* <ToastContainer />
-            <Modal open={openModal} onClose={closeModal}>
-              <div className="modal-container">
-                <Form className="login-form form" onSubmit={handleSubmit}>
-                  <Form.Label>Edit: {rowData.username}</Form.Label>
-                  <Form.Group>
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="text"
-                      // value={password}
-                      id="password"
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={rowData.email}
-                      id="email"
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>User Group</Form.Label>
-                    <CreatableSelect
-                      isMulti={true}
-                      value={selectedOption}
-                      onChange={handleUserGroup}
-                      options={options}
-                    />
-                  </Form.Group>
-                  <Button
-                    className="submitButton"
-                    variant="primary"
-                    type="submit"
-                  >
-                    Save user
-                  </Button>
-                </Form>
-              </div>
-            </Modal> */}
-          </>
-        );
-        // };
-      },
+      render: (rowData) => RenderModal,
+    },
+    {
+      title: "new",
+      field: "new",
     },
   ];
 
@@ -334,17 +245,11 @@ const DisplayUsers = () => {
         columns={columns}
         data={users}
         icons={TableIcons}
-        // detailPanel={[
-        //   {
-        //     tooltip: "Show Name",
-        //     render: ({ rowData }) => {
-        //       return (
-        //         <button onClick={() => console.log(rowData.email)}>hi</button>
-        //       );
-        //     },
-        //   },
-        // ]}
-        // onRowClick={(event, rowData, togglePanel) => togglePanel()}
+        onRowClick={(event, rowData) => {
+          console.log(rowData);
+          setOpenModal(true);
+          console.log(openModal);
+        }}
         options={{
           actionsColumnIndex: -1,
         }}
