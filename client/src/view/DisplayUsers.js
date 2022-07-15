@@ -20,9 +20,13 @@ const DisplayUsers = () => {
 
   // fetch existing user groups from table
   const [userOptions, setUserOptions] = useState([]);
+  const [selectedUser, setSelectedUser] = useState();
 
   const [isDisabled, setIsDisabled] = useState(true);
   const [openModal, setOpenModal] = useState(false);
+  const closeModal = () => {
+    setOpenModal(!openModal);
+  };
 
   // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
@@ -53,7 +57,6 @@ const DisplayUsers = () => {
     const [selectedOption, setSelectedOption] = useState();
 
     // format usergroup to array
-
     const handleUserGroup = (selectedOption) => {
       setUserGroup([...userGroup, selectedOption]);
 
@@ -92,11 +95,10 @@ const DisplayUsers = () => {
   };
 
   const RenderModal = (rowData) => {
-    // console.log(rowData);
-
-    const [username, setUsername] = useState(rowData.username);
-    const [email, setEmail] = useState(rowData.email);
-    const [password, setPassword] = useState(rowData.password);
+    // console.log(rowsData);
+    const [username, setUsername] = useState();
+    const [email, setEmail] = useState();
+    // const [password, setPassword] = useState(password);
 
     const [userGroup, setUserGroup] = useState([]);
     const [selectedOption, setSelectedOption] = useState();
@@ -123,7 +125,7 @@ const DisplayUsers = () => {
       try {
         const response = await axios.put("/update-user", {
           username,
-          password,
+          // password,
           email,
           userGroup,
         });
@@ -146,8 +148,8 @@ const DisplayUsers = () => {
         <button onClick={() => setOpenModal(true)}>edit</button>
         <ToastContainer />
         <Modal open={openModal} onClose={closeModal}>
-          <div className="modal-container">
-            {rowData}
+          <p>hi {rowData.username}</p>
+          {/* <div className="modal-container">
             <Form className="login-form form" onSubmit={handleSubmit}>
               <Form.Label>Edit: {username}</Form.Label>
               <Form.Group>
@@ -156,7 +158,7 @@ const DisplayUsers = () => {
                   type="text"
                   // value={password}
                   id="password"
-                  onChange={(e) => setPassword(e.target.value)}
+                  // onChange={(e) => setPassword(e.target.value)}
                 />
               </Form.Group>
 
@@ -181,10 +183,10 @@ const DisplayUsers = () => {
               </Form.Group>
 
               <Button className="submitButton" variant="primary" type="submit">
-                Save user
+                Save user 
               </Button>
             </Form>
-          </div>
+          </div> */}
         </Modal>
       </>
     );
@@ -226,17 +228,24 @@ const DisplayUsers = () => {
     {
       title: "edit",
       field: "edit",
-      render: (rowData) => RenderModal,
-    },
-    {
-      title: "new",
-      field: "new",
+      render: () => {
+        // returns all rows through map
+        // console.log(rowsData);
+        return (
+          <button
+            onClick={() => {
+              setOpenModal(true);
+            }}
+          >
+            Edit
+          </button>
+        );
+      },
+      editComponent: (rowData) => {
+        <RenderModal rowData={rowData} />;
+      },
     },
   ];
-
-  const closeModal = () => {
-    setOpenModal(!openModal);
-  };
 
   return (
     <div className=" main-container ">
@@ -245,14 +254,25 @@ const DisplayUsers = () => {
         columns={columns}
         data={users}
         icons={TableIcons}
-        onRowClick={(event, rowData) => {
-          console.log(rowData);
-          setOpenModal(true);
-          console.log(openModal);
-        }}
+        // onRowClick={(event, selectedRow) => {
+        //   setSelectedUser(selectedRow);
+        //   console.log(selectedUser);
+        // }}
         options={{
           actionsColumnIndex: -1,
         }}
+        actions={[
+          {
+            icon: "Edit",
+            tooltip: "Edit user",
+            onClick: (event, rowData) => {
+              setOpenModal(true);
+              console.log(openModal);
+              alert(rowData.tableData.id);
+            },
+            render: (rowData) => console.log(rowData),
+          },
+        ]}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import Header from "./Header";
 import AddUser from "./AddUser";
 import UpdateUser from "./UpdateUser";
 import DisplayUsers from "./DisplayUsers";
+import DisplayUsersTest from "./DisplayUsersTest";
 import LoggedIn from "./LoggedIn";
 
 import Form from "react-bootstrap/Form";
@@ -28,7 +29,7 @@ const UserManagement = () => {
 
         {actions === "add" && <AddUser />}
         {actions === "update" && <UpdateUser />}
-        {actions === "view" && <DisplayUsers />}
+        {actions === "view" && <DisplayUsersTest />}
       </div>
     </div>
   );

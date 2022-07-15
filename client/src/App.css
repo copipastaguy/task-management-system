@@ -26,6 +26,7 @@ a {
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: 1005;
 }
 
 .manage {
@@ -96,26 +97,11 @@ a {
 .user-table {
   display: flex;
   flex-direction: column;
-  /* border: 1px solid red; */
+  border: 1px solid red;
   justify-content: center;
   padding: 10px;
-  width: 80%;
+  width: 70%;
   text-align: center;
-}
-
-.user-table td {
-  padding: 10px;
-  text-align: center;
-}
-
-.user-table th {
-  border: 1px solid black;
-  width: 30%;
-}
-
-.user-table .userTable {
-  display: flex;
-  flex-direction: row;
 }
 
 .inactive {
@@ -181,9 +167,10 @@ a {
 }
 
 .modal-container {
+  all: unset;
   position: absolute;
   width: 500px;
-  height: 60vh;
+  height: 10vh;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
