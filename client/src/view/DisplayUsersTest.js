@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-import CreatableSelect from "react-select/creatable";
+import CreatableSelect, { useCreatable } from "react-select/creatable";
+
+import { ToastContainer, toast } from "react-toastify";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 // MATERIAL UI
-import { ToastContainer, toast } from "react-toastify";
-
-import { DataGrid } from "@mui/x-data-grid";
 import Modal from "@material-ui/core/Modal";
 import Box from "@material-ui/core/Box";
 import Table from "@mui/material/Table";
@@ -18,9 +19,9 @@ import TableRow from "@mui/material/TableRow";
 import Input from "@material-ui/core/Input";
 
 const DisplayUsers = () => {
-  // state to store database after FETCH
-  //  user rows
+  // state to store database after FETCHs
   const [users, setUsers] = useState([]);
+  const [userGroup, setUserGroup] = useState([]);
 
   // fetch existing user groups from table
   const [userOptions, setUserOptions] = useState([]);
@@ -50,157 +51,257 @@ const DisplayUsers = () => {
     getGroups();
   }, []);
 
-  // // map out reactselect options
-  const options = userOptions.map((option) => {
-    // object for react-select options
-    return { value: option.user_group, label: option.user_group };
-  });
+  // console.log("options", options);
 
-  console.log("options", options);
+  // states for saving editing form
+  const [editUser, setEditUser] = useState(null);
+
+  // VALUES TO SEND IN PUT
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState();
+  const [active, setActive] = useState("");
+
+  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedActive, setSelectedActive] = useState("");
 
   // render options for material table
-  const RenderOption = ({ row }) => {
-    // console.log(userOptions);
-    const [userGroup, setUserGroup] = useState([]);
-    const [selectedOption, setSelectedOption] = useState();
+  // const RenderGroup = ({ user }) => {
+  //   // console.log(user);
 
-    // format usergroup to array
+  //   // map out ALL reactselect options
+  //   const options = userOptions.map((option) => {
+  //     // object for react-select options
+  //     return { value: option.user_group, label: option.user_group };
+  //   });
+
+  //   // format usergroup to array
+  //   const handleUserGroup = (selectedOption) => {
+  //     // setUserGroup(selectedGroup);
+  //     // console.log(userGroup);
+  //     // console.log(selectedGroup);
+
+  //     // what user has selected. != option that is removed
+  //     selectedOption.forEach((group) => {
+  //       const value = group.value;
+  //       setUserGroup([...userGroup, value]);
+  //       // console.log(userGroup);
+  //     });
+  //   };
+
+  //   const groupArray = user.user_group.split(",");
+
+  //   // // user groups user exist in
+  //   // const currentGroup = groupArray.map((group) => {
+  //   //   return {
+  //   //     value: group.trim(),
+  //   //     label: group.trim(),
+  //   //   };
+  //   // });
+  //   // console.log(currentGroup);
+  //   return (
+  //     <CreatableSelect
+  //       // defaultValue={currentGroup}
+  //       isMulti={true}
+  //       value={selectedOption}
+  //       // onChange={handleUserGroup}
+  //       options={options}
+  //       // isDisabled={isDisabled}
+  //     />
+  //   );
+  // };
+
+  // const RenderActive = ({ user }) => {
+  //   // const [active, setActive] = useState();
+  //   const [selectedActive, setSelectedActive] = useState();
+
+  //   const activeOptions = [
+  //     {
+  //       label: "Active",
+  //       value: "active",
+  //     },
+  //     {
+  //       label: "Inactive",
+  //       value: "inactive",
+  //     },
+  //   ];
+
+  //   const handleActive = (selectedActive) => {
+  //     const value = selectedActive.value;
+  //     setActive(value);
+  //   };
+  //   // console.log(active);
+
+  //   // get active status
+  //   const currentActive = user.isActive;
+  //   const activeObj = {
+  //     label: currentActive,
+  //     value: currentActive,
+  //   };
+
+  //   return (
+  //     <CreatableSelect
+  //       defaultValue={activeObj}
+  //       value={selectedActive}
+  //       onChange={handleActive}
+  //       options={activeOptions}
+  //       // isDisabled={isDisabled}
+  //     />
+  //   );
+  // };
+
+  const ReadTable = ({ user, handleEditClick }) => {
+    return (
+      <TableRow key={user.username}>
+        <TableCell>{user.username}</TableCell>
+        <TableCell>{user.email}</TableCell>
+        <TableCell>{user.isActive}</TableCell>
+        <TableCell style={{ width: "300px" }}>{user.user_group}</TableCell>
+
+        <TableCell>
+          <Button variant="primary" onClick={(e) => handleEditClick(e, user)}>
+            Edit
+          </Button>
+        </TableCell>
+      </TableRow>
+    );
+  };
+
+  const [formValue, setFormValue] = useState();
+
+  const EditTable = ({ user, handleEditChange }) => {
+    const options = userOptions.map((option) => {
+      // object for react-select options
+      return { value: option.user_group, label: option.user_group };
+    });
+
     const handleUserGroup = (selectedOption) => {
-      setUserGroup([...userGroup, selectedOption]);
-
-      // what user has selected. != option that is removed
-      console.log("selected", selectedOption);
+      // console.log(selectedOption);
+      setSelectedOption(selectedOption);
 
       // access value from option and push to array
       selectedOption.forEach((option) => {
         const value = option.value;
-
-        // updated groups
         setUserGroup([...userGroup, value]);
-        console.log(userGroup);
       });
     };
 
-    // const groupArray = users.user_group.split(",");
-    // // user groups user exist in
-    // const currentGroup = groupArray.map((group) => {
-    //   return {
-    //     value: group.trim(),
-    //     label: group.trim(),
-    //   };
-    // });
+    const groupArray = user.user_group.split(",");
+    // user groups user exist in
+    const currentGroup = groupArray.map((group) => {
+      return {
+        value: group.trim(),
+        label: group.trim(),
+      };
+    });
+
+    const activeOptions = [
+      {
+        label: "Active",
+        value: "active",
+      },
+      {
+        label: "Inactive",
+        value: "inactive",
+      },
+    ];
+
+    const handleActive = (selectedActive) => {
+      console.log(selectedActive);
+      setSelectedActive(selectedActive);
+
+      const value = selectedActive.value;
+      setActive(value);
+    };
+
+    // get active status
+    const currentActive = user.isActive;
+    const currentActiveObj = {
+      label: currentActive,
+      value: currentActive,
+    };
 
     return (
-      <CreatableSelect
-        // defaultValue={currentGroup}
-        isMulti={true}
-        // value={selectedOption}
-        onChange={handleUserGroup}
-        options={options}
-        // isDisabled={isDisabled}
-      />
+      <TableRow>
+        <TableCell>{user.username}</TableCell>
+        <TableCell>
+          <Input
+            name="email"
+            placeholder={user.email}
+            // value={email}
+            onChange={handleEditChange}
+          />
+        </TableCell>
+        <TableCell>
+          <CreatableSelect
+            defaultValue={currentActiveObj}
+            value={selectedActive}
+            onChange={handleActive}
+            options={activeOptions}
+          />
+        </TableCell>
+        <TableCell>
+          <CreatableSelect
+            defaultValue={currentGroup}
+            isMulti={true}
+            value={selectedOption}
+            onChange={handleUserGroup}
+            options={options}
+          />
+        </TableCell>
+
+        <TableCell>
+          <Button type="submit">Save</Button>
+        </TableCell>
+      </TableRow>
     );
   };
 
-  // render columns for material table
-  const columns = [
-    {
-      headerName: "ID",
-      field: "id",
-      width: 50,
-    },
-    {
-      headerName: "Username",
-      field: "username",
-      width: 300,
-    },
-    {
-      title: "Password",
-      field: "password",
-      width: 200,
-    },
-    {
-      headerName: "Email",
-      field: "email",
-      width: 200,
-      editable: true,
-    },
-    {
-      headerName: "Disabled",
-      field: "disabled",
-      editable: true,
-    },
-    {
-      title: "User group",
-      field: "usergroup",
-      width: 300,
-      renderCell: () => <RenderOption />,
-    },
-  ];
-
-  const [isOpen, setOpen] = useState(false);
-  const openModal = () => setOpen(true);
-  const closeModal = () => setOpen(false);
-
-  const ReadTable = ({ user }) => {
-    return (
-      <TableBody>
-        <TableRow key={user.username}>
-          {/* <TableCell>{user.id}</TableCell> */}
-          <TableCell>{user.username}</TableCell>
-          <TableCell>{user.email}</TableCell>
-          <TableCell>{user.isEnabled}</TableCell>
-          <TableCell style={{ width: "400px" }}>
-            <RenderOption />
-          </TableCell>
-
-          <TableCell>
-            <button>Edit User</button>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    );
+  const handleEditClick = (e, user) => {
+    e.preventDefault();
+    setEditUser(user.username);
+    console.log(user.username);
   };
 
-  const EditTable = ({ user }) => {
-    return (
-      <TableBody>
-        <TableRow key={user.username}>
-          <TableCell>
-            <Input placeholder={user.email} />
-          </TableCell>
-          <TableCell>
-            <Input placeholder={user.isEnabled} />
-          </TableCell>
-          <TableCell>
-            <Input placeholder={user.user_group} />
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    );
+  const handleEditChange = (e) => {
+    e.preventDefault();
+
+    email = setEmail(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("submit");
   };
 
   return (
     <div className=" main-container ">
       <div style={{ height: "50vh", width: "95%" }}>
-        {/* <RenderOption /> */}
-        <Table>
-          <TableHead>
-            <TableCell>Username</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Active</TableCell>
-            <TableCell>User Group</TableCell>
-            <TableCell>Edit</TableCell>
-          </TableHead>
-          {users.map((user) => {
-            return (
-              <>
-                <EditTable user={user} />
-                <ReadTable user={user} />
-              </>
-            );
-          })}
-        </Table>
+        <Form onSubmit={handleSubmit}>
+          <Table className="user-table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Username</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>User Group</TableCell>
+                <TableCell>Edit</TableCell>
+              </TableRow>
+            </TableHead>
+
+            {users.map((user) => {
+              return (
+                <TableBody key={user.username}>
+                  {editUser === user.username ? (
+                    <EditTable user={user} handleSubmit={handleSubmit} />
+                  ) : (
+                    <ReadTable user={user} handleEditClick={handleEditClick} />
+                  )}
+                </TableBody>
+              );
+            })}
+          </Table>
+        </Form>
       </div>
     </div>
   );

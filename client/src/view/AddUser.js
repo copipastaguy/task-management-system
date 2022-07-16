@@ -35,6 +35,7 @@ const AddUser = () => {
   });
 
   const handleUserGroup = (selectedOption) => {
+    console.log(selectedOption);
     setUserGroup(selectedOption);
 
     // access value from option and push to array
