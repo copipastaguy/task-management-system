@@ -9,7 +9,7 @@ import CreatableSelect from "react-select/creatable";
 
 // MATERIAL UI
 import TableIcons from "./TableIcons";
-import MaterialTable from "@material-table/core";
+// import MaterialTable from "@material-table/core";
 import Modal from "@material-ui/core/Modal";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -249,7 +249,7 @@ const DisplayUsers = () => {
 
   return (
     <div className=" main-container ">
-      <MaterialTable
+      {/* <MaterialTable
         title="User Data"
         columns={columns}
         data={users}
@@ -273,7 +273,7 @@ const DisplayUsers = () => {
             render: (rowData) => console.log(rowData),
           },
         ]}
-      />
+      /> */}
     </div>
   );
 };

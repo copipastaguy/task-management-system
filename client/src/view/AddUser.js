@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Modal from "@mui/material/Modal";
 
 import { ToastContainer, toast } from "react-toastify";
 import CreatableSelect, { useCreatable } from "react-select/creatable";
@@ -93,7 +94,8 @@ const AddUser = () => {
   return (
     <div className="main-container">
       <ToastContainer />
-      <Form onSubmit={handleSubmit} className="login-form form">
+
+      <Form onSubmit={handleSubmit} className="add-form form">
         <h3>ADD USER</h3>
 
         <Form.Group>

@@ -60,7 +60,7 @@ const DisplayUsers = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState();
-  const [active, setActive] = useState("");
+  const [active, setActive] = useState();
 
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedActive, setSelectedActive] = useState("");
@@ -167,8 +167,6 @@ const DisplayUsers = () => {
     );
   };
 
-  const [formValue, setFormValue] = useState();
-
   const EditTable = ({ user, handleEditChange }) => {
     const options = userOptions.map((option) => {
       // object for react-select options
@@ -228,7 +226,7 @@ const DisplayUsers = () => {
           <Input
             name="email"
             placeholder={user.email}
-            // value={email}
+            value={email}
             onChange={handleEditChange}
           />
         </TableCell>
@@ -263,15 +261,20 @@ const DisplayUsers = () => {
     console.log(user.username);
   };
 
-  const handleEditChange = (e) => {
+  const handleEditChange = (e, user) => {
     e.preventDefault();
 
-    email = setEmail(e.target.value);
+    username = user.username;
+    // email = setEmail(e.target.value);
+    console.log(email);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("submit");
+
+    try {
+      console.log("submitting form");
+    } catch (e) {}
   };
 
   return (
