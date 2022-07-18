@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // COMPONENTS
-import Header from "./view/Header";
+// import Header from "./view/Header";
 import Homepage from "./view/Homepage";
 import UserManagement from "./view/UserManagement";
 import Tasks from "./view/Tasks";

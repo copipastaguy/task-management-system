@@ -2,25 +2,18 @@ import { useState } from "react";
 import Header from "./Header";
 import AddUser from "./AddUser";
 import UpdateUser from "./UpdateUser";
-import DisplayUsers from "./DisplayUsers";
-import DisplayUsersTest from "./DisplayUsersTest";
+// import DisplayUsers from "./DisplayUsers";
+// import DisplayUsersTest from "./DisplayUsersTest";
 import LoggedIn from "./LoggedIn";
 import MaterialTable from "./MaterialTable";
 
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Modal from "@mui/material/Modal";
 
 const UserManagement = () => {
   const [actions, setActions] = useState("view");
 
   const [displayAdd, setDisplayAdd] = useState(false);
-
-  const toggleAdd = () => {
-    setDisplayAdd(!displayAdd);
-    console.log(displayAdd);
-    // alert("hi");
-  };
+  const [displayUpdate, setDisplayUpdate] = useState(false);
 
   return (
     <div className="main-container">
@@ -29,7 +22,18 @@ const UserManagement = () => {
       <div className="manage">
         <div className="actions_menu">
           <p>What would you like to do today?</p>
-          <Button onClick={toggleAdd}>Add user</Button>
+          <Button
+            className="action-btn"
+            onClick={() => setDisplayAdd(!displayAdd)}
+          >
+            Add user
+          </Button>
+          <Button
+            className="action-btn"
+            onClick={() => setDisplayUpdate(!displayUpdate)}
+          >
+            Update user
+          </Button>
 
           {/* <Form.Select onChange={(e) => setActions(e.target.value)}>
             <option value="add">Add user</option>
@@ -39,13 +43,28 @@ const UserManagement = () => {
           </Form.Select> */}
         </div>
 
-        {actions === "add" && <AddUser />}
-        {actions === "update" && <UpdateUser />}
+        {/* {actions === "add" && <AddUser />}
+        {actions === "update" && <UpdateUser />} */}
         {actions === "view" && <MaterialTable />}
         {displayAdd && (
           <>
             <AddUser />
-            <Button className="closeBtn" onClick={toggleAdd}>
+            <Button
+              className="closeBtn btn-danger"
+              onClick={() => setDisplayAdd(!displayAdd)}
+            >
+              Close
+            </Button>
+          </>
+        )}
+
+        {displayUpdate && (
+          <>
+            <UpdateUser />
+            <Button
+              className="closeBtn btn-danger"
+              onClick={() => setDisplayUpdate(!displayUpdate)}
+            >
               Close
             </Button>
           </>

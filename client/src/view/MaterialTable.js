@@ -41,42 +41,72 @@ const DisplayUsers = () => {
   useEffect(() => {
     // load on render
     getUsers();
-    console.log(users);
+    // console.log(users);
     getGroups();
   }, []);
 
-  const handleRowAdd = async (newRow, resolve) => {
-    try {
-      const updatedRows = [...users, newRow];
-      const response = await axios.post("/add", {
-        username: newRow.username,
-        password: newRow.password,
-      });
-      if (response.data.error) {
-        toast.error(response.data.error, {
-          position: "top-center",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-        });
-      }
-      resolve();
-      console.log(response);
-      // setTimeout(() => {
-      //   // set new state of data
-      //   setUsers(updatedRows);
-      //   resolve();
-      //   console.log(newRow);
-      // }, 1000);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  // const handleRowAdd = async (newRow, resolve) => {
+  //   try {
+  //     const updatedRows = [...users, newRow];
+  //     const response = await axios.post("/add", {
+  //       username: newRow.username,
+  //       password: newRow.password,
+  //     });
+  //     if (response.data.error) {
+  //       toast.error(response.data.error, {
+  //         position: "top-center",
+  //         autoClose: 1000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //       });
+  //     }
+  //     resolve();
+  //     console.log(response);
+  //     // setTimeout(() => {
+  //     //   // set new state of data
+  //     //   setUsers(updatedRows);
+  //     //   resolve();
+  //     //   console.log(newRow);
+  //     // }, 1000);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
 
   // console.log("options", options);
 
   // states for saving editing form
+
+  // const handleRowAdd = async (newRow, resolve) => {
+  //   try {
+  //     const updatedRows = [...users, newRow];
+  //     const response = await axios.post("/add", {
+  //       username: newRow.username,
+  //       password: newRow.password,
+  //     });
+  //     if (response.data.error) {
+  //       toast.error(response.data.error, {
+  //         position: "top-center",
+  //         autoClose: 1000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //       });
+  //     }
+  //     resolve();
+  //     console.log(response);
+  //     // setTimeout(() => {
+  //     //   // set new state of data
+  //     //   setUsers(updatedRows);
+  //     //   resolve();
+  //     //   console.log(newRow);
+  //     // }, 1000);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
+
   const [editUser, setEditUser] = useState(null);
 
   // VALUES TO SEND IN PUT
@@ -87,6 +117,104 @@ const DisplayUsers = () => {
 
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedActive, setSelectedActive] = useState("");
+  // const handleRowAdd = async (newRow, resolve) => {
+  //   try {
+  //     const updatedRows = [...users, newRow];
+  //     const response = await axios.post("/add", {
+  //       username: newRow.username,
+  //       password: newRow.password,
+  //     });
+  //     if (response.data.error) {
+  //       toast.error(response.data.error, {
+  //         position: "top-center",
+  //         autoClose: 1000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //       });
+  //     }
+  //     resolve();
+  //     console.log(response);
+  //     // setTimeout(() => {
+  //     //   // set new state of data
+  //     //   setUsers(updatedRows);
+  //     //   resolve();
+  //     //   console.log(newRow);
+  //     // }, 1000);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
+
+  const handleRowUpdate = async (newRow, oldRow, resolve, reject) => {
+    try {
+      const updatedRow = [...users];
+      const rowId = oldRow.tableData.id;
+      const oldEmail = oldRow.email;
+      console.log(oldEmail);
+
+      updatedRow[rowId] = newRow;
+      setUsers(updatedRow);
+      // old data
+      const oldData = {
+        username: oldRow.username,
+        email: oldRow.email,
+        password: oldRow.password,
+      };
+      if (!newRow.password) {
+        resolve();
+      }
+
+      if (newRow.email == oldRow.email) {
+        reject();
+      }
+
+      const response = await axios.put("/update-user", {
+        username: newRow.username,
+        password: newRow.password,
+        email: newRow.email,
+        active: newRow.active,
+      });
+      console.log(response.data);
+
+      if (response.data.error) {
+        if (newRow.email == oldRow.email) {
+          console.log("no change in email");
+          reject();
+        } else {
+          toast.error(response.data.error, {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+          console.error(response.data.error);
+          // getUsers();
+          reject();
+        }
+      } else {
+        setTimeout(() => {
+          // set new state of data
+          setUsers(updatedRow);
+          console.log("updated row");
+          console.log(newRow);
+          toast.success("Updated user", {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+          resolve();
+          getUsers();
+        }, 700);
+      }
+    } catch (e) {
+      console.error(e);
+      reject();
+    }
+  };
 
   const RenderActive = (isActive) => {
     //   console.log(rows);
@@ -131,10 +259,13 @@ const DisplayUsers = () => {
     {
       field: "timestamp",
       title: "Created/ Updated",
+      type: "datetime",
+      editable: "never",
     },
     {
       field: "username",
       title: "Username",
+      editable: "never",
     },
     {
       field: "password",
@@ -202,8 +333,6 @@ const DisplayUsers = () => {
   //   );
   // };
 
-  const handleUpdate = (updatedRow, oldRow) => {};
-
   return (
     <div className=" main-container ">
       <div style={{ height: "50vh", width: "95%" }}>
@@ -213,35 +342,26 @@ const DisplayUsers = () => {
           columns={columns}
           data={users}
           icons={TableIcons}
-          editable={{
-            // onRowAdd: (newRow) =>
-            //   new Promise((resolve, reject) => {
-            //     handleRowAdd(newRow, resolve);
-            //   }),
-            onRowUpdate: (updatedRow, oldRow) =>
-              new Promise((resolve) => {
-                // get specific row id
-                const rowId = oldRow.tableData.id;
-                const updatedRows = [...users];
-                updatedRow[rowId] = updatedRow;
-                setTimeout(() => {
-                  // set new state of data
-                  setUsers(updatedRows);
-                  resolve();
-                  console.log(oldRow);
-                }, 1000);
-              }),
-          }}
+          // editable={{
+          //   // onRowAdd: (newRow) =>
+          //   //   new Promise((resolve, reject) => {
+          //   //     handleRowAdd(newRow, resolve);
+          //   //   }),
+          //   onRowUpdate: (newRow, oldRow) =>
+          //     new Promise((resolve, reject) => {
+          //       handleRowUpdate(newRow, oldRow, resolve, reject);
+          //     }),
+          // }}
           options={{
             pageSize: 10,
-            // emptyRowsWhenPaging: false,
+            emptyRowsWhenPaging: false,
             addRowPosition: "first",
             actionsColumnIndex: -1,
           }}
           // actions={[
           //   {
-          //     icon: "Edit",
-          //     tooltip: "edit",
+          //     icon: "Add",
+          //     tooltip: "Add",
           //     isFreeAction: true,
           //     onClick: (event, rowData) => alert("add new user"),
           //   },

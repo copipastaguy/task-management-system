@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Modal from "@mui/material/Modal";
 
 import { ToastContainer, toast } from "react-toastify";
 import CreatableSelect, { useCreatable } from "react-select/creatable";
@@ -15,8 +14,10 @@ const AddUser = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [active, setActive] = useState("");
   const [userGroup, setUserGroup] = useState([]);
   const [selectedOption, setSelectedOption] = useState();
+  const [selectedActive, setSelectedActive] = useState();
 
   // fetch existing user groups from table
   const [userOptions, setUserOptions] = useState([]);
@@ -30,10 +31,15 @@ const AddUser = () => {
     getGroups();
   }, []);
 
-  const options = userOptions.map((option) => {
+  const groupOptions = userOptions.map((group) => {
     // object for react-select options
-    return { value: option.user_group, label: option.user_group };
+    return { value: group.groupname, label: group.groupname };
   });
+
+  const activeOptions = [
+    { value: "Active", label: "Active" },
+    { value: "Inactive", label: "Inactive" },
+  ];
 
   const handleUserGroup = (selectedOption) => {
     console.log(selectedOption);
@@ -46,6 +52,11 @@ const AddUser = () => {
     });
   };
 
+  const handleActive = (selectedActive) => {
+    const value = selectedActive.value;
+    setActive(value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -55,16 +66,17 @@ const AddUser = () => {
         username,
         password,
         email,
+        active,
         userGroup,
       });
-      // console.log(response);
+      console.log(response);
 
       // FRONTEND ERROR HANDLING
       if (response.data.error) {
         // invalid field
         toast.error(response.data.error, {
           position: "top-center",
-          autoClose: 700,
+          autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -135,17 +147,28 @@ const AddUser = () => {
         </Form.Group>
 
         <Form.Group>
+          <Form.Label>Status</Form.Label>
+
+          <CreatableSelect
+            defaultValue="Active"
+            value={selectedActive}
+            onChange={handleActive}
+            options={activeOptions}
+          />
+        </Form.Group>
+
+        <Form.Group>
           <Form.Label>User Group</Form.Label>
 
           <CreatableSelect
             isMulti={true}
             value={selectedOption}
             onChange={handleUserGroup}
-            options={options}
+            options={groupOptions}
           />
         </Form.Group>
 
-        <Button className="submitButton" variant="primary" type="submit">
+        <Button className="submitButton" variant="success" type="submit">
           Add user
         </Button>
       </Form>
