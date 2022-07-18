@@ -14,239 +14,120 @@ const add = function (app) {
     // console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
-    if (username && password && userGroup) {
+    if (username && password) {
       //   - - - CHECK IF USER EXIST - - -
+      ///////////////////////////// CHECK USERNAME ////////////////////////////
       if (username) {
-        checkUsername = `SELECT username from accounts WHERE username = ?`;
+        checkUsername = `SELECT username FROM accounts WHERE username = ? `;
         connection.query(checkUsername, [username], (error, result) => {
-          if (error) {
-            console.log(error);
-            return;
-          }
-          // - - - USER EXIST (INVALID INPUT) - - -
-          // SAME USERNAME
-          if (result.length > 0) {
-            // console.log(`Username already exist`);
-            next(errorHandler("Username already exist", req, res));
-            return;
+          if (error) throw error;
+          else if (result.length > 0) {
+            return next(errorHandler("Invalid username", req, res));
           } else {
-            console.log("New user!");
+            // works
+            console.log("new username");
+            console.log("Checking password");
 
-            // CHECK IF EMAIL EXIST
-            if (email) {
-              query = `SELECT * FROM accounts WHERE email = ?`;
-              connection.query(query, [email], (error, result) => {
-                if (error) {
-                  console.log(error);
-                  return;
-                } else if (result.length > 0) {
-                  // res.send(result);
-                  next(errorHandler("Email already exist", req, res));
-                  return;
-                } else {
-                  // VALIDATE EMAIL
-                  console.log("Validating email. . . ");
-                  if (validator.isEmail(email) || email.length == 0) {
-                    console.log("Valid email !");
-
-                    if (password.length < 8 || password.length > 10) {
-                      // INVALID LENGTH
-                      // console.log(
-                      //   "Password length should be min 8 characters, max 10 characters"
-                      // );
-                      return next(
-                        errorHandler(
-                          "Password length should be min 8 characters, max 10 characters",
-                          req,
-                          res
-                        )
-                      );
-                    } else {
-                      // VALIDATE PASSWORD
-                      console.log("Validating password. . .");
-                      if (
-                        !validator.isStrongPassword(password) ||
-                        password.length > 10 ||
-                        /\s/.test(password)
-                      ) {
-                        // console.log(
-                        //   "Password requires min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces"
-                        // );
-                        return next(
-                          errorHandler(
-                            "Password should include min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces",
-                            req,
-                            res
-                          )
-                        );
-                      } else {
-                        // encrypt password and save into database
-                        // HASH PASSWORD
-                        bcrypt.hash(
-                          password,
-                          saltRounds,
-                          (err, hashPassword) => {
-                            console.log("Hashing password. . .");
-                            addUser = `INSERT INTO accounts ( username, password, email, user_group, status, timestamp) VALUES (?, ?, ?, ?, ?,NOW())`;
-                            const userString = userGroup.toString();
-                            connection.query(
-                              addUser,
-                              [
-                                username,
-                                hashPassword,
-                                email,
-                                userString,
-                                active,
-                              ],
-                              (error, result) => {
-                                if (error) {
-                                  console.log(error);
-                                  return;
-                                } else {
-                                  // // ADDING USER GROUP TO USER WITH FOR LOOP
-                                  // userGroup.forEach((group) => {
-                                  //   addUserGroup = `INSERT INTO usergroup (user_group, username) VALUES (? , ?)`;
-                                  //   connection.query(
-                                  //     addUserGroup,
-                                  //     [group, username],
-                                  //     (error, result) => {
-                                  //       if (error) {
-                                  //         console.log(error);
-                                  //         return;
-                                  //       }
-                                  //       // console.log(result);
-                                  //       console.log(
-                                  //         `Adding ${username} into ${group}`
-                                  //       );
-                                  //     }
-                                  //   );
-                                  // });
-                                }
-                                res.send(result);
-                                console.log(`Added new user ${username}`);
-                              }
-                            );
-                          }
-                        );
-                      }
-                    }
-                  } else {
-                    // console.log("invalid email format");
-                    return next(
-                      errorHandler("Email should include a domain!", req, res)
-                    );
-                  }
-                }
-              });
+            ///////////////////////////// CHECK PASSWORD ////////////////////////////
+            if (
+              password.length < 8 ||
+              password.length > 10 ||
+              /\s/.test(password)
+            ) {
+              return next(
+                errorHandler(
+                  "Password needs to be 8-10 characters and no space",
+                  req,
+                  res
+                )
+              );
+            } else if (!validator.isStrongPassword(password)) {
+              return next(
+                errorHandler(
+                  "Password requires 1 lowercase, 1 uppercase, 1 symbol and numbers",
+                  req,
+                  res
+                )
+              );
             } else {
-              if (validator.isEmail(email) || email.length == 0) {
-                console.log("Valid email !");
-
-                if (password.length < 8 || password.length > 10) {
-                  // INVALID LENGTH
-                  // console.log(
-                  //   "Password length should be min 8 characters, max 10 characters"
-                  // );
-                  return next(
-                    errorHandler(
-                      "Password length should be min 8 characters, max 10 characters",
-                      req,
-                      res
-                    )
-                  );
+              ///////////////////////////// CHECK EMAIL ////////////////////////////
+              if (email) {
+                if (validator.isEmail(email)) {
+                  console.log("good email");
                 } else {
-                  // VALIDATE PASSWORD
-                  console.log("Validating password. . .");
-                  if (
-                    !validator.isStrongPassword(password) ||
-                    password.length > 10 ||
-                    /\s/.test(password)
-                  ) {
-                    // console.log(
-                    //   "Password requires min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces"
-                    // );
-                    return next(
-                      errorHandler(
-                        "Password should include min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces",
-                        req,
-                        res
-                      )
-                    );
-                  } else {
-                    // encrypt password and save into database
-                    // HASH PASSWORD
-                    bcrypt.hash(password, saltRounds, (err, hashPassword) => {
-                      console.log("Hashing password. . .");
-                      addUser = `INSERT INTO accounts ( username, password, email, user_group, timestamp) VALUES (?, ?, ?, ?, NOW())`;
-                      const userString = userGroup.toString();
-                      connection.query(
-                        addUser,
-                        [username, hashPassword, email, userString],
-                        (error, result) => {
-                          if (error) {
-                            console.log(error);
-                            return;
-                          } else {
-                            // CHECK IF GROUP EXIST
-                            userGroup.forEach((group) => {
-                              checkExistingGroup = `SELECT * FROM groupnames`;
-                              connection.query(
-                                checkExistingGroup,
-                                [group],
-                                (error, result) => {
-                                  if (error) throw error;
-                                  else if (result.length == 0) {
-                                    // NEW GROUP
-                                    addGroup = `INSERT INTO groupnames (groupname) VALUES (?)`;
-                                    connection.query(
-                                      addGroup,
-                                      [group],
-                                      (error, result) => {
-                                        if (error) throw error;
-                                        console.log(result);
-                                      }
-                                    );
-                                  } else {
-                                    // EXISTING GROUP
-                                    console.log(result);
-                                  }
-                                }
-                              );
-                            });
-                            // ADDING USER GROUP TO USER WITH FOR LOOP
-                            userGroup.forEach((group) => {
-                              addUserGroup = `INSERT INTO usergroup (user_group, username) VALUES (? , ?)`;
-                              connection.query(
-                                addUserGroup,
-                                [group, username],
-                                (error, result) => {
-                                  if (error) {
-                                    console.log(error);
-                                    return;
-                                  }
-                                  // console.log(result);
-                                  console.log(
-                                    `Adding ${username} into ${group}`
-                                  );
-                                }
-                              );
-                            });
-                          }
-                          res.send(result);
-                          console.log(`Added new user ${username}`);
-                        }
-                      );
-                    });
-                  }
+                  return next(errorHandler("Invalid email format", req, res));
                 }
               }
+
+              if (!active) {
+                active == "active";
+              }
+
+              ///////////////////////////// CHECK GROUP EXIST AND CREATE GROUP  ////////////////////////////
+              if (userGroup) {
+                userGroup.forEach((group) => {
+                  checkGroup = `SELECT * FROM groupnames WHERE groupname = ?`;
+                  connection.query(checkGroup, [group], (error, result) => {
+                    if (error) throw error;
+                    /////////////////////////////  CREATE GROUP  ////////////////////////////
+                    else if (result.length == 0) {
+                      addGroup = `INSERT INTO groupnames (groupname) VALUES (?)`;
+                      connection.query(addGroup, [group], (error, result) => {
+                        if (error) throw error;
+                        // console.log(`new group added ${group}`);
+                      });
+                    }
+                  });
+                });
+              }
+
+              ///////////////////////////// ADD USER INTO ACCOUNTS  ////////////////////////////
+              addUser = `INSERT INTO accounts (username, password, email, user_group, timestamp) VALUES (?, ?, ?, ?, NOW())`;
+              // CONVERT GROUP ARRAY INTO STRING FOR ACCOUNTS
+              const groupStr = userGroup.toString();
+              bcrypt.hash(password, saltRounds, (error, hashPassword) => {
+                if (error) throw error;
+                else {
+                  console.log("valid password format, hashing now");
+                  console.log(hashPassword);
+                  connection.query(
+                    addUser,
+                    [username, hashPassword, email, groupStr],
+                    (error, result) => {
+                      if (error) throw error;
+
+                      // THIS HAS TO PASS FIRST BEFORE ADDING USER INTO USERGROUP
+                      console.log(`${username} added into DB `);
+                    }
+                  );
+                }
+
+                ///////////////////////////// ADD USER INTO USERGROUP  ////////////////////////////
+                addUserWithGroup = `INSERT INTO usergroup (username, user_group, last_updated) VALUES (?, ?, NOW())`;
+                // USER GROUP IS AN ARRAY
+                userGroup.forEach((group) => {
+                  connection.query(
+                    addUserWithGroup,
+                    [username, group],
+                    (error, result) => {
+                      if (error) throw error;
+                      console.log(`Added ${username} into ${group}`);
+                    }
+                  );
+                });
+
+                ///////////////////////////// SUCCESSFULLY ADDED INTO DB WITH ALL CONDITIONS FILLED  ////////////////////////////
+                res.send();
+              });
             }
           }
         });
+      } else {
+        // works
+        return next(errorHandler("Invalid username", req, res));
       }
     } else {
-      next(errorHandler("Fill in all fields", req, res));
-      return;
+      return next(errorHandler("Fill in username and password", req, res));
     }
   });
 };

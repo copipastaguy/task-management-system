@@ -1,9 +1,10 @@
 const connection = require("../server/connection");
+const validator = require("validator");
 const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const errorHandler = require("./errorHandler");
-const validator = require("validator");
-const saltRounds = 10;
+const e = require("cors");
 
 const update = function (app) {
   //    - - - CONTROLLER LOGIC FOR UPDATE - - -
@@ -12,206 +13,285 @@ const update = function (app) {
   app.put("/update-user", (req, res, next) => {
     // - - - INPUTS - - -
     const { username, password, email, userGroup, active } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
+    //   - - - CHECK IF USER EXIST - - -
+    ///////////////////////////// CHECK USERNAME ////////////////////////////
     if (username) {
-      checkUsername = `SELECT * FROM accounts WHERE username = ?`;
-      connection.query(checkUsername, [username], (error, result) => {
+      checkUser = `SELECT * FROM accounts WHERE username = ? `;
+      connection.query(checkUser, [username], (error, result) => {
         if (error) throw error;
         else if (result.length == 0) {
-          return next(errorHandler("Enter a valid username", req, res));
+          return next(errorHandler("Invalid username", req, res));
         } else {
-          console.log(result);
+          console.log(result[0]);
+          ///////////////////////////// VALID USERNAME ////////////////////////////
 
-          // UPDATE USER
-          // CHECK EMAIL
-          console.log("valid username");
-          if (email) {
-            // - - - CHECK IF EMAIL EXIST - - -
-            checkEmail = `SELECT * FROM accounts WHERE email = ?`;
-            connection.query(checkEmail, [email], (error, result) => {
-              if (error) throw error;
-              else if (result.length > 0) {
-                // console.log("Invalid email");
-                return next(errorHandler("Invalid email!", req, res));
-              } else {
-                console.log("Validating email. . .");
-                if (!validator.isEmail(email)) {
-                  return next(errorHandler("Invalid email format!", req, res));
-                } else {
-                  // VALID EMAIL
-                  console.log("valid email");
+          ///////////////////////////// CHECK FOR OPTIONAL FIELDS ////////////////////////////
+          if (!email) {
+            const oldEmail = result[0].email;
+            console.log(oldEmail);
 
-                  // UPDATE FIELDS
-                }
+            ///////////////////////////// ADD EXISTING EMAIL ////////////////////////////
+            updateEmail = `UPDATE accounts SET email = ?, timestamp = NOW() WHERE username = ?`;
+            connection.query(
+              updateEmail,
+              [oldEmail, username],
+              (error, result) => {
+                if (error) throw error;
+                console.log("NO CHANGE IN EMAIL . . .");
               }
-            });
+            );
           } else {
-            // NO EMAIL ENTERED
-            // CHECK EMPTY STRINGS
-            email == result[0].email;
-            console.log("email", email);
+            ///////////////////////////// NEW EMAIL ENTERED ////////////////////////////
+            ///////////////////////////// VALIDATE EMAIL ////////////////////////////
+            if (validator.isEmail(email)) {
+              console.log("good email");
 
-            console.log(result[0].password);
-            if (!password) {
-              password == result[0].password;
-              console.log("password", password);
+              ///////////////////////////// UPDATE EMAIL ////////////////////////////
+              updateEmail = `UPDATE accounts SET email = ?, timestamp = NOW() WHERE username = ?`;
+              connection.query(
+                updateEmail,
+                [email, username],
+                (error, result) => {
+                  if (error) throw error;
+                  console.log("UPDATING EMAIL . . .");
+                }
+              );
+            } else {
+              return next(errorHandler("Invalid email format", req, res));
             }
-            if (!active) {
-              active == result[0].status;
-              console.log("active status: ", active);
-            }
+          }
 
-            if (!userGroup) {
-              userGroup == result[0].user_group;
-              console.log("user group", userGroup);
+          if (!password) {
+            const oldPassword = result[0].password;
+            ///////////////////////////// DO NOT HASH PASSWORD AGAIN ////////////////////////////
+            updatePassword = `UPDATE accounts SET password = ?, timestamp = NOW() WHERE username = ?`;
+            connection.query(
+              updatePassword,
+              [oldPassword, username],
+              (error, result) => {
+                if (error) throw error;
+                console.log("NO CHANGE IN PASSWORD . . .");
+              }
+            );
+          } else {
+            ///////////////////////////// NEW PASSWORD ENTERED ////////////////////////////
+            ///////////////////////////// VALIDATE PASSWORD ////////////////////////////
+            if (
+              password.length < 8 ||
+              password.length > 10 ||
+              /\s/.test(password)
+            ) {
+              return next(
+                errorHandler(
+                  "Password needs to be 8-10 characters and no space",
+                  req,
+                  res
+                )
+              );
+            } else if (!validator.isStrongPassword(password)) {
+              return next(
+                errorHandler(
+                  "Password requires 1 lowercase, 1 uppercase, 1 symbol and numbers",
+                  req,
+                  res
+                )
+              );
+            } else {
+              ///////////////////////////// HASH PASSWORD ////////////////////////////
+              bcrypt.hash(password, saltRounds, (error, hashPassword) => {
+                if (error) throw error;
+                updatePassword = `UPDATE accounts SET password = ?, timestamp = NOW() WHERE username = ?`;
+                connection.query(
+                  updatePassword,
+                  [hashPassword, username],
+                  (error, result) => {
+                    if (error) throw error;
+                    console.log(hashPassword);
+                    console.log("UPDATING PASSWORD . . .");
+                  }
+                );
+              });
             }
+          }
+
+          ///////////////////////////// UPDATE STATUS ////////////////////////////
+          if (!active) {
+            const oldActive = result[0].status;
+            updateStatus = `UPDATE accounts SET status = ?, timestamp = NOW() WHERE username = ?`;
+            connection.query(
+              updateStatus,
+              [oldActive, username],
+              (error, result) => {
+                if (error) throw error;
+                console.log("NO CHANGE IN STATUS . . .");
+              }
+            );
+          } else {
+            updateStatus = `UPDATE accounts SET status = ?, timestamp = NOW() WHERE username = ?`;
+            connection.query(
+              updateStatus,
+              [active, username],
+              (error, result) => {
+                if (error) throw error;
+                console.log("UPDATING STATUS . . .");
+              }
+            );
+          }
+
+          ///////////////////////////// UPDATE GROUP ////////////////////////////
+          const groupStr = userGroup.toString();
+          if (groupStr.length > 0) {
+            console.log("CHECKING GROUPS");
+            userGroup.forEach((group) => {
+              // CHECK GROUPNAME EXIST
+              checkGroup = `SELECT * FROM groupnames WHERE groupname = ?`;
+              connection.query(checkGroup, [group], (error, result) => {
+                if (error) throw error;
+                /////////////////////////////  CREATE NEW GROUP  ////////////////////////////
+                else if (result.length == 0) {
+                  addGroup = `INSERT INTO groupnames (groupname) VALUES (?)`;
+                  connection.query(addGroup, [group], (error, result) => {
+                    if (error) throw error;
+                    else {
+                      console.log(`NEW GROUP ADDED: ${group}`);
+
+                      ////////////////////////////  UPDATE USER IN ACCOUNTS ////////////////////////////
+                      updateUserGroup = `UPDATE accounts SET user_group = ?, timestamp = NOW() WHERE username = ?`;
+                      // CONVERT GROUP ARRAY INTO STRING FOR ACCOUNTS
+                      // const groupStr = userGroup.toString();
+                      // console.log(groupStr);
+
+                      connection.query(
+                        updateUserGroup,
+                        [groupStr, username],
+                        (error, result) => {
+                          if (error) throw error;
+                          else {
+                            // console.log(`UPDATED USER ${username}`);
+                            // console.log("CHECKING COMPOSITE KEY . . .");
+
+                            /////////////////////////// CHECK COMPOSITE KEY USER / GROUP  ////////////////////////////
+                            checkCompositeKey = `SELECT * FROM usergroup WHERE username = ? AND user_group = ?`;
+                            connection.query(
+                              checkCompositeKey,
+                              [username, group],
+                              (error, result) => {
+                                if (error) throw error;
+                                console.log("hi");
+                                // else if (result.length > 0) {
+                                //   // COMPOSITE KEY EXIST IN TABLE
+                                //   console.log(
+                                //     `EXISTING COMPOSITE KEY OF ${username} AND ${group}`
+                                //   );
+                                // } else {
+                                //   // NEW COMPOSITE KEY ENTRY
+                                //   addCompositeKey = `INSERT INTO usergroup (user_group, username, last_updated) VALUES (?, ?, NOW())`;
+                                //   connection.query(
+                                //     addCompositeKey,
+                                //     [group, username],
+                                //     (error, result) => {
+                                //       if (error) throw error;
+                                //       console.log(
+                                //         `NEW COMPOSITE KEY OF ${username} AND ${group}`
+                                //       );
+                                //     }
+                                //   );
+                                // }
+                              }
+                            );
+                          }
+                        }
+                      );
+
+                      ///////////////////////////// HASH PASSWORD ////////////////////////////
+                      // bcrypt.hash(
+                      //   password,
+                      //   saltRounds,
+                      //   (error, hashPassword) => {
+                      //     if (error) throw error;
+                      //     else {
+                      //       console.log("valid password format, hashing now");
+                      //       // console.log(hashPassword);
+
+                      //       // THIS HAS TO PASS FIRST BEFORE ADDING USER INTO USERGROUP
+                      //       connection.query(
+                      //         updateUser,
+                      //         [hashPassword, email, groupStr, username],
+                      //         (error, result) => {
+                      //           if (error) throw error;
+                      //           else {
+                      //             console.log(`UPDATED USER ${username}`);
+
+                      //             console.log(
+                      //               `UPDATED ${username}: GROUP ${groupStr}`
+                      //             );
+                      //           }
+                      //         }
+                      //       );
+                      //     }
+                      //   }
+                      // );
+                    }
+                  });
+                } else {
+                  ///////////////////////////// GROUP EXIST  ////////////////////////////
+                  updateUserGroup = `UPDATE accounts SET user_group = ?, timestamp = NOW() WHERE username = ?`;
+                  // CONVERT GROUP ARRAY INTO STRING FOR ACCOUNTS
+                  const groupStr = userGroup.toString();
+                  // console.log(groupStr);
+                  connection.query(
+                    updateUserGroup,
+                    [groupStr, username],
+                    (error, result) => {
+                      if (error) throw error;
+                      console.log(`UPDATED USER ${username}`);
+                    }
+                  );
+
+                  /////////////////////////// CHECK COMPOSITE KEY USER / GROUP  ////////////////////////////
+                  console.log("hi");
+                  checkCompositeKey = `SELECT * FROM usergroup WHERE username = ? AND user_group = ?`;
+                  connection.query(
+                    checkCompositeKey,
+                    [username, group],
+                    (error, result) => {
+                      if (error) throw error;
+                      else if (result.length > 0) {
+                        // COMPOSITE KEY EXIST IN TABLE
+                        console.log(
+                          `EXISTING COMPOSITE KEY OF ${username} AND ${group}`
+                        );
+                      } else {
+                        // NEW COMPOSITE KEY ENTRY
+                        addCompositeKey = `INSERT INTO usergroup (user_group, username, last_updated) VALUES (?, ?, NOW())`;
+                        connection.query(
+                          addCompositeKey,
+                          [group, username],
+                          (error, result) => {
+                            if (error) throw error;
+                            console.log(
+                              `NEW COMPOSITE KEY OF ${username} AND ${group}`
+                            );
+                          }
+                        );
+                      }
+                    }
+                  );
+                }
+              });
+            });
+          } else if (groupStr.length == 0) {
+            const oldGroupStr = result[0].user_group;
+            console.log(oldGroupStr);
+            console.log("NO CHANGE IN USERGROUP");
           }
         }
       });
     } else {
-      return next(errorHandler("Enter a valid username", req, res));
+      return next(errorHandler("Enter username to update", req, res));
     }
-
-    // CHECK PASSWORD
-    // if (password.length < 8 || password.length > 10) {
-    //   return next(
-    //     errorHandler(
-    //       "Password length should be min 8 characters, max 10 characters",
-    //       req,
-    //       res
-    //     )
-    //   );
-    // } else {
-    //   console.log("Validating password. . .");
-    //   if (
-    //     !validator.isStrongPassword(password) ||
-    //     password.length > 10 ||
-    //     /\s/.test(password)
-    //   ) {
-    //     return next(
-    //       errorHandler(
-    //         "Password should include min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces",
-    //         req,
-    //         res
-    //       )
-    //     );
-    //   } else {
-    //     console.log("hashing pw");
-    //     // bcrypt.hash(password, saltRounds, (err, hashPassword) => {
-    //     //   updateUser = `UPDATE accounts SET username = ?, password = ?, email = ?, user_group = ?, status = ?, timestamp = NOW()`;
-    //     //   const groupString = userGroup.toString();
-    //     //   connection.query(
-    //     //     updateUser,
-    //     //     [username, password, email, groupString, active],
-    //     //     (error, result) => {
-    //     //       if (error) throw error;
-    //     //       console.log(result);
-    //     //     }
-    //     //   );
-    //     // });
-    //   }
-    // }
-
-    // if (email || password) {
-    // if (email) {
-    //   // - - - CHECK IF EMAIL EXIST - - -
-    //   query = `SELECT email FROM accounts WHERE email = ?`;
-    //   connection.query(query, [email], (error, result) => {
-    //     if (error) throw error;
-    //     else if (result.length > 0) {
-    //       console.log("email exist choose another one");
-    //       return next(errorHandler("Email exist!", req, res));
-    //     } else {
-    //       console.log("Validating email. . .");
-    //       if (validator.isEmail(email)) {
-    //         updateEmail = `UPDATE accounts SET email = ?, timestamp = NOW() WHERE username = ?`;
-    //         connection.query(
-    //           updateEmail,
-    //           [email, username],
-    //           (error, result) => {
-    //             if (error) throw error;
-    //             res.send("Email updated");
-    //             console.log("Email updated");
-    //           }
-    //         );
-    //       } else {
-    //         console.log("Invalid email format");
-    //         return next(
-    //           errorHandler("Email should include a domain!", req, res)
-    //         );
-    //       }
-    //     }
-    //   });
-    // }
-
-    // if (password) {
-    //   if (password.length < 8 || password.length > 10) {
-    //     return next(
-    //       errorHandler(
-    //         "Password length should be min 8 characters, max 10 characters",
-    //         req,
-    //         res
-    //       )
-    //     );
-    //   } else {
-    //     if (
-    //       !validator.isStrongPassword(password) ||
-    //       password.length > 10 ||
-    //       /\s/.test(password)
-    //     ) {
-    //       // console.log(
-    //       //   "Password requires min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces"
-    //       // );
-    //       return next(
-    //         errorHandler(
-    //           "Password should include min 1 uppercase, min 1 lowercase, min 1 special character, numbers and no spaces",
-    //           req,
-    //           res
-    //         )
-    //       );
-    //     } else {
-    //       // - - - HASH PASSWORD - - -
-    //       const hashPassword = bcrypt.hashSync(password, 10);
-    //       console.log(hashPassword);
-
-    //       query = `UPDATE accounts SET password = ?, timestamp = NOW() WHERE username = ?`;
-    //       connection.query(query, [hashPassword, username], (error, result) => {
-    //         if (error) throw error;
-    //         res.send("Password updated");
-    //       });
-    //     }
-    //   }
-    // }
-
-    // - - - CHECK IF GROUP COLUMN VALUE IS EMPTY - - -
-    // if (user_group) {
-    //   // - - - UPDATE VALUE - - -
-
-    //   query = `UPDATE accounts SET user_group = ? WHERE username = ?`;
-    //   connection.query(query, [user_group, username], (error, result) => {
-    //     if (error) throw error;
-    //     res.send(result);
-    //   });
-    // }
-
-    // if (enable) {
-    //   query = `SELECT isEnabled from accounts WHERE username = ?`;
-    //   connection.query(query, [enable], (error, result) => {
-    //     if (error) throw error;
-
-    //     // - - - RETURNS A VALUE - - -
-    //     // - - - UPDATE VALUE - - -
-    //     if (result) {
-    //       query = `UPDATE accounts SET isEnabled = ? WHERE username = ?`;
-    //       connection.query(query, [enable, username], (error, result) => {
-    //         if (error) throw error;
-    //         res.send(result);
-    //       });
-    //     }
-    //   });
-    // }
-    // }
   });
 };
 module.exports = update;
