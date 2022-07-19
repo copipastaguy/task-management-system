@@ -88,10 +88,10 @@ const LoginForm = () => {
   };
 
   return (
-    <div>
+    <div className="main-container">
       <ToastContainer />
       <div className="login-header">
-        <h2>Task Management System</h2>
+        <h2>LOGIN</h2>
         <Form onSubmit={handleSubmit} className="login-form form">
           <Form.Group>
             <Form.Control

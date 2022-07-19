@@ -54,7 +54,7 @@ const AddUserToGroup = () => {
           pauseOnHover: true,
         });
         setUsername("");
-        setUserGroup("");
+        setSelectedOption(null);
       }
       if (response.data.error) {
         toast.error(response.data.error, {
@@ -65,7 +65,7 @@ const AddUserToGroup = () => {
           pauseOnHover: true,
         });
         setUsername("");
-        setUserGroup("");
+        setSelectedOption(null);
       }
     } catch (e) {
       console.log(e);

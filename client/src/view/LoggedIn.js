@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import AddGroup from "./AddGroup";
+import AddUser from "./AddUser";
+import CreateGroup from "./CreateGroup";
 import AddUserToGroup from "./AddUserToGroup";
 import RemoveUserFromGroup from "./RemoveUserFromGroup";
 
 import { useNavigate } from "react-router-dom";
-import AddUser from "./AddUser";
+
 const LoggedIn = () => {
   const user = localStorage.getItem("username");
 
@@ -40,46 +41,40 @@ const LoggedIn = () => {
   };
 
   return (
-    <div className="login-header">
-      <h5>
-        Welcome: <span>{user}</span>
-      </h5>
+    <>
+      <div className="login-header nav-bar">
+        <p className="nav-bar-welcome">
+          Welcome: <span>{user} hi</span>
+        </p>
 
-      <Form.Group>
-        <Button href="/" className="signOut-button" onClick={handleSignout}>
-          Sign Out
-        </Button>
+        <Form>
+          <Button className="nav-btn" onClick={handleCreateGroup}>
+            Create Group
+          </Button>
 
-        <Button href="/" className="signOut-button" onClick={handleCreateGroup}>
-          Create Group
-        </Button>
+          <Button className="nav-btn" onClick={handleAddUserToGroup}>
+            Add user to group
+          </Button>
 
-        <Button
-          href="/"
-          className="signOut-button"
-          onClick={handleAddUserToGroup}
-        >
-          Add user to group
-        </Button>
+          <Button className="nav-btn" onClick={handleRemoveFromGroup}>
+            Remove user from group
+          </Button>
 
-        <Button
-          href="/"
-          className="signOut-button"
-          onClick={handleRemoveFromGroup}
-        >
-          Remove user from group
-        </Button>
-      </Form.Group>
+          <Button className="signOut-btn btn-danger" onClick={handleSignout}>
+            Sign Out
+          </Button>
+        </Form>
+      </div>
 
       {showAddGroup && (
         <>
-          <AddGroup />
-          <Button
+          <CreateGroup />
+          {/* <Button
             className="closeBtn btn-danger"
             onClick={() => setAddGroup(!showAddGroup)}
           >
             Close
-          </Button>
+          </Button> */}
         </>
       )}
 
@@ -106,7 +101,7 @@ const LoggedIn = () => {
           </Button>
         </>
       )}
-    </div>
+    </>
   );
 };
 

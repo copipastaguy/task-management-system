@@ -80,6 +80,7 @@ const AdminUpdateUser = () => {
         setUsername("");
         setPassword("");
         setEmail("");
+        setSelectedOption(null);
       }
       // RESET FIELDS
     } catch (e) {

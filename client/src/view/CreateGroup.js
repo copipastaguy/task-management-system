@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 
-const AddGroup = () => {
+const CreateGroup = () => {
   const [groupname, setGroupName] = useState("");
 
   const handleSubmit = async (e) => {
@@ -63,9 +63,17 @@ const AddGroup = () => {
         <Button className="submitButton" variant="success" type="submit">
           Add new user group
         </Button>
+
+        <Button
+          className="submitButton"
+          variant="danger"
+          onClick={() => alert("close")}
+        >
+          Cancel
+        </Button>
       </Form>
     </div>
   );
 };
 
-export default AddGroup;
+export default CreateGroup;

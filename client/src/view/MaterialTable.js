@@ -261,6 +261,7 @@ const DisplayUsers = () => {
       title: "Created/ Updated",
       type: "datetime",
       editable: "never",
+      width: "200",
     },
     {
       field: "username",
@@ -336,9 +337,10 @@ const DisplayUsers = () => {
 
   return (
     <div className=" main-container ">
-      <div style={{ height: "50vh", width: "95%" }}>
+      <div style={{ height: "50vh", width: "100%" }}>
         <ToastContainer />
         <MaterialTable
+          style={{ width: "90vw" }}
           title="User Database"
           columns={columns}
           data={users}
@@ -359,17 +361,6 @@ const DisplayUsers = () => {
             addRowPosition: "first",
             actionsColumnIndex: -1,
           }}
-          // actions={[
-          //   {
-          //     icon: "Add",
-          //     tooltip: "Add",
-          //     isFreeAction: true,
-          //     onClick: (event, rowData) => alert("add new user"),
-          //   },
-          // ]}
-          // components={{
-          //   Cell: (props) => <Button>hi</Button>,
-          // }}
         />
       </div>
     </div>

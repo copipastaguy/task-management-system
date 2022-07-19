@@ -55,6 +55,7 @@ const AddUserToGroup = () => {
         });
         setUsername("");
         setUserGroup("");
+        setSelectedOption(null);
       }
       if (response.data.error) {
         toast.error(response.data.error, {

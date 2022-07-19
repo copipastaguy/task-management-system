@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
@@ -41,6 +41,7 @@ const AddUser = () => {
     { value: "Inactive", label: "Inactive" },
   ];
 
+  const selectRef = useRef();
   const handleUserGroup = (selectedOption) => {
     console.log(selectedOption);
     setUserGroup(selectedOption);
@@ -88,7 +89,10 @@ const AddUser = () => {
         setUsername("");
         setPassword("");
         setEmail("");
-        setUserGroup([]);
+
+        // CLEAR REACT-SELECT
+        setSelectedOption(null);
+
         toast.success("New user successfully added", {
           position: "top-center",
           autoClose: 700,
@@ -113,7 +117,6 @@ const AddUser = () => {
         <Form.Group>
           <Form.Label>Username</Form.Label>
           <Form.Control
-            // required
             type="text"
             placeholder="username"
             value={username}
@@ -131,13 +134,11 @@ const AddUser = () => {
             id="password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          {/* <Form.Text>Your password must be 8-20 characters long</Form.Text> */}
         </Form.Group>
 
         <Form.Group>
           <Form.Label>Email</Form.Label>
           <Form.Control
-            // required
             type="text"
             placeholder="email"
             value={email}
@@ -148,12 +149,12 @@ const AddUser = () => {
 
         <Form.Group>
           <Form.Label>Status</Form.Label>
-
           <CreatableSelect
             defaultValue="Active"
             value={selectedActive}
             onChange={handleActive}
             options={activeOptions}
+            createOptionPosition="first"
           />
         </Form.Group>
 

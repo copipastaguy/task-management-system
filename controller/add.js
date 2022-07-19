@@ -90,30 +90,30 @@ const add = function (app) {
                 else {
                   console.log("valid password format, hashing now");
                   console.log(hashPassword);
-                  connection.query(
-                    addUser,
-                    [username, hashPassword, email, groupStr],
-                    (error, result) => {
-                      if (error) throw error;
+                  // connection.query(
+                  //   addUser,
+                  //   [username, hashPassword, email, groupStr],
+                  //   (error, result) => {
+                  //     if (error) throw error;
 
-                      // THIS HAS TO PASS FIRST BEFORE ADDING USER INTO USERGROUP
-                      console.log(`${username} added into DB `);
-                    }
-                  );
+                  //     // THIS HAS TO PASS FIRST BEFORE ADDING USER INTO USERGROUP
+                  //     console.log(`${username} added into DB `);
+                  //   }
+                  // );
                 }
 
                 ///////////////////////////// ADD USER INTO USERGROUP  ////////////////////////////
                 addUserWithGroup = `INSERT INTO usergroup (username, user_group, last_updated) VALUES (?, ?, NOW())`;
                 // USER GROUP IS AN ARRAY
                 userGroup.forEach((group) => {
-                  connection.query(
-                    addUserWithGroup,
-                    [username, group],
-                    (error, result) => {
-                      if (error) throw error;
-                      console.log(`Added ${username} into ${group}`);
-                    }
-                  );
+                  // connection.query(
+                  //   addUserWithGroup,
+                  //   [username, group],
+                  //   (error, result) => {
+                  //     if (error) throw error;
+                  //     console.log(`Added ${username} into ${group}`);
+                  //   }
+                  // );
                 });
 
                 ///////////////////////////// SUCCESSFULLY ADDED INTO DB WITH ALL CONDITIONS FILLED  ////////////////////////////

@@ -1,12 +1,11 @@
 import { useState } from "react";
-import Header from "./Header";
+
 import AddUser from "./AddUser";
 import AdminUpdateUser from "./AdminUpdateUser";
-// import DisplayUsers from "./DisplayUsers";
-// import DisplayUsersTest from "./DisplayUsersTest";
 import LoggedIn from "./LoggedIn";
 import MaterialTable from "./MaterialTable";
 
+import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 const UserManagement = () => {
@@ -18,22 +17,23 @@ const UserManagement = () => {
   return (
     <div className="main-container">
       <LoggedIn />
-      {/* <h3>User Management</h3> */}
       <div className="manage">
         <div className="actions_menu">
           <p>What would you like to do today?</p>
-          <Button
-            className="action-btn"
-            onClick={() => setDisplayAdd(!displayAdd)}
-          >
-            Add user
-          </Button>
-          <Button
-            className="action-btn"
-            onClick={() => setDisplayUpdate(!displayUpdate)}
-          >
-            Update user
-          </Button>
+          <div>
+            <Button
+              className="action-btn"
+              onClick={() => setDisplayAdd(!displayAdd)}
+            >
+              Add user
+            </Button>
+            <Button
+              className="action-btn"
+              onClick={() => setDisplayUpdate(!displayUpdate)}
+            >
+              Update user
+            </Button>
+          </div>
 
           {/* <Form.Select onChange={(e) => setActions(e.target.value)}>
             <option value="add">Add user</option>
@@ -43,9 +43,11 @@ const UserManagement = () => {
           </Form.Select> */}
         </div>
 
+        <MaterialTable />
+
         {/* {actions === "add" && <AddUser />}
         {actions === "update" && <UpdateUser />} */}
-        {actions === "view" && <MaterialTable />}
+        {/* {actions === "view" && <MaterialTable />} */}
         {displayAdd && (
           <>
             <AddUser />
