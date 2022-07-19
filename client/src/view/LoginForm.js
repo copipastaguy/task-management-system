@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -10,6 +10,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [admin, setAdmin] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,33 +21,55 @@ const LoginForm = () => {
         username,
         password,
       });
+      // RESPONSE FROM CHECKGROUP
       console.log(response);
       if (!response.data.error) {
-        // console.log(response.data);
-        // returns array of data
-
-        // CHECK IF USER IS DISABLED
-        const enabled = response.data[0].isEnabled;
-        if (enabled === "True") {
-          localStorage.setItem("username", response.data[0].username);
-          localStorage.setItem("email", response.data[0].email);
-
-          // CONDITIONAL RENDERING BASED ON USER/ ADMIN
-          const isAdmin = response.data[0].admin_privilege;
-          if (isAdmin === 1) {
-            navigate("/management");
-          } else {
-            navigate("/tasks");
+        try {
+          const admin = await axios.post("/checkadmin", {
+            username,
+          });
+          console.log(admin);
+          if (admin.data[0].admin_privilege === "1") {
           }
+        } catch (e) {
+          console.log(e);
         }
+
+        // GET USER ADMIN PRIVILEGES
+        // const isAdmin = response.data[0].admin_privilege;
+        // CHECK IF USER IS DISABLED
+        // const active = response.data[0].status;
+        // if (active === "Active") {
+        //   localStorage.setItem("username", response.data[0].username);
+        //   localStorage.setItem("email", response.data[0].email);
+        //   localStorage.setItem("isAdmin", response.data[0].admin_privilege);
+        //   sessionStorage.setItem("username", response.data[0].username);
+        //   sessionStorage.setItem("email", response.data[0].email);
+        //   sessionStorage.setItem("isAdmin", response.data[0].admin_privilege);
+        //   // CONDITIONAL RENDERING BASED ON USER/ ADMIN
+        //   const isAdmin = response.data[0].admin_privilege;
+        //   if (isAdmin === 1) {
+        //     navigate("/management");
+        //   } else {
+        //     navigate("/tasks");
+        //   }
+        // } else if (active === "Inactive") {
+        //   toast.error("Unable to login", {
+        //     position: "top-center",
+        //     autoClose: 700,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //   });
+        // }
       } else {
         // RESET FIELDS
-        setUsername("");
-        setPassword("");
-        navigate("/");
+        // setUsername("");
+        // setPassword("");
+        // navigate("/");
       }
       if (response.data.error) {
-        console.log(response.data.error);
+        // console.log(response.data.error);
         toast.error(response.data.error, {
           position: "top-center",
           autoClose: 700,
@@ -68,7 +91,7 @@ const LoginForm = () => {
     <div>
       <ToastContainer />
       <div className="login-header">
-        <h2>TASKY</h2>
+        <h2>Task Management System</h2>
         <Form onSubmit={handleSubmit} className="login-form form">
           <Form.Group>
             <Form.Control

@@ -5,7 +5,6 @@ const Homepage = () => {
   return (
     <div>
       <LoginForm />
-      <p>Content for homepage</p>
     </div>
   );
 };

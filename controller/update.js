@@ -10,7 +10,7 @@ const update = function (app) {
   //    - - - CONTROLLER LOGIC FOR UPDATE - - -
   //    - - - ROUTING FOR UPDATE - - -
 
-  app.put("/update-user", (req, res, next) => {
+  app.put("/admin-update-user", (req, res, next) => {
     // - - - INPUTS - - -
     const { username, password, email, userGroup, active } = req.body;
     // console.log(req.body);
@@ -179,60 +179,31 @@ const update = function (app) {
                               [username, group],
                               (error, result) => {
                                 if (error) throw error;
-                                console.log("hi");
-                                // else if (result.length > 0) {
-                                //   // COMPOSITE KEY EXIST IN TABLE
-                                //   console.log(
-                                //     `EXISTING COMPOSITE KEY OF ${username} AND ${group}`
-                                //   );
-                                // } else {
-                                //   // NEW COMPOSITE KEY ENTRY
-                                //   addCompositeKey = `INSERT INTO usergroup (user_group, username, last_updated) VALUES (?, ?, NOW())`;
-                                //   connection.query(
-                                //     addCompositeKey,
-                                //     [group, username],
-                                //     (error, result) => {
-                                //       if (error) throw error;
-                                //       console.log(
-                                //         `NEW COMPOSITE KEY OF ${username} AND ${group}`
-                                //       );
-                                //     }
-                                //   );
-                                // }
+                                else if (result.length > 0) {
+                                  // COMPOSITE KEY EXIST IN TABLE
+                                  console.log(
+                                    `EXISTING COMPOSITE KEY OF ${username} AND ${group}`
+                                  );
+                                } else {
+                                  // NEW COMPOSITE KEY ENTRY
+                                  addCompositeKey = `INSERT INTO usergroup (user_group, username, last_updated) VALUES (?, ?, NOW())`;
+                                  connection.query(
+                                    addCompositeKey,
+                                    [group, username],
+                                    (error, result) => {
+                                      if (error) throw error;
+                                      console.log(
+                                        `NEW COMPOSITE KEY OF ${username} AND ${group} FOUND`
+                                      );
+                                      console.log("CREATING NEW COMPOSITE KEY");
+                                    }
+                                  );
+                                }
                               }
                             );
                           }
                         }
                       );
-
-                      ///////////////////////////// HASH PASSWORD ////////////////////////////
-                      // bcrypt.hash(
-                      //   password,
-                      //   saltRounds,
-                      //   (error, hashPassword) => {
-                      //     if (error) throw error;
-                      //     else {
-                      //       console.log("valid password format, hashing now");
-                      //       // console.log(hashPassword);
-
-                      //       // THIS HAS TO PASS FIRST BEFORE ADDING USER INTO USERGROUP
-                      //       connection.query(
-                      //         updateUser,
-                      //         [hashPassword, email, groupStr, username],
-                      //         (error, result) => {
-                      //           if (error) throw error;
-                      //           else {
-                      //             console.log(`UPDATED USER ${username}`);
-
-                      //             console.log(
-                      //               `UPDATED ${username}: GROUP ${groupStr}`
-                      //             );
-                      //           }
-                      //         }
-                      //       );
-                      //     }
-                      //   }
-                      // );
                     }
                   });
                 } else {
@@ -282,6 +253,7 @@ const update = function (app) {
                 }
               });
             });
+            res.send();
           } else if (groupStr.length == 0) {
             const oldGroupStr = result[0].user_group;
             console.log(oldGroupStr);

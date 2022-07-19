@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-
+import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
-import CreatableSelect, { useCreatable } from "react-select/creatable";
 
-const AddUser = () => {
-  const navigate = useNavigate();
+const AdminUpdateUser = () => {
+  // array of usernames fetched
+  const username = localStorage.getItem("username");
+  console.log(username);
 
-  // handle change in form fields
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [active, setActive] = useState("");
+  const [enable, setEnable] = useState("");
+
   const [userGroup, setUserGroup] = useState([]);
   const [selectedOption, setSelectedOption] = useState();
-  const [selectedActive, setSelectedActive] = useState();
-
-  // fetch existing user groups from table
   const [userOptions, setUserOptions] = useState([]);
 
+  const [active, setActive] = useState("");
+  const [selectedActive, setSelectedActive] = useState();
+
+  // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
     const getGroups = async () => {
       const response = await axios.get("/user-groups");
@@ -31,18 +31,12 @@ const AddUser = () => {
     getGroups();
   }, []);
 
-  const groupOptions = userOptions.map((group) => {
-    // object for react-select options
-    return { value: group.groupname, label: group.groupname };
-  });
-
   const activeOptions = [
     { value: "Active", label: "Active" },
     { value: "Inactive", label: "Inactive" },
   ];
 
   const handleUserGroup = (selectedOption) => {
-    console.log(selectedOption);
     setUserGroup(selectedOption);
 
     // access value from option and push to array
@@ -57,23 +51,25 @@ const AddUser = () => {
     setActive(value);
   };
 
+  // map out reactselect options
+  const options = userOptions.map((option) => {
+    // object for react-select options
+    return { value: option.groupname, label: option.groupname };
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // POST request for user database
     try {
-      const response = await axios.post("/add", {
+      //  POST request to update user detail
+      const response = await axios.post("/user-update", {
         username,
         password,
         email,
-        active,
         userGroup,
+        active,
       });
-      console.log(response);
-
-      // FRONTEND ERROR HANDLING
+      console.log(response.data);
       if (response.data.error) {
-        // invalid field
         toast.error(response.data.error, {
           position: "top-center",
           autoClose: 1000,
@@ -83,97 +79,57 @@ const AddUser = () => {
         });
       }
       if (!response.data.error) {
-        // no errors
-        // reset form field
-        setUsername("");
-        setPassword("");
-        setEmail("");
-        setUserGroup([]);
-        toast.success("New user successfully added", {
+        toast.success("Updated", {
           position: "top-center",
-          autoClose: 700,
+          autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
         });
+        setPassword("");
+        setEmail("");
       }
-    } catch (error) {
-      console.log(error);
+      // RESET FIELDS
+    } catch (e) {
+      console.log(e);
     }
-    navigate("/management");
   };
-
   return (
     <div className="main-container">
       <ToastContainer />
 
-      <Form onSubmit={handleSubmit} className="add-form form">
-        <h3>ADD USER</h3>
+      <Form className="add-form form" onSubmit={handleSubmit}>
+        <h3>UPDATE {username}</h3>
 
-        <Form.Group>
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            // required
-            type="text"
-            placeholder="username"
-            value={username}
-            id="username"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </Form.Group>
         <Form.Group>
           <Form.Label>Password</Form.Label>
           <Form.Control
             // required
             type="password"
-            placeholder="password"
+            // placeholder="password"
             value={password}
             id="password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          {/* <Form.Text>Your password must be 8-20 characters long</Form.Text> */}
         </Form.Group>
 
         <Form.Group>
           <Form.Label>Email</Form.Label>
           <Form.Control
-            // required
             type="text"
-            placeholder="email"
+            // placeholder="email"
             value={email}
             id="email"
             onChange={(e) => setEmail(e.target.value)}
           />
         </Form.Group>
 
-        <Form.Group>
-          <Form.Label>Status</Form.Label>
-
-          <CreatableSelect
-            defaultValue="Active"
-            value={selectedActive}
-            onChange={handleActive}
-            options={activeOptions}
-          />
-        </Form.Group>
-
-        <Form.Group>
-          <Form.Label>User Group</Form.Label>
-
-          <CreatableSelect
-            isMulti={true}
-            value={selectedOption}
-            onChange={handleUserGroup}
-            options={groupOptions}
-          />
-        </Form.Group>
-
         <Button className="submitButton" variant="success" type="submit">
-          Add user
+          Save user
         </Button>
       </Form>
     </div>
   );
 };
 
-export default AddUser;
+export default AdminUpdateUser;

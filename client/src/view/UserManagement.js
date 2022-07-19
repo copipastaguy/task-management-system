@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Header from "./Header";
 import AddUser from "./AddUser";
-import UpdateUser from "./UpdateUser";
+import AdminUpdateUser from "./AdminUpdateUser";
 // import DisplayUsers from "./DisplayUsers";
 // import DisplayUsersTest from "./DisplayUsersTest";
 import LoggedIn from "./LoggedIn";
@@ -60,7 +60,7 @@ const UserManagement = () => {
 
         {displayUpdate && (
           <>
-            <UpdateUser />
+            <AdminUpdateUser />
             <Button
               className="closeBtn btn-danger"
               onClick={() => setDisplayUpdate(!displayUpdate)}

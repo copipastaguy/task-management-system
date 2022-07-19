@@ -165,7 +165,7 @@ const DisplayUsers = () => {
         resolve();
       }
 
-      if (newRow.email == oldRow.email) {
+      if (newRow.email === oldRow.email) {
         reject();
       }
 
@@ -278,8 +278,9 @@ const DisplayUsers = () => {
       title: "Email",
     },
     {
-      field: "isActive",
+      field: "status",
       title: "Status",
+      // render: (rowData) => <p className="active">{rowData.status}</p>,
     },
     {
       field: "user_group",

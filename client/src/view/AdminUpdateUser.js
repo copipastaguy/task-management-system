@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import CreatableSelect from "react-select/creatable";
 import { ToastContainer, toast } from "react-toastify";
 
-const UpdateUser = () => {
+const AdminUpdateUser = () => {
   // array of usernames fetched
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -47,7 +47,6 @@ const UpdateUser = () => {
   const handleActive = (selectedActive) => {
     const value = selectedActive.value;
     setActive(value);
-    console.log(value);
   };
 
   // map out reactselect options
@@ -60,7 +59,7 @@ const UpdateUser = () => {
     e.preventDefault();
     try {
       //  POST request to update user detail
-      const response = await axios.put("/update-user", {
+      const response = await axios.put("/admin-update-user", {
         username,
         password,
         email,
@@ -81,7 +80,6 @@ const UpdateUser = () => {
         setUsername("");
         setPassword("");
         setEmail("");
-        // setUserGroup("");
       }
       // RESET FIELDS
     } catch (e) {
@@ -108,7 +106,7 @@ const UpdateUser = () => {
           <Form.Label>Password</Form.Label>
           <Form.Control
             // required
-            type="text"
+            type="password"
             // placeholder="password"
             value={password}
             id="password"
@@ -156,4 +154,4 @@ const UpdateUser = () => {
   );
 };
 
-export default UpdateUser;
+export default AdminUpdateUser;

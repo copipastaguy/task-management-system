@@ -7,8 +7,12 @@ const login = require("../controller/login");
 const add = require("../controller/add");
 const update = require("../controller/update");
 const accounts = require("../controller/accounts");
-const checkGroup = require("../controller/checkGroup");
+const checkAdmin = require("../controller/checkAdmin");
 const userGroup = require("../controller/userGroup");
+const addGroup = require("../controller/addGroup");
+const addUserToGroup = require("../controller/addUserToGroup");
+const removeUserFromGroup = require("../controller/removeUserFromGroup");
+const userUpdate = require("../controller/userUpdate");
 
 // server port
 const port = 3002;
@@ -37,10 +41,20 @@ add(app);
 // - - - UPDATE USER - - -
 update(app);
 
-// - - - CHECK GROUP - - -
-checkGroup(app);
+// - - - CHECK ADMIN USER - - -
+checkAdmin(app);
 
+// - - - FETCH USER GROUP - - -
 userGroup(app);
+
+// - - - ADD USER GROUP - - -
+addGroup(app);
+
+addUserToGroup(app);
+
+removeUserFromGroup(app);
+
+userUpdate(app);
 
 // app.use(errorHandler);
 
