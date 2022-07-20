@@ -72,6 +72,8 @@ const AddUserToGroup = () => {
       console.log(e);
     }
   };
+
+
   return (
     <div className="main-container">
       <ToastContainer />
@@ -103,7 +105,7 @@ const AddUserToGroup = () => {
         </Form.Group>
 
         <Button className="submitButton" variant="success" type="submit">
-          Add new user group
+          Add user to group
         </Button>
       </Form>
     </div>

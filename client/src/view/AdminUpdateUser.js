@@ -3,39 +3,80 @@ import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import CreatableSelect from "react-select/creatable";
+import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 
 const AdminUpdateUser = () => {
   // array of usernames fetched
-  const [username, setUsername] = useState("");
+
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [enable, setEnable] = useState("");
-
-  const [userGroup, setUserGroup] = useState([]);
-  const [selectedOption, setSelectedOption] = useState();
-  const [userOptions, setUserOptions] = useState([]);
-
-  const [active, setActive] = useState("");
-  const [selectedActive, setSelectedActive] = useState();
 
   // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
     const getGroups = async () => {
       const response = await axios.get("/user-groups");
       const data = response.data;
-      setUserOptions(data);
+      setGroupOptions(data);
     };
     getGroups();
+
+    const getUsers = async () => {
+      const response = await axios.get("/accounts");
+      const data = response.data;
+      setUsers(data);
+    };
+    getUsers();
   }, []);
+
+  /////////////////////  USERS /////////////////////////////
+  // REACT SELECT USER
+  // data to be sent
+  const [username, setUsername] = useState();
+  // fetch array state
+  const [users, setUsers] = useState([]);
+  // selected option
+  const [selectedUser, setSelectedUser] = useState();
+  const handleUsername = (selectedUser) => {
+    const value = selectedUser.value;
+    setUsername(value);
+    console.log(username);
+  };
+
+  const userOptions = users.map((user) => {
+    const value = user.username;
+    return {
+      label: value,
+      value: value,
+    };
+  });
+
+  /////////////////////  ACTIVE STATUS  /////////////////////////////
+  // REACT SELECT ACTIVE
+  const [active, setActive] = useState("");
+  const [selectedActive, setSelectedActive] = useState();
+
+  const handleActive = (selectedActive) => {
+    const value = selectedActive.value;
+    setActive(value);
+  };
 
   const activeOptions = [
     { value: "Active", label: "Active" },
     { value: "Inactive", label: "Inactive" },
   ];
 
+  /////////////////////  USER GROUP /////////////////////////////
+  // REACT SELECT GROUP
+  // data to be sent in
+  const [userGroup, setUserGroup] = useState([]);
+  // user selection
+  const [selectedOption, setSelectedOption] = useState();
+  // fetch array state
+  const [groupOptions, setGroupOptions] = useState([]);
+
   const handleUserGroup = (selectedOption) => {
-    setUserGroup(selectedOption);
+    setSelectedOption(selectedOption);
 
     // access value from option and push to array
     selectedOption.forEach((option) => {
@@ -43,14 +84,10 @@ const AdminUpdateUser = () => {
       setUserGroup([...userGroup, value]);
     });
   };
-
-  const handleActive = (selectedActive) => {
-    const value = selectedActive.value;
-    setActive(value);
-  };
+  console.log(userGroup);
 
   // map out reactselect options
-  const options = userOptions.map((option) => {
+  const groups = groupOptions.map((option) => {
     // object for react-select options
     return { value: option.groupname, label: option.groupname };
   });
@@ -77,7 +114,7 @@ const AdminUpdateUser = () => {
         });
       }
       if (!response.data.error) {
-        setUsername("");
+        setSelectedUser(null);
         setPassword("");
         setEmail("");
         setSelectedOption(null);
@@ -91,24 +128,22 @@ const AdminUpdateUser = () => {
     <div className="main-container">
       <ToastContainer />
 
-      <Form className="add-form form" onSubmit={handleSubmit}>
+      <Form className="form" onSubmit={handleSubmit}>
         <h3>UPDATE USER</h3>
-        <Form.Group>
-          <Form.Label>Username </Form.Label>
-          <Form.Control
-            type="text"
-            value={username}
-            id="username"
-            onChange={(e) => setUsername(e.target.value)}
+        <Form.Group style={{ width: "400px" }}>
+          <Form.Label>Username</Form.Label>
+          <Select
+            value={selectedUser}
+            onChange={handleUsername}
+            options={userOptions}
           />
         </Form.Group>
 
         <Form.Group>
           <Form.Label>Password</Form.Label>
           <Form.Control
-            // required
             type="password"
-            // placeholder="password"
+            placeholder="new password"
             value={password}
             id="password"
             onChange={(e) => setPassword(e.target.value)}
@@ -119,31 +154,30 @@ const AdminUpdateUser = () => {
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="text"
-            // placeholder="email"
+            placeholder="new email"
             value={email}
             id="email"
             onChange={(e) => setEmail(e.target.value)}
           />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group style={{ width: "400px" }}>
           <Form.Label>Status</Form.Label>
-
-          <CreatableSelect
-            defaultValue="Active"
+          <Select
+            // defaultValue={activeOptions[0]}
             value={selectedActive}
             onChange={handleActive}
             options={activeOptions}
           />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group style={{ width: "400px" }}>
           <Form.Label>User Group</Form.Label>
           <CreatableSelect
             isMulti={true}
             value={selectedOption}
             onChange={handleUserGroup}
-            options={options}
+            options={groups}
           />
         </Form.Group>
 

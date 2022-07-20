@@ -24,44 +24,44 @@ const LoginForm = () => {
       // RESPONSE FROM CHECKGROUP
       console.log(response);
       if (!response.data.error) {
-        try {
-          const admin = await axios.post("/checkadmin", {
-            username,
-          });
-          console.log(admin);
-          if (admin.data[0].admin_privilege === "1") {
-          }
-        } catch (e) {
-          console.log(e);
-        }
+        // try {
+        //   const admin = await axios.post("/checkadmin", {
+        //     username,
+        //   });
+        //   console.log(admin);
+        //   if (admin.data[0].admin_privilege === "1") {
+        //   }
+        // } catch (e) {
+        //   console.log(e);
+        // }
 
         // GET USER ADMIN PRIVILEGES
-        // const isAdmin = response.data[0].admin_privilege;
+        const isAdmin = response.data[0].admin_privilege;
         // CHECK IF USER IS DISABLED
-        // const active = response.data[0].status;
-        // if (active === "Active") {
-        //   localStorage.setItem("username", response.data[0].username);
-        //   localStorage.setItem("email", response.data[0].email);
-        //   localStorage.setItem("isAdmin", response.data[0].admin_privilege);
-        //   sessionStorage.setItem("username", response.data[0].username);
-        //   sessionStorage.setItem("email", response.data[0].email);
-        //   sessionStorage.setItem("isAdmin", response.data[0].admin_privilege);
-        //   // CONDITIONAL RENDERING BASED ON USER/ ADMIN
-        //   const isAdmin = response.data[0].admin_privilege;
-        //   if (isAdmin === 1) {
-        //     navigate("/management");
-        //   } else {
-        //     navigate("/tasks");
-        //   }
-        // } else if (active === "Inactive") {
-        //   toast.error("Unable to login", {
-        //     position: "top-center",
-        //     autoClose: 700,
-        //     hideProgressBar: false,
-        //     closeOnClick: true,
-        //     pauseOnHover: true,
-        //   });
-        // }
+        const active = response.data[0].status;
+        if (active === "Active") {
+          localStorage.setItem("username", response.data[0].username);
+          localStorage.setItem("email", response.data[0].email);
+          localStorage.setItem("isAdmin", response.data[0].admin_privilege);
+          sessionStorage.setItem("username", response.data[0].username);
+          sessionStorage.setItem("email", response.data[0].email);
+          sessionStorage.setItem("isAdmin", response.data[0].admin_privilege);
+          // CONDITIONAL RENDERING BASED ON USER/ ADMIN
+          const isAdmin = response.data[0].admin_privilege;
+          if (isAdmin === 1) {
+            navigate("/management");
+          } else {
+            navigate("/tasks");
+          }
+        } else if (active === "Inactive") {
+          toast.error("Unable to login", {
+            position: "top-center",
+            autoClose: 700,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+        }
       } else {
         // RESET FIELDS
         // setUsername("");
@@ -91,8 +91,8 @@ const LoginForm = () => {
     <div className="main-container">
       <ToastContainer />
       <div className="login-header">
-        <h2>LOGIN</h2>
         <Form onSubmit={handleSubmit} className="login-form form">
+          <h4>Enter your details to sign in</h4>
           <Form.Group>
             <Form.Control
               type="text"
@@ -112,8 +112,17 @@ const LoginForm = () => {
             />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
-            Login
+          <Button
+            variant="primary"
+            type="submit"
+            style={{
+              width: "400px",
+              backgroundColor: "#fca311",
+              border: "none",
+              padding: "10px",
+            }}
+          >
+            LOGIN
           </Button>
         </Form>
       </div>

@@ -41,6 +41,18 @@ const CreateGroup = () => {
       console.log(e);
     }
   };
+
+  const CloseCreate = () => {
+    return (
+      <Button
+        className="submitButton"
+        variant="danger"
+        onClick={() => alert("close")}
+      >
+        Cancel
+      </Button>
+    );
+  };
   return (
     <div className="main-container">
       <ToastContainer />

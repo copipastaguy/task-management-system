@@ -253,13 +253,13 @@ const update = function (app) {
                 }
               });
             });
-            res.send();
           } else if (groupStr.length == 0) {
             const oldGroupStr = result[0].user_group;
             console.log(oldGroupStr);
             console.log("NO CHANGE IN USERGROUP");
           }
         }
+        res.send();
       });
     } else {
       return next(errorHandler("Enter username to update", req, res));

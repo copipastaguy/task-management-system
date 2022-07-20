@@ -111,8 +111,8 @@ const AddUser = () => {
     <div className="main-container">
       <ToastContainer />
 
-      <Form onSubmit={handleSubmit} className="add-form form">
-        <h3>ADD USER</h3>
+      <Form onSubmit={handleSubmit} className="form">
+        <h3>Create a new user</h3>
 
         <Form.Group>
           <Form.Label>Username</Form.Label>
@@ -147,10 +147,10 @@ const AddUser = () => {
           />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group style={{ width: "400px" }}>
           <Form.Label>Status</Form.Label>
           <CreatableSelect
-            defaultValue="Active"
+            defaultValue={activeOptions[0]}
             value={selectedActive}
             onChange={handleActive}
             options={activeOptions}
@@ -158,9 +158,8 @@ const AddUser = () => {
           />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group style={{ width: "400px" }}>
           <Form.Label>User Group</Form.Label>
-
           <CreatableSelect
             isMulti={true}
             value={selectedOption}
@@ -169,9 +168,17 @@ const AddUser = () => {
           />
         </Form.Group>
 
-        <Button className="submitButton" variant="success" type="submit">
-          Add user
-        </Button>
+        <Form.Group>
+          <Button className="submitButton" variant="success" type="submit">
+            Add user
+          </Button>
+        </Form.Group>
+
+        <Form.Group>
+          <Button className="submitButton" variant="danger">
+            Cancel
+          </Button>
+        </Form.Group>
       </Form>
     </div>
   );

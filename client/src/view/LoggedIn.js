@@ -1,107 +1,42 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import AddUser from "./AddUser";
-import CreateGroup from "./CreateGroup";
-import AddUserToGroup from "./AddUserToGroup";
-import RemoveUserFromGroup from "./RemoveUserFromGroup";
 
 import { useNavigate } from "react-router-dom";
 
 const LoggedIn = () => {
-  const user = localStorage.getItem("username");
+  const local_user = localStorage.getItem("username");
+  const session_user = sessionStorage.getItem("username");
 
   const navigate = useNavigate();
 
   const handleSignout = (e) => {
     e.preventDefault();
-    console.log("sign out");
-    localStorage.clear();
-    sessionStorage.clear();
+
+    // CLEAR ALL STORAGE
+    localStorage.clear("username");
+    sessionStorage.clear("username");
     navigate("/");
   };
 
-  const [showAddGroup, setAddGroup] = useState(false);
-  const [showAddUser, setAddUser] = useState(false);
-  const [showRemoveUser, setRemoveUser] = useState(false);
-
-  const handleCreateGroup = (e) => {
-    e.preventDefault();
-    setAddGroup(!showAddGroup);
-  };
-
-  const handleAddUserToGroup = (e) => {
-    e.preventDefault();
-    setAddUser(!showAddUser);
-  };
-
-  const handleRemoveFromGroup = (e) => {
-    e.preventDefault();
-    setRemoveUser(!showRemoveUser);
-  };
-
   return (
-    <>
-      <div className="login-header nav-bar">
-        <p className="nav-bar-welcome">
-          Welcome: <span>{user} hi</span>
-        </p>
-
-        <Form>
-          <Button className="nav-btn" onClick={handleCreateGroup}>
-            Create Group
-          </Button>
-
-          <Button className="nav-btn" onClick={handleAddUserToGroup}>
-            Add user to group
-          </Button>
-
-          <Button className="nav-btn" onClick={handleRemoveFromGroup}>
-            Remove user from group
-          </Button>
-
-          <Button className="signOut-btn btn-danger" onClick={handleSignout}>
-            Sign Out
-          </Button>
-        </Form>
+    <div className="login-header nav-bar">
+      <div className="nav-bar-welcome">
+        <h3>
+          Welcome: <span>{local_user}</span>
+        </h3>
       </div>
 
-      {showAddGroup && (
-        <>
-          <CreateGroup />
-          {/* <Button
-            className="closeBtn btn-danger"
-            onClick={() => setAddGroup(!showAddGroup)}
-          >
-            Close
-          </Button> */}
-        </>
-      )}
+      <Form>
+        <Button href="/management">Home</Button>
 
-      {showAddUser && (
-        <>
-          <AddUserToGroup />
-          <Button
-            className="closeBtn btn-danger"
-            onClick={() => setAddUser(!showAddUser)}
-          >
-            Close
-          </Button>
-        </>
-      )}
+        <Button href="/group-management">Group Management</Button>
 
-      {showRemoveUser && (
-        <>
-          <RemoveUserFromGroup />
-          <Button
-            className="closeBtn btn-danger"
-            onClick={() => setRemoveUser(!showRemoveUser)}
-          >
-            Close
-          </Button>
-        </>
-      )}
-    </>
+        <Button className="signOut-btn btn-danger" onClick={handleSignout}>
+          Sign Out
+        </Button>
+      </Form>
+    </div>
   );
 };
 
