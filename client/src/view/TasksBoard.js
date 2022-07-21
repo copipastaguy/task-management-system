@@ -6,6 +6,7 @@ import Modal from "@mui/material/Modal";
 import axios from "axios";
 import CreateApp from "./CreateApp";
 import { toast, ToastContainer } from "react-toastify";
+import CreatableSelect from "react-select/creatable";
 
 const TasksBoard = () => {
   // LOCALSTORAGE USERNAME
@@ -73,6 +74,30 @@ const TasksBoard = () => {
               onChange={(e) => setAppDescription(e.target.value)}
             />
           </Form.Group>
+
+          <Form.Group style={{ width: "400px" }}>
+            <Form.Label>Permit Open</Form.Label>
+            <CreatableSelect />
+          </Form.Group>
+
+          <Form.Group style={{ width: "400px" }}>
+            <Form.Label>Permit ToDo</Form.Label>
+            <CreatableSelect />
+          </Form.Group>
+
+          <Form.Group style={{ width: "400px" }}>
+            <Form.Label>Permit Doing</Form.Label>
+            <CreatableSelect />
+          </Form.Group>
+
+          <Form.Group style={{ width: "400px" }}>
+            <Form.Label>Permit Done</Form.Label>
+            <CreatableSelect />
+          </Form.Group>
+
+          <Button className="btn-success" type="submit">
+            Create App
+          </Button>
         </Form>
       </Modal>
     );
@@ -84,7 +109,7 @@ const TasksBoard = () => {
 
   return (
     <div className="main-container tasks-board">
-      <h3>Application Board.</h3>
+      <h3>Application Board</h3>
       <ToastContainer />
       <Button onClick={handleOpenForm}>Create task</Button>
       {/* 
