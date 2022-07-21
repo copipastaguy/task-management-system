@@ -1,29 +1,19 @@
 const connection = require("../server/connection");
 const checkAdmin = function (app) {
-  app.post("/checkadmin", (req, res) => {
+  app.get("/checkadmin", (req, res) => {
     // checkGroup(userid, usergroup)
-    const { username } = req.body;
-    console.log(username);
+    const currentUser = req.query.username;
     const checkIsAdmin = `SELECT admin_privilege FROM accounts WHERE username = ? `;
-    connection.query(checkIsAdmin, [username], (error, result) => {
+    connection.query(checkIsAdmin, [currentUser], (error, result) => {
       if (error) throw error;
-      else if (result.length > 0) {
-        res.send(result);
+      // console.log(result[0].admin_privilege);
+      else if (result[0].admin_privilege == "1") {
+        res.send(true);
+      } else {
+        res.send(false);
       }
     });
   });
 };
 
-// const checkAdmin = (username, req, res) => {
-//   // console.log("hi");
-//   // checkGroup(userid, usergroup);
-//   const checkIsAdmin = `SELECT username, admin_privilege FROM accounts WHERE username = ? `;
-//   connection.query(checkIsAdmin, [username], (error, result) => {
-//     if (error) throw error;
-
-//     // RETURNS 1 IF ADMIN
-//     // RETURNS 0 IF NOT ADMIN
-//     res.send(result);
-//   });
-// };
 module.exports = checkAdmin;

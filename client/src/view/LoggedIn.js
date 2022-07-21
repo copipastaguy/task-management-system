@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 const LoggedIn = () => {
   const local_user = localStorage.getItem("username");
   const session_user = sessionStorage.getItem("username");
-
   const navigate = useNavigate();
 
   const handleSignout = (e) => {
@@ -19,6 +18,16 @@ const LoggedIn = () => {
     navigate("/");
   };
 
+  const goHome = (e) => {
+    e.preventDefault();
+    navigate("/management");
+  };
+
+  const groupManagemant = (e) => {
+    e.preventDefault();
+    navigate("/group-management");
+  };
+
   return (
     <div className="login-header nav-bar">
       <div className="nav-bar-welcome">
@@ -28,10 +37,8 @@ const LoggedIn = () => {
       </div>
 
       <Form>
-        <Button href="/management">Home</Button>
-
-        <Button href="/group-management">Group Management</Button>
-
+        <Button onClick={goHome}>Home</Button>
+        <Button onClick={groupManagemant}>Group Management</Button>
         <Button className="signOut-btn btn-danger" onClick={handleSignout}>
           Sign Out
         </Button>

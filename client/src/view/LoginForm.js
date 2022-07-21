@@ -10,9 +10,8 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [admin, setAdmin] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const login = async (e) => {
     e.preventDefault();
 
     // POST request for user database
@@ -21,55 +20,55 @@ const LoginForm = () => {
         username,
         password,
       });
-      // RESPONSE FROM CHECKGROUP
-      console.log(response);
+      // RESPONSE FROM POST
+      // console.log(response);
       if (!response.data.error) {
-        // try {
-        //   const admin = await axios.post("/checkadmin", {
-        //     username,
-        //   });
-        //   console.log(admin);
-        //   if (admin.data[0].admin_privilege === "1") {
-        //   }
-        // } catch (e) {
-        //   console.log(e);
-        // }
+        // check for admin status
+        try {
+          // CHECK ACTIVE STATUS
+          const active = response.data[0].status;
+          if (active === "Active") {
+            localStorage.setItem("username", response.data[0].username);
+            localStorage.setItem("email", response.data[0].email);
 
-        // GET USER ADMIN PRIVILEGES
-        const isAdmin = response.data[0].admin_privilege;
-        // CHECK IF USER IS DISABLED
-        const active = response.data[0].status;
-        if (active === "Active") {
-          localStorage.setItem("username", response.data[0].username);
-          localStorage.setItem("email", response.data[0].email);
-          localStorage.setItem("isAdmin", response.data[0].admin_privilege);
-          sessionStorage.setItem("username", response.data[0].username);
-          sessionStorage.setItem("email", response.data[0].email);
-          sessionStorage.setItem("isAdmin", response.data[0].admin_privilege);
-          // CONDITIONAL RENDERING BASED ON USER/ ADMIN
-          const isAdmin = response.data[0].admin_privilege;
-          if (isAdmin === 1) {
-            navigate("/management");
+            // CHECK ADMIN STATUS
+            const currentUser = localStorage.getItem("username");
+            const admin = await axios.get("/checkgroup", {
+              params: {
+                username: currentUser,
+                usergroup: "admin",
+              },
+            });
+
+            if (admin.data === true) {
+              localStorage.setItem("isAdmin", "admin");
+              navigate("/management");
+            } else {
+              localStorage.setItem("isAdmin", "non-admin");
+              navigate("/tasks");
+            }
           } else {
-            navigate("/tasks");
+            toast.error("Unable to login", {
+              position: "top-center",
+              autoClose: 700,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+            });
+            setUsername("");
+            setPassword("");
+            navigate("/");
           }
-        } else if (active === "Inactive") {
-          toast.error("Unable to login", {
-            position: "top-center",
-            autoClose: 700,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-          });
+        } catch (e) {
+          console.log(e);
         }
       } else {
         // RESET FIELDS
-        // setUsername("");
-        // setPassword("");
-        // navigate("/");
+        setUsername("");
+        setPassword("");
+        navigate("/");
       }
       if (response.data.error) {
-        // console.log(response.data.error);
         toast.error(response.data.error, {
           position: "top-center",
           autoClose: 700,
@@ -83,7 +82,7 @@ const LoginForm = () => {
         navigate("/");
       }
     } catch (error) {
-      throw error;
+      console.log(error);
     }
   };
 
@@ -91,7 +90,7 @@ const LoginForm = () => {
     <div className="main-container">
       <ToastContainer />
       <div className="login-header">
-        <Form onSubmit={handleSubmit} className="login-form form">
+        <Form onSubmit={login} className="login-form form">
           <h4>Enter your details to sign in</h4>
           <Form.Group>
             <Form.Control

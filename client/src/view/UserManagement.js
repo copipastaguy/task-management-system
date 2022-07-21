@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import CreatableSelect, { useCreatable } from "react-select/creatable";
 import Select from "react-select";
@@ -263,7 +263,6 @@ const UserManagement = () => {
         setUserGroup([...userGroup, value]);
       });
     };
-    console.log(userGroup);
 
     // map out reactselect options
     const groups = groupOptions.map((option) => {
@@ -388,11 +387,9 @@ const UserManagement = () => {
           <Button onClick={handleOpenAdd}>Add user</Button>
           <Button onClick={handleOpenUpdate}>Update user</Button>
         </div>
-
         {/* MODALS */}
         <AddUser open={openAdd} handleClose={handleCloseAdd} />
         <UpdateUser open={openUpdate} handleClose={handleCloseUpdate} />
-
         {/* MATERIAL TABLE */}
         <MaterialTable />
       </div>

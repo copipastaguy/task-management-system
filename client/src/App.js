@@ -5,11 +5,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // COMPONENTS
-// import Header from "./view/Header";
 import Homepage from "./view/Homepage";
 import UserManagement from "./view/UserManagement";
 import GroupManagement from "./view/GroupManagement";
-import Tasks from "./view/Tasks";
+import TasksHomepage from "./view/TasksHomepage";
+import AdminRoutes from "./utils/AdminRoutes";
+import UserRoutes from "./utils/UserRoutes";
 
 function App() {
   // PROTECTED ROUTE
@@ -20,12 +21,17 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Homepage />} />
+
           {/* admin page */}
-          <Route path="/management" element={<UserManagement />} />
-          <Route path="/group-management" element={<GroupManagement />} />
+          <Route element={<AdminRoutes />}>
+            <Route path="/management" element={<UserManagement />} exact />
+            <Route path="/group-management" element={<GroupManagement />} />
+          </Route>
 
           {/* user page */}
-          <Route path="/tasks" element={<Tasks />} />
+          <Route element={<UserRoutes />}>
+            <Route path="/tasks" element={<TasksHomepage />} />
+          </Route>
         </Routes>
       </div>
     </BrowserRouter>

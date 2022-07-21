@@ -23,8 +23,6 @@ const Header = () => {
 
   const UserUpdate = ({ open, handleClose }) => {
     const username = localStorage.getItem("username");
-    console.log(username);
-
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const [enable, setEnable] = useState("");

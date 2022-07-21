@@ -8,6 +8,7 @@ const add = require("../controller/add");
 const update = require("../controller/update");
 const accounts = require("../controller/accounts");
 const checkAdmin = require("../controller/checkAdmin");
+const checkGroup = require("../controller/checkGroup");
 const userGroup = require("../controller/userGroup");
 const addGroup = require("../controller/addGroup");
 const addUserToGroup = require("../controller/addUserToGroup");
@@ -32,6 +33,15 @@ app.use(express.urlencoded({ extended: true }));
 // - - - ALL ACCOUNTS - - -
 accounts(app);
 
+//////////////////////////// PHASE 1 IDENTITY ACCESS MANAGEMENT /////////////////////////////////
+// 1. login
+// 2. add user
+// 3. update user (admin/ user)
+// 4. add user group
+// 5. add user to group
+// 6. remove user from group
+// 7. check group function
+
 // - - - LOGIN AND AUTH - - -
 login(app);
 
@@ -50,13 +60,15 @@ userGroup(app);
 // - - - ADD USER GROUP - - -
 addGroup(app);
 
+// - - - ADD USER TO GROUP
 addUserToGroup(app);
 
 removeUserFromGroup(app);
 
 userUpdate(app);
 
-// app.use(errorHandler);
+//////////////////////////// PHASE 2 TASK FLOW MANAGEMENT /////////////////////////////////
+checkGroup(app);
 
 app.get("/", (req, res) => {
   // redirect users to login page

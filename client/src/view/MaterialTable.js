@@ -39,7 +39,7 @@ const DisplayUsers = () => {
   const columns = [
     {
       field: "timestamp",
-      title: "Created/ Updated",
+      title: "Last Updated",
       type: "datetime",
       editable: "never",
       width: "200",
@@ -53,6 +53,7 @@ const DisplayUsers = () => {
     {
       field: "password",
       title: "password",
+      hidden: true,
       // render a custom react element
       render: (rowData) => <p>********</p>,
     },

@@ -6,7 +6,7 @@ const addGroup = function (app) {
   // GET ALL ACCOUNTS
   app.post("/add-group", (req, res, next) => {
     const { groupname } = req.body;
-    console.log(groupname);
+
     const checkGroup = `SELECT groupname FROM groupnames WHERE groupname = ?`;
     connection.query(checkGroup, [groupname], (error, result) => {
       if (error) throw error;
