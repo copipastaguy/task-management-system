@@ -14,6 +14,9 @@ const addGroup = require("../controller/addGroup");
 const addUserToGroup = require("../controller/addUserToGroup");
 const removeUserFromGroup = require("../controller/removeUserFromGroup");
 const userUpdate = require("../controller/userUpdate");
+const addApp = require("../controller/addApp");
+const getApplications = require("../controller/getApplications");
+const addTask = require("../controller/addTask");
 
 // server port
 const port = 3002;
@@ -69,6 +72,12 @@ userUpdate(app);
 
 //////////////////////////// PHASE 2 TASK FLOW MANAGEMENT /////////////////////////////////
 checkGroup(app);
+
+addApp(app);
+
+getApplications(app);
+
+addTask(app);
 
 app.get("/", (req, res) => {
   // redirect users to login page

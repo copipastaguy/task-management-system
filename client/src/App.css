@@ -295,3 +295,18 @@ a {
   width: 100%;
   border: 1px solid red;
 }
+
+.application-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.application {
+  border: 1px solid;
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
