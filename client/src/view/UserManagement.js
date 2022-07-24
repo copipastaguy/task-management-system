@@ -14,7 +14,6 @@ import Button from "react-bootstrap/Button";
 import Modal from "@mui/material/Modal";
 
 const UserManagement = () => {
-  const [userGroup, setUserGroup] = useState([]);
   const getGroups = async () => axios.get("/user-groups");
   const getGroupsApi = useApi(getGroups);
 
@@ -29,6 +28,11 @@ const UserManagement = () => {
     };
   });
 
+  const activeOptions = [
+    { value: "Active", label: "Active" },
+    { value: "Inactive", label: "Inactive" },
+  ];
+
   const AddUser = ({ open, handleClose }) => {
     const navigate = useNavigate();
 
@@ -36,14 +40,10 @@ const UserManagement = () => {
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const [active, setActive] = useState("");
+    const [userGroup, setUserGroup] = useState([]);
 
     const [selectedOption, setSelectedOption] = useState();
     const [selectedActive, setSelectedActive] = useState();
-
-    const activeOptions = [
-      { value: "Active", label: "Active" },
-      { value: "Inactive", label: "Inactive" },
-    ];
 
     const handleUserGroup = (selectedOption) => {
       setSelectedOption(selectedOption);
@@ -53,6 +53,7 @@ const UserManagement = () => {
         const value = option.value;
         setUserGroup([...userGroup, value]);
       });
+      console.log(userGroup);
     };
 
     const handleActive = (selectedActive) => {
@@ -92,7 +93,7 @@ const UserManagement = () => {
           setUsername("");
           setPassword("");
           setEmail("");
-          setSelectedOption(null);
+          // setSelectedOption();
 
           toast.success("New user successfully added", {
             position: "top-center",
@@ -147,12 +148,11 @@ const UserManagement = () => {
 
           <Form.Group style={{ width: "400px" }}>
             <Form.Label>Status</Form.Label>
-            <CreatableSelect
+            <Select
               defaultValue={activeOptions[0]}
               value={selectedActive}
               onChange={handleActive}
               options={activeOptions}
-              createOptionPosition="first"
             />
           </Form.Group>
 
@@ -163,7 +163,6 @@ const UserManagement = () => {
               value={selectedOption}
               onChange={handleUserGroup}
               options={options}
-              createOptionPosition="first"
             />
           </Form.Group>
 

@@ -77,14 +77,17 @@ const TasksBoard = () => {
 
     const handleSubmit = async (e) => {
       e.preventDefault();
+      setPermitOpen(selectedOpen);
+      console.log(permitOpen);
 
       try {
-        setPermitOpen(selectedOpen);
+        // setPermitOpen(value);
+
         ///////////////////// ADD APPLICATION /////////////////////////////
         const response = await axios.post("/add-application", {
           appAcronym,
           appDescription,
-          permitOpen: permitOpen.value,
+          permitOpen: permitOpen,
         });
 
         if (response.data.error) {
@@ -108,7 +111,7 @@ const TasksBoard = () => {
           // RESET FIELDS
           setAppAcronym("");
           setAppDescription("");
-          setPermitOpen(null);
+          // setPermitOpen(null);
         }
       } catch (e) {
         console.error(e);
