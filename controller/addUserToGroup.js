@@ -80,9 +80,10 @@ const addUserToGroup = function (app) {
                     );
                   }
                 });
+                console.log("sending add");
                 res.send();
               } else {
-                return next(errorHandler("No user group selected"));
+                return next(errorHandler("No user group selected", req, res));
               }
             }
           });

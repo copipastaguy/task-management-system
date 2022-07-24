@@ -1,82 +1,87 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import CreatableSelect from "react-select/creatable";
-import Select from "react-select";
-import { ToastContainer, toast } from "react-toastify";
+import Modal from "@mui/material/Modal";
 
-import useApi from "../utils/useApi";
-
-const AdminUpdateUser = () => {
+// UPDATE USER
+// HOC WITH HOOKS
+const AddUserModal = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
-  const getGroups = async () => axios.get("/user-groups");
-  const getGroupsApi = useApi(getGroups);
+  const [username, setUsername] = useState();
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState();
 
-  const getUsers = async () => axios.get("/accounts");
-  const getUsersApi = useApi(getUsers);
+  const [userGroup, setUserGroup] = useState([]);
+  const [selectedOption, setSelectedOption] = useState();
+  const [groupOptions, setGroupOptions] = useState([]);
 
-  // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
   useEffect(() => {
-    getGroupsApi.request();
-    getUsersApi.request();
+    const getGroups = async () => {
+      const response = await axios.get("/user-groups");
+      const data = response.data;
+      setGroupOptions(data);
+    };
+    getGroups();
+
+    const getUsers = async () => {
+      const response = await axios.get("/accounts");
+      const data = response.data;
+      setUsers(data);
+    };
+    getUsers();
   }, []);
 
   /////////////////////  USERS /////////////////////////////
-  const [username, setUsername] = useState();
-  const [selectedUser, setSelectedUser] = useState();
   const handleUsername = (selectedUser) => {
     const value = selectedUser.value;
     setUsername(value);
     console.log(username);
   };
-  const userOptions = getUsersApi.data?.map((user) => {
+  const userOptions = users.map((user) => {
     const value = user.username;
     return {
       label: value,
       value: value,
     };
   });
+
   /////////////////////  ACTIVE STATUS  /////////////////////////////
-  // REACT SELECT ACTIVE
   const [active, setActive] = useState("");
   const [selectedActive, setSelectedActive] = useState();
-
+  const handleActive = (selectedActive) => {
+    const value = selectedActive.value;
+    setActive(value);
+  };
   const activeOptions = [
     { value: "Active", label: "Active" },
     { value: "Inactive", label: "Inactive" },
   ];
 
   /////////////////////  USER GROUP /////////////////////////////
-  const [userGroup, setUserGroup] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState();
-  const groups = getGroupsApi.data?.map((option) => {
+  const handleUserGroup = (selectedOption) => {
+    setSelectedOption(selectedOption);
+    selectedOption.forEach((option) => {
+      const value = option.value;
+      setUserGroup([...userGroup, value]);
+    });
+  };
+  const groups = groupOptions.map((option) => {
     return { value: option.groupname, label: option.groupname };
   });
-
-  const updateUser = () =>
-    axios.put("/admin-update-user", {
-      username,
-      password,
-      email,
-      userGroup,
-      active,
-    });
-  const updateUserApi = useApi(updateUser);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setActive(selectedActive);
-      setSelectedOption(selectedOption);
-      selectedGroup.forEach((option) => {
-        const value = option.value;
-        setUserGroup([...userGroup, value]);
+      //  POST request to update user detail
+      const response = await axios.put("/admin-update-user", {
+        username,
+        password,
+        email,
+        userGroup,
+        active,
       });
-
-      const response = updateUserApi.request();
       console.log(response.data);
       if (response.data.error) {
         toast.error(response.data.error, {
@@ -88,6 +93,13 @@ const AdminUpdateUser = () => {
         });
       }
       if (!response.data.error) {
+        toast.success("User updated", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
         setSelectedUser(null);
         setPassword("");
         setEmail("");
@@ -97,11 +109,17 @@ const AdminUpdateUser = () => {
       console.log(e);
     }
   };
-  return (
-    <div className="main-container">
-      <ToastContainer />
 
-      <Form className="form" onSubmit={handleSubmit}>
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const handleOpenUpdate = () => {
+    setOpenUpdate(true);
+  };
+  const handleCloseUpdate = () => {
+    setOpenUpdate(false);
+  };
+  return (
+    <Modal open={openUpdate} onClose={handleCloseUpdate}>
+      <Form className="add-form form" onSubmit={handleSubmit}>
         <h3>UPDATE USER</h3>
         <Form.Group style={{ width: "400px" }}>
           <Form.Label>Username</Form.Label>
@@ -138,7 +156,7 @@ const AdminUpdateUser = () => {
           <Form.Label>Status</Form.Label>
           <Select
             value={selectedActive}
-            onChange={setActive}
+            onChange={handleActive}
             options={activeOptions}
           />
         </Form.Group>
@@ -147,8 +165,8 @@ const AdminUpdateUser = () => {
           <Form.Label>User Group</Form.Label>
           <CreatableSelect
             isMulti={true}
-            value={selectedGroup}
-            onChange={setUserGroup}
+            value={selectedOption}
+            onChange={handleUserGroup}
             options={groups}
           />
         </Form.Group>
@@ -157,8 +175,8 @@ const AdminUpdateUser = () => {
           Save user
         </Button>
       </Form>
-    </div>
+    </Modal>
   );
 };
 
-export default AdminUpdateUser;
+export default AddUserModal;

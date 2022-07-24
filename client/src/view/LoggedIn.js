@@ -5,9 +5,8 @@ import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router-dom";
 
 const LoggedIn = () => {
-  const local_user = localStorage.getItem("username");
-  const session_user = sessionStorage.getItem("username");
   const navigate = useNavigate();
+  const local_user = localStorage.getItem("username");
 
   const handleSignout = (e) => {
     e.preventDefault();

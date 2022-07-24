@@ -1,40 +1,20 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import useApi from "../utils/useApi";
 
 import MaterialTable from "material-table";
 import TableIcons from "./TableIcons";
 
 // MATERIAL UI
 const DisplayUsers = () => {
-  // state to store database after FETCHs
-  const [users, setUsers] = useState([]);
+  const getUsers = () => axios.get("/accounts");
+  const getUsersApi = useApi(getUsers);
 
-  // fetch existing user groups from table
-  // const [userOptions, setUserOptions] = useState([]);
-
-  // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
-  const getUsers = async () => {
-    try {
-      const response = await axios.get("/accounts");
-      setUsers(response.data);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  // const getGroups = async () => {
-  //   try {
-  //     const response = await axios.get("/user-groups");
-  //     setUserOptions(response.data);
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // };
   useEffect(() => {
-    // load on render
-    getUsers();
-    // getGroups();
+    getUsersApi.request();
   }, []);
+
+  const users = getUsersApi.data;
 
   const columns = [
     {

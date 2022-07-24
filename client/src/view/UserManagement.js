@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import CreatableSelect, { useCreatable } from "react-select/creatable";
 import Select from "react-select";
 import axios from "axios";
+import useApi from "../utils/useApi";
 
 import LoggedIn from "./LoggedIn";
 import MaterialTable from "./MaterialTable";
@@ -13,34 +14,31 @@ import Button from "react-bootstrap/Button";
 import Modal from "@mui/material/Modal";
 
 const UserManagement = () => {
+  const [userGroup, setUserGroup] = useState([]);
+  const getGroups = async () => axios.get("/user-groups");
+  const getGroupsApi = useApi(getGroups);
+
+  useEffect(() => {
+    getGroupsApi.request();
+  }, []);
+
+  const options = getGroupsApi.data?.map((option) => {
+    return {
+      label: option.groupname,
+      value: option.groupname,
+    };
+  });
+
   const AddUser = ({ open, handleClose }) => {
     const navigate = useNavigate();
 
-    // handle change in form fields
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const [active, setActive] = useState("");
-    const [userGroup, setUserGroup] = useState([]);
+
     const [selectedOption, setSelectedOption] = useState();
     const [selectedActive, setSelectedActive] = useState();
-
-    // fetch existing user groups from table
-    const [userOptions, setUserOptions] = useState([]);
-
-    useEffect(() => {
-      const getGroups = async () => {
-        const response = await axios.get("/user-groups");
-        const data = response.data;
-        setUserOptions(data);
-      };
-      getGroups();
-    }, []);
-
-    const groupOptions = userOptions.map((group) => {
-      // object for react-select options
-      return { value: group.groupname, label: group.groupname };
-    });
 
     const activeOptions = [
       { value: "Active", label: "Active" },
@@ -48,8 +46,7 @@ const UserManagement = () => {
     ];
 
     const handleUserGroup = (selectedOption) => {
-      console.log(selectedOption);
-      setUserGroup(selectedOption);
+      setSelectedOption(selectedOption);
 
       // access value from option and push to array
       selectedOption.forEach((option) => {
@@ -63,11 +60,14 @@ const UserManagement = () => {
       setActive(value);
     };
 
+    // const addUser = () =>
+    //   axios.post("/add", { username, password, email, active, userGroup });
+    // const addUserApi = useApi(addUser);
+
     const handleSubmit = async (e) => {
       e.preventDefault();
-
-      // POST request for user database
       try {
+        // addUserApi.request();
         const response = await axios.post("/add", {
           username,
           password,
@@ -75,8 +75,6 @@ const UserManagement = () => {
           active,
           userGroup,
         });
-        console.log(response);
-
         // FRONTEND ERROR HANDLING
         if (response.data.error) {
           // invalid field
@@ -85,7 +83,7 @@ const UserManagement = () => {
             autoClose: 1000,
             hideProgressBar: false,
             closeOnClick: true,
-            pauseOnHover: true,
+            pauseOnHover: false,
           });
         }
         if (!response.data.error) {
@@ -94,8 +92,6 @@ const UserManagement = () => {
           setUsername("");
           setPassword("");
           setEmail("");
-
-          // CLEAR REACT-SELECT
           setSelectedOption(null);
 
           toast.success("New user successfully added", {
@@ -103,7 +99,7 @@ const UserManagement = () => {
             autoClose: 700,
             hideProgressBar: false,
             closeOnClick: true,
-            pauseOnHover: true,
+            pauseOnHover: false,
           });
         }
       } catch (error) {
@@ -166,7 +162,8 @@ const UserManagement = () => {
               isMulti={true}
               value={selectedOption}
               onChange={handleUserGroup}
-              options={groupOptions}
+              options={options}
+              createOptionPosition="first"
             />
           </Form.Group>
 
@@ -359,7 +356,7 @@ const UserManagement = () => {
               isMulti={true}
               value={selectedOption}
               onChange={handleUserGroup}
-              options={groups}
+              options={options}
             />
           </Form.Group>
 
@@ -387,10 +384,8 @@ const UserManagement = () => {
           <Button onClick={handleOpenAdd}>Add user</Button>
           <Button onClick={handleOpenUpdate}>Update user</Button>
         </div>
-        {/* MODALS */}
         <AddUser open={openAdd} handleClose={handleCloseAdd} />
         <UpdateUser open={openUpdate} handleClose={handleCloseUpdate} />
-        {/* MATERIAL TABLE */}
         <MaterialTable />
       </div>
     </div>

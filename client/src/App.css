@@ -251,7 +251,7 @@ a {
 }
 
 .menu {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   position: fixed;
   top: 0;
   left: 0;
@@ -273,7 +273,7 @@ a {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 2px solid #000;
+  /* border: 2px solid #000; */
   color: red;
   background-color: aliceblue;
 }
@@ -305,8 +305,10 @@ a {
 
 .application {
   border: 1px solid;
-  width: 200px;
+  width: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  cursor: pointer;
 }

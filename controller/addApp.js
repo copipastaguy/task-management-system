@@ -4,8 +4,8 @@ const addApp = function (app) {
   app.post("/add-application", (req, res, next) => {
     // checkGroup(userid, usergroup)
     const { appAcronym, appDescription, permitOpen } = req.body;
-    // console.log(req.body);
-    // const addApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate) VALUES (?, ?, ?, ?, ?)`;
+    console.log(req.body);
+    const addApp = `INSERT INTO application (app_acronym, app_permitOpen) VALUES (?, ?)`;
 
     if (appAcronym) {
       const checkApp = `SELECT app_acronym FROM application WHERE app_acronym = ?`;
@@ -16,10 +16,10 @@ const addApp = function (app) {
         } else {
           // CHECK FOR OTHER CONDITIONS
 
-          const addApp = `INSERT INTO application (app_acronym, app_description) VALUES (?, ?)`;
+          // const addApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?)`;
           connection.query(
             addApp,
-            [appAcronym, appDescription],
+            [appAcronym, permitOpen],
             (error, result) => {
               if (error) throw error;
               else {

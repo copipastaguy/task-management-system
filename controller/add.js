@@ -117,7 +117,7 @@ const add = function (app) {
                 });
 
                 ///////////////////////////// SUCCESSFULLY ADDED INTO DB WITH ALL CONDITIONS FILLED  ////////////////////////////
-                res.send();
+                res.send("User successfully added into database");
               });
             }
           }

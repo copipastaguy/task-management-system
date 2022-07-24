@@ -7,6 +7,7 @@ import Applications from "./Applications";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Select from "react-select";
+import useApi from "../utils/useApi";
 
 const TasksBoard = () => {
   // LOCALSTORAGE USERNAME
@@ -30,9 +31,7 @@ const TasksBoard = () => {
     setOpenTaskForm(false);
   };
 
-  const [applications, setApplications] = useState([]);
-
-  // FETCH project lead user group
+  // CHECK GROUP FUNCTION
   const checkGroup = async () => {
     const response = await axios.get("/checkgroup", {
       params: {
@@ -46,14 +45,12 @@ const TasksBoard = () => {
     }
   };
 
-  const fetchApplication = async () => {
-    const response = await axios.get("/applications");
-    setApplications(response.data);
-  };
+  const getApplications = () => axios.get("/applications");
+  const getApplicationsApi = useApi(getApplications);
 
   useEffect(() => {
     checkGroup();
-    fetchApplication();
+    getApplicationsApi.request();
   }, []);
 
   const CreateApp = ({ open, handleClose }) => {
@@ -61,7 +58,7 @@ const TasksBoard = () => {
     const [appRnum, setAppRnum] = useState("");
     const [appDescription, setAppDescription] = useState("");
     const [permitOpen, setPermitOpen] = useState();
-    const [selectedOpen, setSelectedOpen] = useState(null);
+    const [selectedOpen, setSelectedOpen] = useState();
 
     const options = [
       {
@@ -82,13 +79,13 @@ const TasksBoard = () => {
       e.preventDefault();
 
       try {
+        setPermitOpen(selectedOpen);
         ///////////////////// ADD APPLICATION /////////////////////////////
         const response = await axios.post("/add-application", {
           appAcronym,
           appDescription,
-          permitOpen: setSelectedOpen.value,
+          permitOpen: permitOpen.value,
         });
-        setPermitOpen(setSelectedOpen);
 
         if (response.data.error) {
           toast.error(response.data.error, {
@@ -98,7 +95,6 @@ const TasksBoard = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
-          setPermitOpen(null);
         } else if (!response.data.error) {
           toast.success(`Added ${appAcronym}!`, {
             position: "top-center",
@@ -107,7 +103,7 @@ const TasksBoard = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
-          fetchApplication();
+          getApplicationsApi.request();
 
           // RESET FIELDS
           setAppAcronym("");
@@ -136,6 +132,7 @@ const TasksBoard = () => {
 
           <Form.Group>
             <Form.Label>Running Number</Form.Label>
+            <Select options={[]} name="running_number" />
           </Form.Group>
 
           <Form.Group>
@@ -155,24 +152,24 @@ const TasksBoard = () => {
             <Select
               options={options}
               name="permit_open"
-              value={permitOpen}
+              value={selectedOpen}
               onChange={setPermitOpen}
             />
           </Form.Group>
 
           {/* <Form.Group style={{ width: "400px" }}>
             <Form.Label>Permit ToDo</Form.Label>
-            <CreatableSelect />
+            <Select options={options} name="permit_open" />
           </Form.Group>
 
           <Form.Group style={{ width: "400px" }}>
             <Form.Label>Permit Doing</Form.Label>
-            <CreatableSelect />
+            <Select options={options} name="permit_open" />
           </Form.Group>
 
           <Form.Group style={{ width: "400px" }}>
             <Form.Label>Permit Done</Form.Label>
-            <CreatableSelect />
+            <Select options={options} name="permit_open" />
           </Form.Group> */}
 
           <Button className="btn-success" type="submit">
@@ -267,18 +264,23 @@ const TasksBoard = () => {
     );
   };
 
+  const editApp = () => {};
+
   return (
     <div className="main-container tasks-board">
       <ToastContainer />
       <h3>Kanban Board</h3>
 
       <div className="application-container">
-        {applications.map((application) => {
+        {getApplicationsApi.data.map((application) => {
           return (
             <div className="application">
               <Applications
                 acronym={application.app_acronym}
                 description={application.app_description}
+                open={application.app_permitOpen}
+                key={application.acronym}
+                editApp={editApp}
               />
             </div>
           );

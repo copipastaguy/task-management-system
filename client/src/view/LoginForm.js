@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useApi from "../utils/useApi";
 
 import { ToastContainer, toast } from "react-toastify";
 import Form from "react-bootstrap/Form";
@@ -11,25 +12,26 @@ const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const getLogin = () =>
+    axios.post("/auth", {
+      username,
+      password,
+    });
+  const getLoginApi = useApi(getLogin);
+
   const login = async (e) => {
     e.preventDefault();
 
     // POST request for user database
     try {
-      const response = await axios.post("/auth", {
-        username,
-        password,
-      });
-      // RESPONSE FROM POST
-      // console.log(response);
-      if (!response.data.error) {
-        // check for admin status
+      getLoginApi.request();
+      if (!getLoginApi.data.error) {
         try {
           // CHECK ACTIVE STATUS
-          const active = response.data[0].status;
+          const active = getLoginApi.data[0].status;
           if (active === "Active") {
-            localStorage.setItem("username", response.data[0].username);
-            localStorage.setItem("email", response.data[0].email);
+            localStorage.setItem("username", getLoginApi.data[0].username);
+            localStorage.setItem("email", getLoginApi.data[0].email);
 
             // CHECK ADMIN STATUS
             const currentUser = localStorage.getItem("username");
@@ -47,7 +49,7 @@ const LoginForm = () => {
               localStorage.setItem("isAdmin", "non-admin");
               navigate("/tasks");
             }
-          } else {
+          } else if (active === "Inactive") {
             toast.error("Unable to login", {
               position: "top-center",
               autoClose: 700,
@@ -68,8 +70,8 @@ const LoginForm = () => {
         setPassword("");
         navigate("/");
       }
-      if (response.data.error) {
-        toast.error(response.data.error, {
+      if (getLoginApi.data.error) {
+        toast.error(getLoginApi.data.error, {
           position: "top-center",
           autoClose: 700,
           hideProgressBar: false,

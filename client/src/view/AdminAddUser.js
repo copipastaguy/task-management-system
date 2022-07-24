@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import useApi from "../utils/useApi";
 
 import { ToastContainer, toast } from "react-toastify";
 import CreatableSelect, { useCreatable } from "react-select/creatable";
+import Select from "react-select";
 
-const AddUser = () => {
+const AdminAddUser = () => {
   const navigate = useNavigate();
 
   // handle change in form fields
@@ -16,23 +18,30 @@ const AddUser = () => {
   const [email, setEmail] = useState("");
   const [active, setActive] = useState("");
   const [userGroup, setUserGroup] = useState([]);
-  const [selectedOption, setSelectedOption] = useState();
+  const [selectedGroup, setSelectedGroup] = useState();
   const [selectedActive, setSelectedActive] = useState();
 
   // fetch existing user groups from table
-  const [userOptions, setUserOptions] = useState([]);
+  // const [userOptions, setUserOptions] = useState([]);
+
+  const getGroups = () => axios.get("/user-groups");
+  const getGroupsApi = useApi(getGroups);
+
+  const addUser = () =>
+    axios.post("/add", {
+      username,
+      password,
+      email,
+      active,
+      userGroup,
+    });
+  const addUserApi = useApi(addUser);
 
   useEffect(() => {
-    const getGroups = async () => {
-      const response = await axios.get("/user-groups");
-      const data = response.data;
-      setUserOptions(data);
-    };
-    getGroups();
+    getGroupsApi.request();
   }, []);
 
-  const groupOptions = userOptions.map((group) => {
-    // object for react-select options
+  const groupOptions = getGroupsApi.data.map((group) => {
     return { value: group.groupname, label: group.groupname };
   });
 
@@ -41,56 +50,30 @@ const AddUser = () => {
     { value: "Inactive", label: "Inactive" },
   ];
 
-  const selectRef = useRef();
-  const handleUserGroup = (selectedOption) => {
-    console.log(selectedOption);
-    setUserGroup(selectedOption);
-
-    // access value from option and push to array
-    selectedOption.forEach((option) => {
-      const value = option.value;
-      setUserGroup([...userGroup, value]);
-    });
-  };
-
-  const handleActive = (selectedActive) => {
-    const value = selectedActive.value;
-    setActive(value);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // POST request for user database
     try {
-      const response = await axios.post("/add", {
-        username,
-        password,
-        email,
-        active,
-        userGroup,
+      setActive(selectedActive);
+      selectedGroup.forEach((option) => {
+        const value = option.value;
+        setUserGroup([...userGroup, value]);
       });
-      console.log(response);
 
-      // FRONTEND ERROR HANDLING
+      const response = addUserApi.request();
       if (response.data.error) {
-        // invalid field
         toast.error(response.data.error, {
           position: "top-center",
           autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
         });
       }
       if (!response.data.error) {
-        // no errors
-        // reset form field
         setUsername("");
         setPassword("");
         setEmail("");
-
-        // CLEAR REACT-SELECT
         setSelectedOption(null);
 
         toast.success("New user successfully added", {
@@ -98,7 +81,7 @@ const AddUser = () => {
           autoClose: 700,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
         });
       }
     } catch (error) {
@@ -110,10 +93,8 @@ const AddUser = () => {
   return (
     <div className="main-container">
       <ToastContainer />
-
       <Form onSubmit={handleSubmit} className="form">
         <h3>Create a new user</h3>
-
         <Form.Group>
           <Form.Label>Username</Form.Label>
           <Form.Control
@@ -127,7 +108,6 @@ const AddUser = () => {
         <Form.Group>
           <Form.Label>Password</Form.Label>
           <Form.Control
-            // required
             type="password"
             placeholder="password"
             value={password}
@@ -149,12 +129,11 @@ const AddUser = () => {
 
         <Form.Group style={{ width: "400px" }}>
           <Form.Label>Status</Form.Label>
-          <CreatableSelect
+          <Select
             defaultValue={activeOptions[0]}
             value={selectedActive}
-            onChange={handleActive}
+            onChange={setActive}
             options={activeOptions}
-            createOptionPosition="first"
           />
         </Form.Group>
 
@@ -162,8 +141,8 @@ const AddUser = () => {
           <Form.Label>User Group</Form.Label>
           <CreatableSelect
             isMulti={true}
-            value={selectedOption}
-            onChange={handleUserGroup}
+            value={selectedGroup}
+            onChange={setUserGroup}
             options={groupOptions}
           />
         </Form.Group>
@@ -184,4 +163,4 @@ const AddUser = () => {
   );
 };
 
-export default AddUser;
+export default AdminAddUser;

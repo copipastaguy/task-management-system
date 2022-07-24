@@ -3,21 +3,18 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import useApi from "../utils/useApi";
 import CreatableSelect, { useCreatable } from "react-select/creatable";
 
 const AddUserToGroup = () => {
   const [username, setUsername] = useState("");
   const [userGroup, setUserGroup] = useState([]);
-  const [userOptions, setUserOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState();
 
+  const getGroups = async () => axios.get("/user-groups");
+  const getGroupsApi = useApi(getGroups);
   useEffect(() => {
-    const getGroups = async () => {
-      const response = await axios.get("/user-groups");
-      const data = response.data;
-      setUserOptions(data);
-    };
-    getGroups();
+    getGroupsApi.request();
   }, []);
 
   const handleUserGroup = (selectedOption) => {
@@ -31,8 +28,7 @@ const AddUserToGroup = () => {
     });
   };
 
-  const groupOptions = userOptions.map((group) => {
-    // object for react-select options
+  const groupOptions = getGroupsApi.data.map((group) => {
     return { value: group.groupname, label: group.groupname };
   });
 
