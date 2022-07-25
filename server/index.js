@@ -17,6 +17,7 @@ const userUpdate = require("../controller/userUpdate");
 const addApp = require("../controller/addApp");
 const getApplications = require("../controller/getApplications");
 const addTask = require("../controller/addTask");
+const getTasks = require("../controller/getTasks");
 
 // server port
 const port = 3002;
@@ -78,6 +79,8 @@ addApp(app);
 getApplications(app);
 
 addTask(app);
+
+getTasks(app);
 
 app.get("/", (req, res) => {
   // redirect users to login page

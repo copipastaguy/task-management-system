@@ -1,21 +1,20 @@
 import { useState } from "react";
 
-export default (apiFunc) => {
+export const useApi = (apiFunc) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState("");
   //   const [loading, setLoading] = useState(false);
 
   //   similar to request api
-  const request = async (...args) => {
+  const request = async (params) => {
     // setLoading(true);
     try {
       // takes async function
-      const result = await apiFunc(...args);
+      const result = await apiFunc(...params);
       setData(result.data);
     } catch (err) {
-      setError(err.message || "Unexpected Error!");
+      setError(data.error || "Unexpected Error!");
     } finally {
-      //   setLoading(false);
     }
   };
 

@@ -2,7 +2,7 @@
 
 - Server running on port 3002
 - View running on port 3000
-- include res.send() to get a response on react
+- include res.send() to get a response on front end side
 
 - `npm start` in root folder to run concurrently scripts
 
@@ -14,6 +14,8 @@
 - [x] Nodejs SERVER
 
 - import connection module into every CONTROLLER file
+
+PHASE 1 IDENTITY ACCESS MANAGEMENT
 
 <h2>Login</h2> 
 POST request to send input to database and check
@@ -56,31 +58,65 @@ route: /update
 
 <h2>Privilege User Management & Security</h2>
 
-- [] admin account
+- [x] admin account
 
-  - [] create user
-  - [] map out user groups and insert into db
+  - [x] create user
+  - [x] map out user groups and insert into db
 
-  - [] disable user == no login
-  - [] update account password, email, group details
+  - [x] disable user == no login
+  - [x] update account password, email, group details
   - [x] display users
 
-- [] enable/disable users (POST request to update)
-- [] password validation
+- [x] enable/disable users (POST request to update)
+- [x] password validation
 - [x] bcrypt password encryption
 - [x] decrypt password for compare
-- [] 8-10 characters (numbers, alphabets, special characters)
+- [x] 8-10 characters (numbers, alphabets, special characters)
 
 <h2>Conditional Rendering based on user group</h2>
 
 admin:
 
-- [] management page
+- [x] management page
 - change password
 - change email
 - disable account
 
-user:
+PHASE 2 TASK MANAGEMENT FLOW
+TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 
+- [] MYSQL MODEL
+- PRIMARY KEY: app_acronym, plan_app_acronym, task_app_acronym
+
+- Create App
+  Optional fields
+  - description
+  - permit permissions
+
+- Create Task
+  Optional fields
+  - description
+  - notes
+
+
+- EVERYONE
+- view applications
+- not able to edit/ view tasks linked to applications not assigned to them
+
+- [] Project Lead
+- [] create new apps
+- [] create new open tasks
+- [] assign permit
+- [] close tasks, demote tasks to doing
+
+- [] Project Manager
 - [] view tasks
-- [] manage tasks
+- [] approve tasks
+
+- [] Team Member
+- [] complete tasks
+
+- Validation of which user-group can perform state actions
+- Email notification when team member complete tasks
+- SYSTEM GENERATED: task_id = app_acronym + app_runningNumber
+- audit trail of read-only notes

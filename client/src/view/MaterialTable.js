@@ -1,20 +1,26 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import useApi from "../utils/useApi";
+import { useApi } from "../utils/useApi";
 
 import MaterialTable from "material-table";
 import TableIcons from "./TableIcons";
 
 // MATERIAL UI
 const DisplayUsers = () => {
-  const getUsers = () => axios.get("/accounts");
-  const getUsersApi = useApi(getUsers);
+  // const getUsers = () => axios.get("/accounts");
+  // const getUsersApi = useApi(getUsers);
+
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    getUsersApi.request();
+    // getUsersApi.request();
+    const getUsers = async () => {
+      const response = await axios.get("/accounts");
+      setData(response.data);
+    };
+    getUsers();
   }, []);
-
-  const users = getUsersApi.data;
+  // const users = getUsersApi.data;
 
   const columns = [
     {
@@ -59,7 +65,7 @@ const DisplayUsers = () => {
           style={{ width: "100%" }}
           title="User Management"
           columns={columns}
-          data={users}
+          data={data}
           icons={TableIcons}
           options={{
             pageSize: 10,

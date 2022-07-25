@@ -7,14 +7,11 @@ const checkAdmin = require("../controller/checkAdmin");
 const login = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
   //    - - - ROUTING FOR LOGIN AND AUTH - - -
-  // app.get("/login", (req, res) => {
-  //   res.redirect("/auth");
-  // });
 
   app.post("/auth", (req, res, next) => {
     const { username, password } = req.body;
 
-    // console.log(req.body);
+    console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password) {

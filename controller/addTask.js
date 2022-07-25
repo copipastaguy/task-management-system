@@ -4,6 +4,7 @@ const addTask = function (app) {
   app.post("/add-task", (req, res, next) => {
     // checkGroup(userid, usergroup)
     const {
+      taskAcronym,
       taskName,
       taskDescription,
       taskNotes,
@@ -24,13 +25,12 @@ const addTask = function (app) {
           return next(errorHandler("Task name exist!", req, res));
         } else {
           //////////////////////////// GET APP ACRONYM, RUNNING NUMBER FOR TASK_ID /////////////////////////////////
-        const createTaskID = `SELECT app_acronym, app_Rnum FROM application WHERE app_acronym = ?`
-
+          // const createTaskID = `SELECT app_acronym, app_Rnum FROM application WHERE app_acronym = ?`;
           //////////////////////////// ADD TASK /////////////////////////////////
-          const addTask = `INSERT INTO task (task_name, task_description, task_createDate) VALUES (?, ?, NOW())`;
+          const addTask = `INSERT INTO task (task_app_acronym, task_name, task_description, task_createDate) VALUES (?, ?, ?, NOW())`;
           connection.query(
             addTask,
-            [taskName, taskDescription],
+            [taskAcronym, taskName, taskDescription],
             (error, result) => {
               if (error) throw error;
               res.send(`New task created!`);

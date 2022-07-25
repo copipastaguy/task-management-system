@@ -47,7 +47,7 @@ const AddUserToGroup = () => {
           autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
         });
         setUsername("");
         setSelectedOption(null);
@@ -58,7 +58,7 @@ const AddUserToGroup = () => {
           autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
         });
         setUsername("");
         setSelectedOption(null);
@@ -73,7 +73,6 @@ const AddUserToGroup = () => {
 
       <Form onSubmit={handleSubmit} className="add-form add-group form">
         <h3>REMOVE USER FROM GROUP</h3>
-
         <Form.Group>
           <Form.Label>User</Form.Label>
           <Form.Control

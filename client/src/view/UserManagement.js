@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import CreatableSelect, { useCreatable } from "react-select/creatable";
-import Select from "react-select";
+import Select, { useStateManager } from "react-select";
 import axios from "axios";
-import useApi from "../utils/useApi";
+import { useApi } from "../utils/useApi";
 
 import LoggedIn from "./LoggedIn";
 import MaterialTable from "./MaterialTable";
@@ -14,14 +14,19 @@ import Button from "react-bootstrap/Button";
 import Modal from "@mui/material/Modal";
 
 const UserManagement = () => {
-  const getGroups = async () => axios.get("/user-groups");
-  const getGroupsApi = useApi(getGroups);
-
+  // const getGroups = async () => axios.get("/user-groups");
+  // const getGroupsApi = useApi(getGroups);
+  const [groupOptions, setGroupOptions] = useState([]);
   useEffect(() => {
-    getGroupsApi.request();
+    const getGroups = async () => {
+      const response = await axios.get("/user-groups");
+      setGroupOptions(response.data);
+    };
+    getGroups();
+    // getGroupsApi.request();
   }, []);
 
-  const options = getGroupsApi.data?.map((option) => {
+  const options = groupOptions.map((option) => {
     return {
       label: option.groupname,
       value: option.groupname,
@@ -47,8 +52,6 @@ const UserManagement = () => {
 
     const handleUserGroup = (selectedOption) => {
       setSelectedOption(selectedOption);
-
-      // access value from option and push to array
       selectedOption.forEach((option) => {
         const value = option.value;
         setUserGroup([...userGroup, value]);
@@ -78,6 +81,7 @@ const UserManagement = () => {
         });
         // FRONTEND ERROR HANDLING
         if (response.data.error) {
+          console.log(response.data.error);
           // invalid field
           toast.error(response.data.error, {
             position: "top-center",
@@ -86,6 +90,7 @@ const UserManagement = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
+          setSelectedOption(null);
         }
         if (!response.data.error) {
           // no errors
@@ -93,7 +98,7 @@ const UserManagement = () => {
           setUsername("");
           setPassword("");
           setEmail("");
-          // setSelectedOption();
+          setSelectedOption(null);
 
           toast.success("New user successfully added", {
             position: "top-center",
@@ -187,6 +192,9 @@ const UserManagement = () => {
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
 
+    const getUsers = async () => axios.get("/accounts");
+    const getUsersApi = useApi(getUsers);
+
     // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
     useEffect(() => {
       const getGroups = async () => {
@@ -196,12 +204,7 @@ const UserManagement = () => {
       };
       getGroups();
 
-      const getUsers = async () => {
-        const response = await axios.get("/accounts");
-        const data = response.data;
-        setUsers(data);
-      };
-      getUsers();
+      getUsersApi.request();
     }, []);
 
     /////////////////////  USERS /////////////////////////////
@@ -245,9 +248,7 @@ const UserManagement = () => {
     // REACT SELECT GROUP
     // data to be sent in
     const [userGroup, setUserGroup] = useState([]);
-    // user selection
     const [selectedOption, setSelectedOption] = useState();
-    // fetch array state
     const [groupOptions, setGroupOptions] = useState([]);
 
     const handleUserGroup = (selectedOption) => {

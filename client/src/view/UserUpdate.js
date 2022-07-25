@@ -1,61 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import CreatableSelect from "react-select/creatable";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 const AdminUpdateUser = () => {
   // array of usernames fetched
   const username = localStorage.getItem("username");
-  console.log(username);
-
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [enable, setEnable] = useState("");
-
-  const [userGroup, setUserGroup] = useState([]);
-  const [selectedOption, setSelectedOption] = useState();
-  const [userOptions, setUserOptions] = useState([]);
-
-  const [active, setActive] = useState("");
-  const [selectedActive, setSelectedActive] = useState();
-
-  // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
-  useEffect(() => {
-    const getGroups = async () => {
-      const response = await axios.get("/user-groups");
-      const data = response.data;
-      setUserOptions(data);
-    };
-    getGroups();
-  }, []);
-
-  const activeOptions = [
-    { value: "Active", label: "Active" },
-    { value: "Inactive", label: "Inactive" },
-  ];
-
-  const handleUserGroup = (selectedOption) => {
-    setUserGroup(selectedOption);
-
-    // access value from option and push to array
-    selectedOption.forEach((option) => {
-      const value = option.value;
-      setUserGroup([...userGroup, value]);
-    });
-  };
-
-  const handleActive = (selectedActive) => {
-    const value = selectedActive.value;
-    setActive(value);
-  };
-
-  // map out reactselect options
-  const options = userOptions.map((option) => {
-    // object for react-select options
-    return { value: option.groupname, label: option.groupname };
-  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,8 +18,6 @@ const AdminUpdateUser = () => {
         username,
         password,
         email,
-        userGroup,
-        active,
       });
       console.log(response.data);
       if (response.data.error) {
@@ -75,7 +26,7 @@ const AdminUpdateUser = () => {
           autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
         });
       }
       if (!response.data.error) {
@@ -84,7 +35,7 @@ const AdminUpdateUser = () => {
           autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
         });
         setPassword("");
         setEmail("");
@@ -96,11 +47,8 @@ const AdminUpdateUser = () => {
   };
   return (
     <div className="main-container">
-      <ToastContainer />
-
       <Form className="add-form form" onSubmit={handleSubmit}>
         <h3>UPDATE {username}</h3>
-
         <Form.Group>
           <Form.Label>Password</Form.Label>
           <Form.Control

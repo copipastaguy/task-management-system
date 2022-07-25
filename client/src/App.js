@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 // COMPONENTS
 import Homepage from "./view/Homepage";
@@ -13,12 +14,10 @@ import AdminRoutes from "./utils/AdminRoutes";
 import UserRoutes from "./utils/UserRoutes";
 
 function App() {
-  // PROTECTED ROUTE
-  // GET ADMIN PRIVILEDGE
-
   return (
     <BrowserRouter>
       <div className="App">
+        <ToastContainer />
         <Routes>
           <Route path="/" element={<Homepage />} />
 

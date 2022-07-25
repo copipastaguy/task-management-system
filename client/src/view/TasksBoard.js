@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import Task from "./Task";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "@mui/material/Modal";
-import Applications from "./Applications";
+import AllApplications from "./AllApplications";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Select from "react-select";
-import useApi from "../utils/useApi";
+import { useApi } from "../utils/useApi";
 
 const TasksBoard = () => {
   // LOCALSTORAGE USERNAME
   const user = localStorage.getItem("username");
   const [projectlead, setProjectLead] = useState();
+  const [applications, setApplications] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
   const [openCreateForm, setOpenCreateForm] = useState(false);
   const openCreateApp = () => {
@@ -31,7 +32,7 @@ const TasksBoard = () => {
     setOpenTaskForm(false);
   };
 
-  // CHECK GROUP FUNCTION
+  // CHECK IF USER IS A PROJECT LEAD FUNCTION
   const checkGroup = async () => {
     const response = await axios.get("/checkgroup", {
       params: {
@@ -45,19 +46,36 @@ const TasksBoard = () => {
     }
   };
 
-  const getApplications = () => axios.get("/applications");
-  const getApplicationsApi = useApi(getApplications);
+  // const getApplications = () => axios.get("/applications");
+  // const getApplicationsApi = useApi(getApplications);
+
+  const getApplications = async () => {
+    const response = await axios.get("/get-applications");
+    setApplications(response.data);
+  };
+
+  const getTasks = async () => {
+    const response = await axios.get("/get-tasks");
+    setTasks(response.data);
+  };
 
   useEffect(() => {
     checkGroup();
-    getApplicationsApi.request();
+    getApplications();
+    // getApplicationsApi.request();
+
+    getTasks();
   }, []);
 
   const CreateApp = ({ open, handleClose }) => {
-    const [appAcronym, setAppAcronym] = useState("");
-    const [appRnum, setAppRnum] = useState("");
-    const [appDescription, setAppDescription] = useState("");
+    const [app_acronym, setAppAcronym] = useState("");
+    const [app_Rnum, setAppRnum] = useState("");
+    const [app_description, setAppDescription] = useState("");
     const [permitOpen, setPermitOpen] = useState();
+    const [permitTodo, setPermitTodo] = useState();
+    const [permitDoing, setPermitDoing] = useState();
+    const [permitDone, setPermitDone] = useState();
+
     const [selectedOpen, setSelectedOpen] = useState();
 
     const options = [
@@ -75,21 +93,21 @@ const TasksBoard = () => {
       },
     ];
 
+    const handlePermitOpen = (selectedOpen) => {
+      const value = selectedOpen.value;
+      setPermitOpen(value);
+    };
+
     const handleSubmit = async (e) => {
       e.preventDefault();
-      setPermitOpen(selectedOpen);
-      console.log(permitOpen);
-
       try {
-        // setPermitOpen(value);
-
+        // console.log(permitOpen);
         ///////////////////// ADD APPLICATION /////////////////////////////
         const response = await axios.post("/add-application", {
-          appAcronym,
-          appDescription,
-          permitOpen: permitOpen,
+          app_acronym,
+          app_description,
+          permitOpen,
         });
-
         if (response.data.error) {
           toast.error(response.data.error, {
             position: "top-center",
@@ -98,20 +116,22 @@ const TasksBoard = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
+          // setSelectedOpen(null);
         } else if (!response.data.error) {
-          toast.success(`Added ${appAcronym}!`, {
+          toast.success(`Added ${app_acronym}!`, {
             position: "top-center",
             autoClose: 700,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
           });
-          getApplicationsApi.request();
+          // getApplicationsApi.request();
+          getApplications();
 
           // RESET FIELDS
           setAppAcronym("");
           setAppDescription("");
-          // setPermitOpen(null);
+          setSelectedOpen(null);
         }
       } catch (e) {
         console.error(e);
@@ -125,9 +145,10 @@ const TasksBoard = () => {
           <Form.Group>
             <Form.Label>App name</Form.Label>
             <Form.Control
+              autoFocus
               type="text"
               placeholder="app name"
-              value={appAcronym}
+              value={app_acronym}
               id="app_name"
               onChange={(e) => setAppAcronym(e.target.value)}
             />
@@ -144,7 +165,7 @@ const TasksBoard = () => {
               as="textarea"
               rows={3}
               placeholder="app description"
-              value={appDescription}
+              value={app_description}
               id="app_description"
               onChange={(e) => setAppDescription(e.target.value)}
             />
@@ -156,11 +177,12 @@ const TasksBoard = () => {
               options={options}
               name="permit_open"
               value={selectedOpen}
-              onChange={setPermitOpen}
+              onChange={handlePermitOpen}
+              getOptionValue={(option) => option.value}
             />
           </Form.Group>
 
-          {/* <Form.Group style={{ width: "400px" }}>
+          <Form.Group style={{ width: "400px" }}>
             <Form.Label>Permit ToDo</Form.Label>
             <Select options={options} name="permit_open" />
           </Form.Group>
@@ -173,7 +195,7 @@ const TasksBoard = () => {
           <Form.Group style={{ width: "400px" }}>
             <Form.Label>Permit Done</Form.Label>
             <Select options={options} name="permit_open" />
-          </Form.Group> */}
+          </Form.Group>
 
           <Button className="btn-success" type="submit">
             Create App
@@ -205,9 +227,20 @@ const TasksBoard = () => {
         value: "Close",
       },
     ];
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await axios.post("/add-task", {
+          taskName,
+          taskDescription,
+        });
+        console.log(response);
+      } catch {}
+    };
     return (
       <Modal open={openTaskForm} onClose={closeCreateTask}>
-        <Form className="add-form form">
+        <Form className="add-form form" onSubmit={handleSubmit}>
           <h3>Create a new task</h3>
 
           <Form.Group>
@@ -267,52 +300,24 @@ const TasksBoard = () => {
     );
   };
 
-  const editApp = () => {};
-
   return (
     <div className="main-container tasks-board">
       <ToastContainer />
-      <h3>Kanban Board</h3>
+      <h3>Applications</h3>
 
       <div className="application-container">
-        {getApplicationsApi.data.map((application) => {
-          return (
-            <div className="application">
-              <Applications
-                acronym={application.app_acronym}
-                description={application.app_description}
-                open={application.app_permitOpen}
-                key={application.acronym}
-                editApp={editApp}
-              />
-            </div>
-          );
-        })}
+        <AllApplications />
       </div>
 
-      {projectlead && (
-        <div>
-          <Button onClick={openCreateApp}>Create App</Button>
-          <Button onClick={openCreateTask}>Create New Task</Button>
-          <CreateApp open={openCreateForm} onClose={closeCreateApp} />
-          <CreateTask open={openTaskForm} onClose={closeCreateTask} />
-        </div>
-      )}
-
       <div className="tasks-container">
-        <div>
-          <p>Open</p>
-          <Task />
-        </div>
-        <div>
-          <p>To-Do</p>
-        </div>
-        <div>
-          <p>Doing</p>
-        </div>
-        <div>
-          <p>Done</p>
-        </div>
+        {projectlead && (
+          <div>
+            <Button onClick={openCreateApp}>Create App</Button>
+            {/* <Button onClick={openCreateTask}>Create New Task</Button> */}
+            <CreateApp open={openCreateForm} onClose={closeCreateApp} />
+            {/* <CreateTask open={openTaskForm} onClose={closeCreateTask} /> */}
+          </div>
+        )}
       </div>
     </div>
   );
