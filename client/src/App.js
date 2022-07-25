@@ -10,6 +10,8 @@ import Homepage from "./view/Homepage";
 import UserManagement from "./view/UserManagement";
 import GroupManagement from "./view/GroupManagement";
 import TasksHomepage from "./view/TasksHomepage";
+import ApplicationKanban from "./view/ApplicationKanban";
+
 import AdminRoutes from "./utils/AdminRoutes";
 import UserRoutes from "./utils/UserRoutes";
 
@@ -30,6 +32,7 @@ function App() {
           {/* user page */}
           <Route element={<UserRoutes />}>
             <Route path="/tasks" element={<TasksHomepage />} />
+            <Route path="/tasks/:app_acronym" element={<ApplicationKanban />} />
           </Route>
         </Routes>
       </div>
