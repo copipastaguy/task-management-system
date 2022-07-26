@@ -5,7 +5,7 @@ import TasksBoard from "./TasksBoard";
 const TasksHomepage = () => {
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <TasksBoard />
     </div>
   );

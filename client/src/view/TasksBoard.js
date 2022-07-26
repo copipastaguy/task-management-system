@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Modal from "@mui/material/Modal";
+import Modal from "react-bootstrap/Modal";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+// import Modal from "@mui/material/Modal";
 import AllApplications from "./AllApplications";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -16,21 +19,12 @@ const TasksBoard = () => {
   const [tasks, setTasks] = useState([]);
 
   const [openCreateForm, setOpenCreateForm] = useState(false);
-  const openCreateApp = () => {
-    setOpenCreateForm(true);
-  };
-  const closeCreateApp = () => {
-    setOpenCreateForm(false);
-  };
+  const openCreateApp = () => setOpenCreateForm(true);
+  const closeCreateApp = () => setOpenCreateForm(false);
 
   const [openTaskForm, setOpenTaskForm] = useState(false);
-  const openCreateTask = () => {
-    setOpenTaskForm(true);
-  };
-
-  const closeCreateTask = () => {
-    setOpenTaskForm(false);
-  };
+  const openCreateTask = () => setOpenTaskForm(true);
+  const closeCreateTask = () => setOpenTaskForm(false);
 
   // CHECK IF USER IS A PROJECT LEAD FUNCTION
   const checkGroup = async () => {
@@ -67,10 +61,13 @@ const TasksBoard = () => {
     getTasks();
   }, []);
 
-  const CreateApp = ({ open, handleClose }) => {
+  const CreateApp = ({ show, onHide }) => {
     const [app_acronym, setAppAcronym] = useState("");
     const [app_Rnum, setAppRnum] = useState("");
     const [app_description, setAppDescription] = useState("");
+    const [app_startDate, setStartDate] = useState(null);
+    const [app_endDate, setEndDate] = useState(null);
+
     const [permitOpen, setPermitOpen] = useState();
     const [permitTodo, setPermitTodo] = useState();
     const [permitDoing, setPermitDoing] = useState();
@@ -101,11 +98,13 @@ const TasksBoard = () => {
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        // console.log(permitOpen);
         ///////////////////// ADD APPLICATION /////////////////////////////
         const response = await axios.post("/add-application", {
           app_acronym,
           app_description,
+          app_Rnum,
+          app_startDate,
+          app_endDate,
           permitOpen,
         });
         if (response.data.error) {
@@ -131,6 +130,7 @@ const TasksBoard = () => {
           // RESET FIELDS
           setAppAcronym("");
           setAppDescription("");
+          setAppRnum();
           setSelectedOpen(null);
         }
       } catch (e) {
@@ -139,67 +139,145 @@ const TasksBoard = () => {
     };
 
     return (
-      <Modal open={openCreateForm} onClose={closeCreateApp}>
-        <Form className="add-form form" onSubmit={handleSubmit}>
-          <h3>Create a new App</h3>
-          <Form.Group>
-            <Form.Label>App name</Form.Label>
-            <Form.Control
-              autoFocus
-              type="text"
-              placeholder="app name"
-              value={app_acronym}
-              id="app_name"
-              onChange={(e) => setAppAcronym(e.target.value)}
-            />
-          </Form.Group>
+      <Modal
+        show={openCreateForm}
+        onHide={closeCreateApp}
+        size="xl"
+        centered
+        style={{ margin: "auto", border: "1px solid" }}
+      >
+        <Form
+          className=""
+          onSubmit={handleSubmit}
+          style={{
+            alignItems: "center",
+            width: "90%",
+            margin: "0 auto",
+          }}
+        >
+          <Modal.Header>
+            <Modal.Title>Create new app</Modal.Title>
+          </Modal.Header>
 
-          <Form.Group>
-            <Form.Label>Running Number</Form.Label>
-            <Select options={[]} name="running_number" />
-          </Form.Group>
+          <Modal.Body>
+            <Row>
+              <Col>
+                <Form.Group>
+                  <Form.Label>
+                    App name <span>(required)</span>
+                  </Form.Label>
+                  <Form.Control
+                    autoFocus
+                    type="text"
+                    placeholder="Application"
+                    value={app_acronym}
+                    id="app_name"
+                    onChange={(e) => setAppAcronym(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
 
-          <Form.Group>
-            <Form.Label>App description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="app description"
-              value={app_description}
-              id="app_description"
-              onChange={(e) => setAppDescription(e.target.value)}
-            />
-          </Form.Group>
+              <Col xs={4}>
+                <Form.Group>
+                  <Form.Label>
+                    Running Number <span>(required)</span>
+                  </Form.Label>
 
-          <Form.Group style={{ width: "400px" }}>
-            <Form.Label>Permit Open</Form.Label>
-            <Select
-              options={options}
-              name="permit_open"
-              value={selectedOpen}
-              onChange={handlePermitOpen}
-              getOptionValue={(option) => option.value}
-            />
-          </Form.Group>
+                  <Form.Control
+                    type="number"
+                    value={app_Rnum}
+                    onChange={(e) => setAppRnum(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <br />
 
-          <Form.Group style={{ width: "400px" }}>
-            <Form.Label>Permit ToDo</Form.Label>
-            <Select options={options} name="permit_open" />
-          </Form.Group>
+            <Row>
+              <Form.Group>
+                <Form.Label>
+                  Description <span>(required)</span>
+                </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  placeholder="Description"
+                  value={app_description}
+                  id="app_description"
+                  onChange={(e) => setAppDescription(e.target.value)}
+                />
+              </Form.Group>
+            </Row>
+            <br />
 
-          <Form.Group style={{ width: "400px" }}>
-            <Form.Label>Permit Doing</Form.Label>
-            <Select options={options} name="permit_open" />
-          </Form.Group>
+            <Row>
+              <Form.Group as={Col}>
+                <Form.Label>Start Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={app_startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </Form.Group>
 
-          <Form.Group style={{ width: "400px" }}>
-            <Form.Label>Permit Done</Form.Label>
-            <Select options={options} name="permit_open" />
-          </Form.Group>
+              <Form.Group as={Col}>
+                <Form.Label>End Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={app_endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </Form.Group>
+            </Row>
+            <br />
 
-          <Button className="btn-success" type="submit">
-            Create App
-          </Button>
+            <Row>
+              <Form.Group style={{ width: "400px" }} as={Col}>
+                <Form.Label>Permit Open</Form.Label>
+                <Select
+                  options={options}
+                  name="permit_open"
+                  value={selectedOpen}
+                  onChange={handlePermitOpen}
+                  getOptionValue={(option) => option.value}
+                />
+              </Form.Group>
+
+              <Form.Group style={{ width: "400px" }} as={Col}>
+                <Form.Label>Permit ToDo</Form.Label>
+                <Select options={options} name="permit_open" />
+              </Form.Group>
+
+              <Form.Group style={{ width: "400px" }} as={Col}>
+                <Form.Label>Permit Doing</Form.Label>
+                <Select options={options} name="permit_open" />
+              </Form.Group>
+              <Form.Group style={{ width: "400px" }} as={Col}>
+                <Form.Label>Permit Done</Form.Label>
+                <Select options={options} name="permit_open" />
+              </Form.Group>
+            </Row>
+            <br />
+
+            <Row>
+              <Col>
+                <Button className="btn-success" type="submit" xs={4}>
+                  Create new App
+                </Button>
+              </Col>
+
+              {/* <Col>
+                <Button
+                  className="btn-danger"
+                  type="submit"
+                  as={Col}
+                  onClick={closeCreateApp}
+                >
+                  Close
+                </Button>
+              </Col> */}
+            </Row>
+          </Modal.Body>
         </Form>
       </Modal>
     );
@@ -304,21 +382,20 @@ const TasksBoard = () => {
     <div className="main-container tasks-board">
       <ToastContainer />
       <h3>Applications</h3>
+      {projectlead && (
+        <div>
+          <Button onClick={openCreateApp}>Create new App</Button>
+          <CreateApp show={openCreateForm} onHide={closeCreateApp} />
+          {/* <Button onClick={openCreateTask}>Create New Task</Button> */}
+          {/* <CreateTask open={openTaskForm} onClose={closeCreateTask} /> */}
+        </div>
+      )}
 
       <div className="application-container">
         <AllApplications />
       </div>
 
-      <div className="tasks-container">
-        {projectlead && (
-          <div>
-            <Button onClick={openCreateApp}>Create App</Button>
-            {/* <Button onClick={openCreateTask}>Create New Task</Button> */}
-            <CreateApp open={openCreateForm} onClose={closeCreateApp} />
-            {/* <CreateTask open={openTaskForm} onClose={closeCreateTask} /> */}
-          </div>
-        )}
-      </div>
+      <div className="tasks-container"></div>
     </div>
   );
 };

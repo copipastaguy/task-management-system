@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const errorHandler = require("./errorHandler");
-
 const add = function (app) {
   //    - - - CONTROLLER LOGIC FOR ADDING USER - - -
   //    - - - ROUTING FOR ADD - - -

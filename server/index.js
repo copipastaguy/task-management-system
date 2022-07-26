@@ -14,7 +14,7 @@ const addGroup = require("../controller/addGroup");
 const addUserToGroup = require("../controller/addUserToGroup");
 const removeUserFromGroup = require("../controller/removeUserFromGroup");
 const userUpdate = require("../controller/userUpdate");
-const addApp = require("../controller/addApp");
+const addupdateApp = require("../controller/addupdateApp");
 const getApplications = require("../controller/getApplications");
 const addTask = require("../controller/addTask");
 const getTasks = require("../controller/getTasks");
@@ -74,7 +74,7 @@ userUpdate(app);
 //////////////////////////// PHASE 2 TASK FLOW MANAGEMENT /////////////////////////////////
 checkGroup(app);
 
-addApp(app);
+addupdateApp(app);
 
 getApplications(app);
 

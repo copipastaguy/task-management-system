@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 
 // COMPONENTS
 import Homepage from "./view/Homepage";
+import Header from "./view/Header";
 import UserManagement from "./view/UserManagement";
 import GroupManagement from "./view/GroupManagement";
 import TasksHomepage from "./view/TasksHomepage";
@@ -20,6 +21,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <ToastContainer />
+        <Header />
         <Routes>
           <Route path="/" element={<Homepage />} />
 
@@ -30,9 +32,9 @@ function App() {
           </Route>
 
           {/* user page */}
-          <Route element={<UserRoutes />}>
-            <Route path="/tasks" element={<TasksHomepage />} />
-            <Route path="/tasks/:app_acronym" element={<ApplicationKanban />} />
+          <Route path="/tasks" element={<UserRoutes />}>
+            <Route index element={<TasksHomepage />} />
+            <Route path=":app_acronym" element={<ApplicationKanban />} />
           </Route>
         </Routes>
       </div>
