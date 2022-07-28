@@ -265,17 +265,6 @@ const TasksBoard = () => {
                   Create new App
                 </Button>
               </Col>
-
-              {/* <Col>
-                <Button
-                  className="btn-danger"
-                  type="submit"
-                  as={Col}
-                  onClick={closeCreateApp}
-                >
-                  Close
-                </Button>
-              </Col> */}
             </Row>
           </Modal.Body>
         </Form>

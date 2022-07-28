@@ -289,16 +289,20 @@ a {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  align-items: center;
-  /* border: 1px solid; */
+  align-items: flex-start;
+  /* margin: 1% 0; */
+  /* background-color: #343a40; */
+  /* color: white; */
+  /* align-items: center; */
 }
 
-.tasks-container div {
+.tasks-container > div {
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid red;
-  width: 250px;
+  width: 100%;
+  flex-direction: column;
 }
 
 .application-container {

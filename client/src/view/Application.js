@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
+import { FcClock } from "react-icons/fc";
 
 const Application = ({
   acronym,
@@ -22,10 +22,9 @@ const Application = ({
           <p>Description: {description}</p>
         </div>
         <div>
-          <p>Running Num: {rNum}</p>
-        </div>
-        <div>
-          <p>Permited by: {open}</p>
+          <p>
+            <FcClock /> {end}
+          </p>
         </div>
       </Card>
     </Link>

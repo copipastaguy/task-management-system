@@ -21,7 +21,6 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <ToastContainer />
-        <Header />
         <Routes>
           <Route path="/" element={<Homepage />} />
 
@@ -33,7 +32,15 @@ function App() {
 
           {/* user page */}
           <Route path="/tasks" element={<UserRoutes />}>
-            <Route index element={<TasksHomepage />} />
+            <Route
+              index
+              element={
+                <>
+                  <Header />
+                  <TasksHomepage />
+                </>
+              }
+            />
             <Route path=":app_acronym" element={<ApplicationKanban />} />
           </Route>
         </Routes>
