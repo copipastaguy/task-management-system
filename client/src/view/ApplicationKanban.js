@@ -7,12 +7,15 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-
 import { toast } from "react-toastify";
+import AllPlans from "./AllPlans";
+import Plan from "./Plan";
 
 const ApplicationKanban = () => {
   const param = useParams();
+
   const [data, setData] = useState([]);
+  const [plan, setPlan] = useState([]);
 
   const [openEdit, setOpenEdit] = useState(false);
   const openEditForm = () => setOpenEdit(true);
@@ -32,12 +35,19 @@ const ApplicationKanban = () => {
         app_acronym: param.app_acronym,
       },
     });
-    console.log(response.data);
     setData(response.data[0]);
   };
-
+  const getPlans = async () => {
+    const response = await axios.get("/get-plans", {
+      params: {
+        plan_app_acronym: param.app_acronym,
+      },
+    });
+    setPlan(response.data[0]);
+  };
   useEffect(() => {
     fetchApplication();
+    getPlans();
   }, []);
 
   const EditApp = ({ show, onHide }) => {
@@ -281,8 +291,7 @@ const ApplicationKanban = () => {
   };
 
   const CreatePlan = ({ open, onHide }) => {
-    const app_acronym = data.app_acronym;
-    // console.log(app_acronym);
+    const plan_app_acronym = data.app_acronym;
     const [planName, setPlanName] = useState();
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
@@ -291,7 +300,7 @@ const ApplicationKanban = () => {
       e.preventDefault();
       try {
         const response = await axios.post("/add-plan", {
-          app_acronym,
+          plan_app_acronym,
           planName,
           startDate,
           endDate,
@@ -305,6 +314,7 @@ const ApplicationKanban = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
+          getPlans();
         } else if (!response.data.error) {
           toast.success("New plan created!", {
             position: "top-center",
@@ -313,6 +323,7 @@ const ApplicationKanban = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
+          getPlans();
         }
       } catch {}
     };
@@ -325,13 +336,14 @@ const ApplicationKanban = () => {
       >
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
+            <Modal.Title>{plan_app_acronym}</Modal.Title>
             <Row>
               <Col>
                 <Form.Group>
                   <Form.Label>Plan name</Form.Label>
                   <Form.Control
                     type="text"
-                    id="app_name"
+                    id="plan_name"
                     value={planName}
                     onChange={(e) => setPlanName(e.target.value)}
                   />
@@ -494,6 +506,7 @@ const ApplicationKanban = () => {
                 <CreatePlan show={openAddPlan} onHide={closeAddPlanForm} />
               )}
             </div>
+            <AllPlans />
           </div>
 
           <div>

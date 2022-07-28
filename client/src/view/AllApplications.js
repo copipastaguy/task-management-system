@@ -25,7 +25,7 @@ const AllApplications = () => {
               description={application.app_description}
               rNum={application.app_Rnum}
               open={application.app_permitOpen}
-              end={application.app_endDate}
+              end={application.endDate}
             />
           </div>
         );

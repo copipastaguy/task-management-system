@@ -211,7 +211,7 @@ const addupdateApp = function (app) {
   });
 
   app.post("/add-plan", (req, res, next) => {
-    const { app_acryonym, planName, startDate, endDate } = req.body;
+    const { plan_app_acronym, planName, startDate, endDate } = req.body;
     console.log(req.body);
 
     if (planName) {
@@ -221,10 +221,10 @@ const addupdateApp = function (app) {
         else if (result.length > 0) {
           return next(errorHandler("Plan name exist!", req, res));
         } else {
-          const addPlan = `INSERT INTO plan (plan_app_acronym, plan_mvp_name, plan_startDate, plan_endDate) VALUES (?, ?, ?, ?)`;
+          const addPlan = `INSERT INTO plan (plan_mvp_name, plan_app_acronym, plan_startDate, plan_endDate) VALUES (?, ?, ?, ?)`;
           connection.query(
             addPlan,
-            [app_acryonym, planName, startDate, endDate],
+            [planName, plan_app_acronym, startDate, endDate],
             (error, result) => {
               if (error) throw error;
               else {
@@ -232,13 +232,25 @@ const addupdateApp = function (app) {
               }
             }
           );
-
-          res.send("new plan");
+          res.send();
         }
       });
     } else {
       return next(errorHandler("Plan name cannot be empty!", req, res));
     }
+  });
+
+  app.get("/get-plans", (req, res) => {
+    const plan_app_acronym = req.query.plan_app_acronym;
+    // console.log(plan_app_acronym);
+
+    const getPlan = `SELECT *, date_format(plan_startDate, '%d/%m/%y') as startDate, date_format(plan_endDate, '%d/%m/%y') as endDate FROM plan WHERE plan_app_acronym = ?`;
+    connection.query(getPlan, [plan_app_acronym], (error, result) => {
+      if (error) throw error;
+      else if (result.length > 0) {
+        res.send(result);
+      }
+    });
   });
 };
 

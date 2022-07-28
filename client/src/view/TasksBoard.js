@@ -57,7 +57,6 @@ const TasksBoard = () => {
     checkGroup();
     getApplications();
     // getApplicationsApi.request();
-
     getTasks();
   }, []);
 
@@ -272,101 +271,6 @@ const TasksBoard = () => {
     );
   };
 
-  const CreateTask = ({ open, handleClose }) => {
-    const [taskName, setTaskName] = useState();
-    const [taskDescription, setTaskDescription] = useState();
-    const [taskNotes, setTaskNotes] = useState();
-    const options = [
-      {
-        label: "ToDo",
-        value: "ToDo",
-      },
-      {
-        label: "Doing",
-        value: "Doing",
-      },
-      {
-        label: "Done",
-        value: "Done",
-      },
-      {
-        label: "Close",
-        value: "Close",
-      },
-    ];
-
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.post("/add-task", {
-          taskName,
-          taskDescription,
-        });
-        console.log(response);
-      } catch {}
-    };
-    return (
-      <Modal open={openTaskForm} onClose={closeCreateTask}>
-        <Form className="add-form form" onSubmit={handleSubmit}>
-          <h3>Create a new task</h3>
-
-          <Form.Group>
-            <Form.Label>Task name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="task name"
-              value={taskName}
-              id="app_name"
-              onChange={(e) => setTaskName(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group>
-            <Form.Label>Running Number</Form.Label>
-          </Form.Group>
-
-          <Form.Group>
-            <Form.Label>Task description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="task description"
-              value={taskDescription}
-              id="app_description"
-              onChange={(e) => setTaskDescription(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group>
-            <Form.Label>Task notes</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              placeholder="task description"
-              value={taskNotes}
-              id="app_description"
-              onChange={(e) => setTaskNotes(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group style={{ width: "400px" }}>
-            <Form.Label>State</Form.Label>
-            <Select
-              options={options}
-              name="task_state"
-              // value={permitOpen}
-              // onChange={setPermitOpen}
-            />
-          </Form.Group>
-
-          <Button className="btn-success" type="submit">
-            Create new task
-          </Button>
-        </Form>
-      </Modal>
-    );
-  };
-
   return (
     <div className="main-container tasks-board">
       <ToastContainer />
@@ -375,8 +279,6 @@ const TasksBoard = () => {
         <div>
           <Button onClick={openCreateApp}>Create new App</Button>
           <CreateApp show={openCreateForm} onHide={closeCreateApp} />
-          {/* <Button onClick={openCreateTask}>Create New Task</Button> */}
-          {/* <CreateTask open={openTaskForm} onClose={closeCreateTask} /> */}
         </div>
       )}
 
