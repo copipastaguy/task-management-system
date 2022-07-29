@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Select from "react-select";
 import { useParams, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
@@ -41,10 +41,6 @@ const ApplicationKanban = () => {
   const [projectLead, setProjectLead] = useState(false);
   const [projectManager, setProjectManager] = useState(false);
 
-  const backToApplications = () => {
-    navigate("/tasks");
-  };
-
   const fetchApplication = async () => {
     const response = await axios.get("/get-application", {
       params: {
@@ -54,14 +50,14 @@ const ApplicationKanban = () => {
     setData(response.data[0]);
   };
 
-  const getPlans = async () => {
+  const getPlans = useCallback(async () => {
     const response = await axios.get("/get-plans", {
       params: {
-        plan_app_acronym: param.app_acronym,
+        plan_app_acronym: data.app_acronym,
       },
     });
     setPlan(response.data[0]);
-  };
+  }, []);
 
   const fetchOpen = async () => {
     const response = await axios.get("/get-open");
@@ -87,7 +83,7 @@ const ApplicationKanban = () => {
     if (userGroup === "project lead") {
       setProjectLead(true);
     }
-  }, []);
+  }, [plan]);
 
   const EditApp = ({ show, onHide }) => {
     const app_acronym = data.app_acronym;
@@ -323,7 +319,7 @@ const ApplicationKanban = () => {
   };
 
   const CreatePlan = ({ open, onHide }) => {
-    const plan_app_acronym = data.app_acronym;
+    const app_acronym = data.app_acronym;
     const [planName, setPlanName] = useState();
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
@@ -332,7 +328,7 @@ const ApplicationKanban = () => {
       e.preventDefault();
       try {
         const response = await axios.post("/add-plan", {
-          plan_app_acronym,
+          app_acronym,
           planName,
           startDate,
           endDate,
@@ -368,7 +364,7 @@ const ApplicationKanban = () => {
       >
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
-            <Modal.Title>{plan_app_acronym}</Modal.Title>
+            <Modal.Title>{app_acronym}</Modal.Title>
             <Row>
               <Col>
                 <Form.Group>
@@ -599,13 +595,6 @@ const ApplicationKanban = () => {
     );
   };
 
-  const approveTask = async () => {
-    try {
-      // POST REQUEST
-      const response = await axios.post("/approve-task", {});
-    } catch (e) {}
-  };
-
   return (
     <div className="application-kanban">
       <Header />
@@ -628,7 +617,7 @@ const ApplicationKanban = () => {
               justifyContent: "center",
             }}
           >
-            <Button variant="danger" onClick={backToApplications}>
+            <Button variant="danger" onClick={() => navigate("/tasks")}>
               Back
             </Button>
             <Button onClick={openEditForm}>Update Application</Button>
@@ -650,7 +639,7 @@ const ApplicationKanban = () => {
         )}
 
         <div className="tasks-container">
-          <div className="plans">
+          <div>
             <div>
               <h3>Plan</h3>
             </div>
@@ -664,24 +653,36 @@ const ApplicationKanban = () => {
             <div>
               {/* <AllOpenTasks /> */}
               {open.map((task) => {
+                const approveTask = async () => {
+                  alert(`Approving ${task.task_name}`);
+                  const newState = "ToDo";
+                  try {
+                    // POST REQUEST
+                    const response = await axios.post("/approve-task", {
+                      task_name: task.task_name,
+                      newState,
+                    });
+                    fetchTodo();
+                    fetchOpen();
+                  } catch (e) {}
+                };
                 return (
-                  <>
-                    <Card
-                      style={{ borderRadius: "15px", marginBottom: "10px" }}
-                    >
-                      <Task
-                        taskName={task.task_name}
-                        taskDescription={task.task_description}
-                        taskState={task.task_state}
-                        taskOwner={task.task_owner}
-                      />
-                      {projectManager && (
-                        <Button variant="success" onClick={approveTask}>
-                          Approve
-                        </Button>
-                      )}
-                    </Card>
-                  </>
+                  <Card
+                    key={task.task_name}
+                    style={{ borderRadius: "15px", marginBottom: "10px" }}
+                  >
+                    <Task
+                      taskName={task.task_name}
+                      taskDescription={task.task_description}
+                      taskState={task.task_state}
+                      taskOwner={task.task_owner}
+                    />
+                    {projectManager && (
+                      <Button variant="success" onClick={approveTask}>
+                        Approve
+                      </Button>
+                    )}
+                  </Card>
                 );
               })}
             </div>
@@ -693,15 +694,16 @@ const ApplicationKanban = () => {
             </div>
 
             <div>
-              {/* <AllTodoTasks /> */}
               {todo.map((task) => {
                 return (
-                  <Task
-                    taskName={task.task_name}
-                    taskDescription={task.task_description}
-                    taskState={task.task_state}
-                    taskOwner={task.task_owner}
-                  />
+                  <div key={task.task_name}>
+                    <Task
+                      taskName={task.task_name}
+                      taskDescription={task.task_description}
+                      taskState={task.task_state}
+                      taskOwner={task.task_owner}
+                    />
+                  </div>
                 );
               })}
             </div>

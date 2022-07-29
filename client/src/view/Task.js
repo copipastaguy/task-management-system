@@ -19,7 +19,7 @@ const Task = ({
       }}
     >
       <div>
-        <h2>{taskName}</h2>
+        <h4>{taskName}</h4>
       </div>
 
       <div>

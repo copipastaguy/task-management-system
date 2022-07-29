@@ -211,10 +211,12 @@ const addupdateApp = function (app) {
   });
 
   app.post("/add-plan", (req, res, next) => {
-    const { plan_app_acronym, planName, startDate, endDate } = req.body;
-    console.log(req.body);
+    const { app_acronym, planName, startDate, endDate } = req.body;
+    // console.log(req.body);
 
     if (planName) {
+      // const plan_app_acronym = `${planName.replaceAll(" ", "")}_${app_acronym}`;
+      // console.log(plan_app_acronym);
       const checkPlan = `SELECT plan_mvp_name FROM plan WHERE plan_mvp_name = ?`;
       connection.query(checkPlan, [planName], (error, result) => {
         if (error) throw error;
@@ -224,7 +226,7 @@ const addupdateApp = function (app) {
           const addPlan = `INSERT INTO plan (plan_mvp_name, plan_app_acronym, plan_startDate, plan_endDate) VALUES (?, ?, ?, ?)`;
           connection.query(
             addPlan,
-            [planName, plan_app_acronym, startDate, endDate],
+            [planName, app_acronym, startDate, endDate],
             (error, result) => {
               if (error) throw error;
               else {

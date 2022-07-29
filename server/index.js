@@ -16,7 +16,7 @@ const removeUserFromGroup = require("../controller/removeUserFromGroup");
 const userUpdate = require("../controller/userUpdate");
 const addupdateApp = require("../controller/addupdateApp");
 const getApplications = require("../controller/getApplications");
-const addTask = require("../controller/addTask");
+const addupdateTask = require("../controller/addupdateTask");
 const getTasks = require("../controller/getTasks");
 
 // server port
@@ -78,7 +78,7 @@ addupdateApp(app);
 
 getApplications(app);
 
-addTask(app);
+addupdateTask(app);
 
 getTasks(app);
 

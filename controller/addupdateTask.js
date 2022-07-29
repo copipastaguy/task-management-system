@@ -1,5 +1,5 @@
 const connection = require("../server/connection");
-const errorHandler = require("../controller/errorHandler");
+const errorHandler = require("./errorHandler");
 const addTask = function (app) {
   app.post("/add-task", (req, res, next) => {
     // checkGroup(userid, usergroup)
@@ -64,7 +64,15 @@ const addTask = function (app) {
   });
 
   app.post("/approve-task", (req, res, next) => {
-    console.log("hi");
+    const { task_name, newState } = req.body;
+    console.log(req.body);
+    const updateTask = `UPDATE task SET task_state = ? WHERE task_name = ? `;
+    connection.query(updateTask, [newState, task_name], (error, result) => {
+      if (error) throw error;
+      else {
+        res.send();
+      }
+    });
   });
 };
 

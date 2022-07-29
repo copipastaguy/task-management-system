@@ -14,7 +14,6 @@ const AllPlans = () => {
       },
     });
     setData(response.data);
-    console.log(response.data);
   };
   useEffect(() => {
     getPlans();
