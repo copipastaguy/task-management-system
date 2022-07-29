@@ -1,21 +1,30 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { toast } from "react-toastify";
+import Header from "./Header";
+
 import AllPlans from "./AllPlans";
-import Plan from "./Plan";
+import AllOpenTasks from "./AllOpenTasks";
+
+import Task from "./Task";
+import AllTodoTasks from "./AllOpenTasks";
 
 const ApplicationKanban = () => {
   const param = useParams();
+  const navigate = useNavigate();
 
   const [data, setData] = useState([]);
   const [plan, setPlan] = useState([]);
+  const [open, setOpen] = useState([]);
+  const [todo, setTodo] = useState([]);
 
   const [openEdit, setOpenEdit] = useState(false);
   const openEditForm = () => setOpenEdit(true);
@@ -29,6 +38,13 @@ const ApplicationKanban = () => {
   const openAddTaskForm = () => setOpenAddTask(true);
   const closeAddTaskForm = () => setOpenAddTask(false);
 
+  const [projectLead, setProjectLead] = useState(false);
+  const [projectManager, setProjectManager] = useState(false);
+
+  const backToApplications = () => {
+    navigate("/tasks");
+  };
+
   const fetchApplication = async () => {
     const response = await axios.get("/get-application", {
       params: {
@@ -37,6 +53,7 @@ const ApplicationKanban = () => {
     });
     setData(response.data[0]);
   };
+
   const getPlans = async () => {
     const response = await axios.get("/get-plans", {
       params: {
@@ -45,9 +62,31 @@ const ApplicationKanban = () => {
     });
     setPlan(response.data[0]);
   };
+
+  const fetchOpen = async () => {
+    const response = await axios.get("/get-open");
+    setOpen(response.data);
+  };
+
+  const fetchTodo = async () => {
+    const response = await axios.get("/get-todo");
+    setTodo(response.data);
+  };
+
   useEffect(() => {
     fetchApplication();
     getPlans();
+    fetchOpen();
+    fetchTodo();
+
+    const userGroup = localStorage.getItem("user-group");
+    if (userGroup === "project manager") {
+      setProjectManager(true);
+    }
+
+    if (userGroup === "project lead") {
+      setProjectLead(true);
+    }
   }, []);
 
   const EditApp = ({ show, onHide }) => {
@@ -55,8 +94,9 @@ const ApplicationKanban = () => {
     console.log(app_acronym);
     const app_Rnum = data.app_Rnum;
     const app_description = data.app_description;
-    const [startDate, setStartDate] = useState(data.app_startDate);
-    const [endDate, setEndDate] = useState(data.app_endDate);
+    const [startDate, setStartDate] = useState(data.startDate);
+    const [endDate, setEndDate] = useState(data.endDate);
+    console.log(data.startDate);
 
     const [selectedOpen, setSelectedOpen] = useState();
     const [selectedTodo, setSelectedTodo] = useState();
@@ -130,14 +170,6 @@ const ApplicationKanban = () => {
       },
     ];
 
-    useEffect(() => {
-      setStartDate(new Date(data.app_startDate).toISOString().split("T")[0]);
-      // moment(data.app_startDate).format("YYYY-MM-DD");
-      // moment(data.app_startDate).add(1, "day").format("yyyy-MM-dd");
-      setEndDate(new Date(data.app_endDate).toISOString().split("T")[0]);
-      // setStartDate(moment(data.app_startDate).format("DD-MM-YYYY"));
-    }, []);
-
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
@@ -150,7 +182,7 @@ const ApplicationKanban = () => {
           permitDoing,
           permitDone,
         });
-        // console.log(response);
+        console.log(response);
 
         if (!response.data.error) {
           toast.success(`Updated ${app_acronym}!`, {
@@ -387,12 +419,21 @@ const ApplicationKanban = () => {
   };
 
   const CreateTask = ({ open, onHide }) => {
-    const [taskName, setTaskName] = useState();
-    const [taskDescription, setTaskDescription] = useState();
-    const [taskNotes, setTaskNotes] = useState();
+    const [taskName, setTaskName] = useState("");
+    const [taskDescription, setTaskDescription] = useState("");
+    const [taskNotes, setTaskNotes] = useState("");
+    const [taskState, setTaskState] = useState("Open");
+    const taskCreator = localStorage.getItem("username");
+
+    const [selectedState, setSelectedState] = useState();
+
     const options = [
       {
-        label: "ToDo",
+        label: "Open",
+        value: "Open",
+      },
+      {
+        label: "To Do",
         value: "ToDo",
       },
       {
@@ -409,16 +450,56 @@ const ApplicationKanban = () => {
       },
     ];
 
+    const handleTaskState = (selectedState) => {
+      setSelectedState(selectedState);
+      const value = selectedState.value;
+      setTaskState(value);
+    };
+
     const handleSubmit = async (e) => {
       e.preventDefault();
+      const app_acronym = data.app_acronym;
+      const app_Rnum = data.app_Rnum;
+      console.log(taskState);
+
       try {
         const response = await axios.post("/add-task", {
+          app_Rnum,
+          app_acronym,
           taskName,
           taskDescription,
+          taskNotes,
+          taskState,
+          taskCreator,
         });
         console.log(response);
+        if (!response.data.error) {
+          toast.success("New task created!", {
+            position: "top-center",
+            autoClose: 700,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+          });
+          setTaskName("");
+          setTaskDescription("");
+          setTaskNotes("");
+          setTaskState("Open");
+          fetchOpen();
+          fetchTodo();
+        }
+        if (response.data.error) {
+          toast.error(response.data.error, {
+            position: "top-center",
+            autoClose: 700,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+          });
+        }
       } catch {}
     };
+
     return (
       <Modal
         show={openAddTaskForm}
@@ -428,7 +509,7 @@ const ApplicationKanban = () => {
       >
         <Form onSubmit={handleSubmit}>
           <Modal.Header>
-            {/* <Modal.Title>Update application: {app_acronym}</Modal.Title> */}
+            <Modal.Title>Create a new task</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -440,6 +521,8 @@ const ApplicationKanban = () => {
                     type="text"
                     // placeholder={app_acronym}
                     id="app_name"
+                    value={taskName}
+                    onChange={(e) => setTaskName(e.target.value)}
                   />
                 </Form.Group>
               </Col>
@@ -454,28 +537,54 @@ const ApplicationKanban = () => {
                   rows={3}
                   // placeholder={app_description}
                   id="app_description"
+                  value={taskDescription}
+                  onChange={(e) => setTaskDescription(e.target.value)}
                 />
               </Form.Group>
             </Row>
             <br />
 
             <Row>
-              <Form.Group>
-                <Form.Label>Existing notes</Form.Label>
-                <Form.Control readOnly rows={3} id="app_description" />
-              </Form.Group>
+              <Col>
+                <Form.Group>
+                  <Form.Label>Existing notes</Form.Label>
+                  <Form.Control readOnly rows={3} id="app_notes" />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group>
+                  <Form.Label>Task notes</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    id="app_notes"
+                    value={taskNotes}
+                    onChange={(e) => setTaskNotes(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <br />
 
+            <Row>
               <Form.Group>
-                <Form.Label>Task notes</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  // placeholder={app_description}
-                  id="app_description"
+                <Form.Label>Current State</Form.Label>
+                <Select
+                  options={options}
+                  name="permit_todo"
+                  value={selectedState}
+                  // defaultValue={{ label: "Open", value: "Open" }}
+                  defaultValue={options[0]}
+                  onChange={handleTaskState}
+                  getOptionValue={(option) => option.value}
                 />
               </Form.Group>
             </Row>
             <br />
+
+            <Row>
+              <p>Created by: {taskCreator}</p>
+            </Row>
 
             <Row>
               <Col>
@@ -490,37 +599,112 @@ const ApplicationKanban = () => {
     );
   };
 
+  const approveTask = async () => {
+    try {
+      // POST REQUEST
+      const response = await axios.post("/approve-task", {});
+    } catch (e) {}
+  };
+
   return (
-    <div>
-      <h2>Kanban Board for: {param.app_acronym}</h2>
-      <div>
-        <Button onClick={openEditForm}>Update Application</Button>
+    <div className="application-kanban">
+      <Header />
+
+      <div className="application-container">
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <h2 style={{ textAlign: "center" }}>
+            Kanban Board for: {param.app_acronym}
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              justifyContent: "center",
+            }}
+          >
+            <Button variant="danger" onClick={backToApplications}>
+              Back
+            </Button>
+            <Button onClick={openEditForm}>Update Application</Button>
+
+            {projectLead && <Button onClick={openAddPlanForm}>Add Plan</Button>}
+            {projectLead && (
+              <Button onClick={openAddTaskForm}>Add tasks</Button>
+            )}
+          </div>
+        </div>
+
         {openEdit && <EditApp show={openEdit} onHide={closeEditForm} />}
+        {openAddPlan && (
+          <CreatePlan show={openAddPlan} onHide={closeAddPlanForm} />
+        )}
+
+        {openAddTask && (
+          <CreateTask show={openAddTask} onHide={closeAddTaskForm} />
+        )}
 
         <div className="tasks-container">
           <div className="plans">
-            <h3>Plan</h3>
             <div>
-              <Button onClick={openAddPlanForm}>Add Plan</Button>
-              {openAddPlan && (
-                <CreatePlan show={openAddPlan} onHide={closeAddPlanForm} />
-              )}
+              <h3>Plan</h3>
             </div>
             <AllPlans />
           </div>
 
           <div>
-            <h3>Open</h3>
             <div>
-              <Button onClick={openAddTaskForm}>Add tasks</Button>
-              {openAddTask && (
-                <CreateTask show={openAddTask} onHide={closeAddTaskForm} />
-              )}
+              <h3>Open</h3>
+            </div>
+            <div>
+              {/* <AllOpenTasks /> */}
+              {open.map((task) => {
+                return (
+                  <>
+                    <Card
+                      style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    >
+                      <Task
+                        taskName={task.task_name}
+                        taskDescription={task.task_description}
+                        taskState={task.task_state}
+                        taskOwner={task.task_owner}
+                      />
+                      {projectManager && (
+                        <Button variant="success" onClick={approveTask}>
+                          Approve
+                        </Button>
+                      )}
+                    </Card>
+                  </>
+                );
+              })}
             </div>
           </div>
 
           <div>
-            <h3>To-Do</h3>
+            <div>
+              <h3>To-Do</h3>
+            </div>
+
+            <div>
+              {/* <AllTodoTasks /> */}
+              {todo.map((task) => {
+                return (
+                  <Task
+                    taskName={task.task_name}
+                    taskDescription={task.task_description}
+                    taskState={task.task_state}
+                    taskOwner={task.task_owner}
+                  />
+                );
+              })}
+            </div>
           </div>
 
           <div>

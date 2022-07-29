@@ -18,7 +18,8 @@ const AllPlans = () => {
   };
   useEffect(() => {
     getPlans();
-  }, [data]);
+  }, []);
+
   return (
     <>
       {data.map((plan) => {

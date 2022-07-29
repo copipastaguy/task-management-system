@@ -14,7 +14,11 @@ const Application = ({
 }) => {
   return (
     <Link to={`/tasks/${acronym}`}>
-      <Card className="application" onClick={editApp}>
+      <Card
+        className="application"
+        onClick={editApp}
+        style={{ boxShadow: "7px 7px 8px -6px rgba(87,87,87,0.8)" }}
+      >
         <div>
           <h3>{acronym}</h3>
         </div>

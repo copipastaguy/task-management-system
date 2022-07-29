@@ -17,7 +17,6 @@ const AllApplications = () => {
   return (
     <>
       {data.map((application) => {
-        // const date = application.app_endDate.toString().slice(0, 10);
         return (
           <div key={application.app_acronym}>
             <Application

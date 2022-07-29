@@ -9,6 +9,46 @@ const getTasks = function (app) {
       }
     });
   });
+
+  app.get("/get-open", (req, res) => {
+    const getOpen = `SELECT * FROM task WHERE task_state = "Open"`;
+    connection.query(getOpen, (error, result) => {
+      if (error) throw error;
+      else {
+        res.send(result);
+      }
+    });
+  });
+
+  app.get("/get-todo", (req, res) => {
+    const getTodo = `SELECT * FROM task WHERE task_state = "ToDo"`;
+    connection.query(getTodo, (error, result) => {
+      if (error) throw error;
+      else {
+        res.send(result);
+      }
+    });
+  });
+
+  app.get("/get-doing", (req, res) => {
+    const getDoing = `SELECT * FROM task WHERE task_state = "Doing"`;
+    connection.query(getDoing, (error, result) => {
+      if (error) throw error;
+      else {
+        res.send(result);
+      }
+    });
+  });
+
+  app.get("/get-done", (req, res) => {
+    const getDone = `SELECT * FROM task WHERE task_state = "Done"`;
+    connection.query(getDone, (error, result) => {
+      if (error) throw error;
+      else {
+        res.send(result);
+      }
+    });
+  });
 };
 
 module.exports = getTasks;

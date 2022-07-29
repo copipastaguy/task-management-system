@@ -28,15 +28,27 @@ const TasksBoard = () => {
 
   // CHECK IF USER IS A PROJECT LEAD FUNCTION
   const checkGroup = async () => {
-    const response = await axios.get("/checkgroup", {
+    const response_lead = await axios.get("/checkgroup", {
       params: {
         username: user,
         usergroup: "project lead",
       },
     });
-    if (response.data === true) {
+    if (response_lead.data === true) {
       localStorage.setItem("user-group", "project lead");
       setProjectLead("project lead");
+    }
+
+    const response_manager = await axios.get("/checkgroup", {
+      params: {
+        username: user,
+        usergroup: "project manager",
+      },
+    });
+
+    if (response_manager.data === true) {
+      localStorage.setItem("user-group", "project manager");
+      setProjectLead("project manager");
     }
   };
 
