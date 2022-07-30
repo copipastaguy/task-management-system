@@ -38,8 +38,18 @@ const ApplicationKanban = () => {
   const openAddTaskForm = () => setOpenAddTask(true);
   const closeAddTaskForm = () => setOpenAddTask(false);
 
+  const taskCreator = localStorage.getItem("username");
   const [projectLead, setProjectLead] = useState(false);
   const [projectManager, setProjectManager] = useState(false);
+
+  const today = new Date();
+  let day = today.getDate();
+  if (day < 10) day = "0" + day;
+  let month = today.getMonth() + 1;
+  if (month < 10) month = "0" + month;
+  const year = today.getFullYear();
+  const now = `${year}-${month}-${day}`;
+  const time = new Date().toTimeString().slice(0, 8);
 
   const fetchApplication = async () => {
     const response = await axios.get("/get-application", {
@@ -74,7 +84,6 @@ const ApplicationKanban = () => {
     getPlans();
     fetchOpen();
     fetchTodo();
-
     const userGroup = localStorage.getItem("user-group");
     if (userGroup === "project manager") {
       setProjectManager(true);
@@ -321,8 +330,9 @@ const ApplicationKanban = () => {
   const CreatePlan = ({ open, onHide }) => {
     const app_acronym = data.app_acronym;
     const [planName, setPlanName] = useState();
-    const [startDate, setStartDate] = useState();
-    const [endDate, setEndDate] = useState();
+
+    const [startDate, setStartDate] = useState(now);
+    const [endDate, setEndDate] = useState(now);
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -350,6 +360,7 @@ const ApplicationKanban = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
+          setPlanName("");
         }
       } catch (e) {
         console.warn(e);
@@ -456,7 +467,7 @@ const ApplicationKanban = () => {
       e.preventDefault();
       const app_acronym = data.app_acronym;
       const app_Rnum = data.app_Rnum;
-      console.log(taskState);
+      const note = `${now} ${time}: ${taskState}\n${taskCreator}\nNew task have been created`;
 
       try {
         const response = await axios.post("/add-task", {
@@ -650,16 +661,19 @@ const ApplicationKanban = () => {
               <h3>Open</h3>
             </div>
             <div>
-              {/* <AllOpenTasks /> */}
               {open.map((task) => {
                 const approveTask = async () => {
-                  alert(`Approving ${task.task_name}`);
+                  // alert(`Approving ${task.task_name}`);
                   const newState = "ToDo";
+
+                  const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
+                  alert(note);
                   try {
                     // POST REQUEST
                     const response = await axios.post("/approve-task", {
                       task_name: task.task_name,
                       newState,
+                      note,
                     });
                     fetchOpen();
                     fetchTodo();

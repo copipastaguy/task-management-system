@@ -64,7 +64,7 @@ const addTask = function (app) {
   });
 
   app.post("/approve-task", (req, res, next) => {
-    const { task_name, newState } = req.body;
+    const { task_name, newState, note } = req.body;
     console.log(req.body);
     const updateTask = `UPDATE task SET task_state = ? WHERE task_name = ? `;
     connection.query(updateTask, [newState, task_name], (error, result) => {
