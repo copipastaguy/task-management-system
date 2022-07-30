@@ -13,7 +13,7 @@ const AllOpenTasks = () => {
 
   useEffect(() => {
     fetchOpen();
-  }, []);
+  }, [data]);
   return (
     <>
       {data.map((open) => {

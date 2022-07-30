@@ -17,7 +17,7 @@ const AllPlans = () => {
   };
   useEffect(() => {
     getPlans();
-  }, []);
+  }, [data]);
 
   return (
     <>

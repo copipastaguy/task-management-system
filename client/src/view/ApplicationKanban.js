@@ -83,7 +83,7 @@ const ApplicationKanban = () => {
     if (userGroup === "project lead") {
       setProjectLead(true);
     }
-  }, [plan]);
+  }, []);
 
   const EditApp = ({ show, onHide }) => {
     const app_acronym = data.app_acronym;
@@ -342,7 +342,6 @@ const ApplicationKanban = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
-          getPlans();
         } else if (!response.data.error) {
           toast.success("New plan created!", {
             position: "top-center",
@@ -351,9 +350,10 @@ const ApplicationKanban = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
-          getPlans();
         }
-      } catch {}
+      } catch (e) {
+        console.warn(e);
+      }
     };
     return (
       <Modal
@@ -569,7 +569,6 @@ const ApplicationKanban = () => {
                   options={options}
                   name="permit_todo"
                   value={selectedState}
-                  // defaultValue={{ label: "Open", value: "Open" }}
                   defaultValue={options[0]}
                   onChange={handleTaskState}
                   getOptionValue={(option) => option.value}
@@ -662,9 +661,11 @@ const ApplicationKanban = () => {
                       task_name: task.task_name,
                       newState,
                     });
-                    fetchTodo();
                     fetchOpen();
-                  } catch (e) {}
+                    fetchTodo();
+                  } catch (e) {
+                    console.warn(e);
+                  }
                 };
                 return (
                   <Card
