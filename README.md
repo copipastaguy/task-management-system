@@ -90,33 +90,55 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 
 - Create App
   Optional fields
+
   - description
   - permit permissions
 
 - Create Task
   Optional fields
+
   - description
   - notes
-
+  - deadline
+  - plan
 
 - EVERYONE
 - view applications
 - not able to edit/ view tasks linked to applications not assigned to them
 
+==============================================
+
 - [] Project Lead
-- [] create new apps
-- [] create new open tasks
-- [] assign permit
+- [x] create new apps
+- [x] create new open tasks
+- [x] assign permit
 - [] close tasks, demote tasks to doing
 
+- [] Edit Application
+- [] description
+- [] deadline
+- [] permits
+
+- [] Edit Task
+- [] description
+- [] new notes
+
+==============================================
+
 - [] Project Manager
-- [] view tasks
+- [x] view tasks
 - [] approve tasks
+- [] assign task to plan
+- [] approve done to close task
+
+==============================================
 
 - [] Team Member
 - [] complete tasks
+- [] add notes
 
 - Validation of which user-group can perform state actions
 - Email notification when team member complete tasks
 - SYSTEM GENERATED: task_id = app_acronym + app_runningNumber
 - audit trail of read-only notes
+-

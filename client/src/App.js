@@ -12,6 +12,7 @@ import UserManagement from "./view/UserManagement";
 import GroupManagement from "./view/GroupManagement";
 import TasksHomepage from "./view/TasksHomepage";
 import ApplicationKanban from "./view/ApplicationKanban";
+import EditTask from "./view/EditTask";
 
 import AdminRoutes from "./utils/AdminRoutes";
 import UserRoutes from "./utils/UserRoutes";
@@ -41,7 +42,11 @@ function App() {
                 </>
               }
             />
-            <Route path=":app_acronym" element={<ApplicationKanban />} />
+            <Route path="/tasks/:app_acronym" element={<ApplicationKanban />} />
+            <Route
+              path="/tasks/:app_acronym/:task_name"
+              element={<EditTask />}
+            />
           </Route>
         </Routes>
       </div>

@@ -119,15 +119,6 @@ const addupdateTask = function (app) {
     // );
   });
 
-  app.get("/task/get-notes", (req, res) => {
-    const task_name = req.query.task_name;
-    console.log(task_name);
-    const getNotes = `SELECT task_note FROM task_notes WHERE task_name = ?`;
-    connection.query(getNotes, [task_name], (error, result) => {
-      if (error) throw error;
-      res.send(result);
-    });
-  });
 };
 
 module.exports = addupdateTask;

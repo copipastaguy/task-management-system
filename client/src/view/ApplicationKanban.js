@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useCallback } from "react";
 import Select from "react-select";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -18,14 +18,13 @@ import Task from "./Task";
 import AllTodoTasks from "./AllOpenTasks";
 
 const ApplicationKanban = () => {
-  const param = useParams();
+  const { app_acronym } = useParams();
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
   const [plans, setPlans] = useState([]);
   const [open, setOpen] = useState([]);
   const [todo, setTodo] = useState([]);
-  const [auditNotes, setAuditNotes] = useState();
 
   const [openEdit, setOpenEdit] = useState(false);
   const openEditForm = () => setOpenEdit(true);
@@ -61,17 +60,17 @@ const ApplicationKanban = () => {
   const fetchApplication = useCallback(async () => {
     const response = await axios.get("/get-application", {
       params: {
-        app_acronym: param.app_acronym,
+        app_acronym: app_acronym,
       },
     });
     setData(response.data[0]);
   }, []);
 
   const getPlans = async () => {
-    console.log(param.app_acronym);
+    // console.log(app_acronym);
     const response = await axios.get("/get-plans", {
       params: {
-        plan_app_acronym: param.app_acronym,
+        plan_app_acronym: app_acronym,
       },
     });
     setPlans(response.data);
@@ -92,6 +91,7 @@ const ApplicationKanban = () => {
     getPlans();
     fetchOpen();
     fetchTodo();
+
     const userGroup = localStorage.getItem("user-group");
     if (userGroup === "project manager") {
       setProjectManager(true);
@@ -100,7 +100,6 @@ const ApplicationKanban = () => {
     if (userGroup === "project lead") {
       setProjectLead(true);
     }
-    console.log("useeffect ran");
   }, []);
 
   const EditApp = ({ show, onHide }) => {
@@ -608,129 +607,114 @@ const ApplicationKanban = () => {
     );
   };
 
-  const EditTask = ({ open, onHide }) => {
-    const [taskName, setTaskName] = useState("");
-    const [taskDescription, setTaskDescription] = useState("");
-    const [taskNotes, setTaskNotes] = useState("");
-    // const [taskState, setTaskState] = useState("Open");
-    // const [taskPlan, setTaskPlan] = useState();
+  // const EditTask = () => {
+  //   const [taskName, setTaskName] = useState("");
+  //   const [taskDescription, setTaskDescription] = useState("");
+  //   const [taskNotes, setTaskNotes] = useState("");
+  //   // const [taskState, setTaskState] = useState("Open");
+  //   // const [taskPlan, setTaskPlan] = useState();
 
-    // const [selectedState, setSelectedState] = useState();
-    // const [selectedPlan, setSelectedPlan] = useState();
+  //   // const [selectedState, setSelectedState] = useState();
+  //   // const [selectedPlan, setSelectedPlan] = useState();
 
-    const fetchTaskNotes = async () => {
-      const response = await axios.get("/task/get-notes", {
-        params: {
-          task_name: "1",
-        },
-      });
-      console.log(response);
+  //   const handleSubmit = (e) => {};
 
-      setAuditNotes(response);
-    };
+  //   return (
+  //     <Modal
+  //       show={openEditTaskForm}
+  //       onHide={closeEditTaskForm}
+  //       size="lg"
+  //       centered
+  //     >
+  //       <Form onSubmit={handleSubmit}>
+  //         <Modal.Header>
+  //           <Modal.Title>Update</Modal.Title>
+  //         </Modal.Header>
 
-    useEffect(() => {
-      fetchTaskNotes();
-    });
+  //         <Modal.Body>
+  //           <Row>
+  //             <Col>
+  //               <Form.Group>
+  //                 <Form.Label>Task name</Form.Label>
+  //                 <Form.Control
+  //                   type="text"
+  //                   id="app_name"
+  //                   value={taskName}
+  //                   onChange={(e) => setTaskName(e.target.value)}
+  //                 />
+  //               </Form.Group>
+  //             </Col>
+  //           </Row>
+  //           <br />
 
-    const handleSubmit = (e) => {};
+  //           <Row>
+  //             <Form.Group>
+  //               <Form.Label>Description</Form.Label>
+  //               <Form.Control
+  //                 as="textarea"
+  //                 rows={3}
+  //                 id="app_description"
+  //                 value={taskDescription}
+  //                 onChange={(e) => setTaskDescription(e.target.value)}
+  //               />
+  //             </Form.Group>
+  //           </Row>
+  //           <br />
 
-    return (
-      <Modal
-        show={openEditTaskForm}
-        onHide={closeEditTaskForm}
-        size="lg"
-        centered
-      >
-        <Form onSubmit={handleSubmit}>
-          <Modal.Header>
-            <Modal.Title>Update</Modal.Title>
-          </Modal.Header>
+  //           <Row>
+  //             <Col>
+  //               <Form.Group>
+  //                 <Form.Label>Existing notes</Form.Label>
+  //                 <Form.Control readOnly rows={3} id="app_notes" />
+  //               </Form.Group>
+  //             </Col>
+  //             <Col>
+  //               <Form.Group>
+  //                 <Form.Label>Task notes</Form.Label>
+  //                 <Form.Control
+  //                   as="textarea"
+  //                   rows={3}
+  //                   id="app_notes"
+  //                   value={taskNotes}
+  //                   onChange={(e) => setTaskNotes(e.target.value)}
+  //                 />
+  //               </Form.Group>
+  //             </Col>
+  //           </Row>
+  //           <br />
 
-          <Modal.Body>
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Task name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="app_name"
-                    value={taskName}
-                    onChange={(e) => setTaskName(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <br />
+  //           {/* <Row>
+  //             <Col>
+  //               <Form.Group>
+  //                 <Form.Label>Assign a Plan</Form.Label>
+  //                 <Select
+  //                   // options={availPlans}
+  //                   name="task_plan"
+  //                   value={selectedPlan}
+  //                   // onChange={handleTaskPlan}
+  //                   // getOptionValue={(option) => option.value}
+  //                 />
+  //               </Form.Group>
+  //             </Col>
+  //           </Row> */}
+  //           <br />
 
-            <Row>
-              <Form.Group>
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  id="app_description"
-                  value={taskDescription}
-                  onChange={(e) => setTaskDescription(e.target.value)}
-                />
-              </Form.Group>
-            </Row>
-            <br />
+  //           <Row>
+  //             <p>Created by: {taskCreator}</p>
+  //           </Row>
 
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Existing notes</Form.Label>
-                  <Form.Control readOnly rows={3} id="app_notes" />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Task notes</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    id="app_notes"
-                    value={taskNotes}
-                    onChange={(e) => setTaskNotes(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <br />
-
-            {/* <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Assign a Plan</Form.Label>
-                  <Select
-                    // options={availPlans}
-                    name="task_plan"
-                    value={selectedPlan}
-                    // onChange={handleTaskPlan}
-                    // getOptionValue={(option) => option.value}
-                  />
-                </Form.Group>
-              </Col>
-            </Row> */}
-            <br />
-
-            <Row>
-              <p>Created by: {taskCreator}</p>
-            </Row>
-
-            <Row>
-              <Col>
-                <Button className="btn-success" type="submit" xs={4}>
-                  Create new task
-                </Button>
-              </Col>
-            </Row>
-          </Modal.Body>
-        </Form>
-      </Modal>
-    );
-  };
+  //           <Row>
+  //             <Col>
+  //               <Button className="btn-success" type="submit" xs={4}>
+  //                 Update task
+  //               </Button>
+  //             </Col>
+  //           </Row>
+  //         </Modal.Body>
+  //       </Form>
+  //     </Modal>
+  //   );
+  // };
 
   return (
     <div className="application-kanban">
@@ -745,7 +729,7 @@ const ApplicationKanban = () => {
           }}
         >
           <h2 style={{ textAlign: "center" }}>
-            Kanban for: {param.app_acronym}
+            Kanban for: {data.app_acronym}
           </h2>
           <div
             style={{
@@ -788,9 +772,10 @@ const ApplicationKanban = () => {
               <h3>Open</h3>
             </div>
             <div>
-              {openEditTask && (
+              {/* {openEditTask && (
                 <EditTask show={openEditTask} onHide={closeEditTaskForm} />
-              )}
+              )} */}
+
               {open.map((task) => {
                 const approveTask = async () => {
                   const newState = "ToDo";
@@ -812,10 +797,11 @@ const ApplicationKanban = () => {
                     console.warn(e);
                   }
                 };
+
                 return (
                   <Card
-                    key={task.task_name}
                     style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    key={task.task_name}
                   >
                     <Task
                       taskName={task.task_name}
@@ -823,14 +809,11 @@ const ApplicationKanban = () => {
                       taskState={task.task_state}
                       taskOwner={task.task_owner}
                     />
-                    <Button
-                      onClick={() => {
-                        setOpenEditTask(true);
-                        alert(task.task_name);
-                      }}
-                    >
-                      Edit
-                    </Button>
+
+                    <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                      <Button style={{ width: "100%" }}>Edit</Button>
+                    </Link>
+
                     {projectManager && (
                       <Button variant="success" onClick={approveTask}>
                         Approve

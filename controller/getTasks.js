@@ -10,6 +10,30 @@ const getTasks = function (app) {
     });
   });
 
+  app.get("/get-task", (req, res) => {
+    const task_name = req.query.task_name;
+    // console.log(task_name);
+    const getNotes = `SELECT * FROM task WHERE task_name = ?`;
+    connection.query(getNotes, [task_name], (error, result) => {
+      if (error) throw error;
+      else {
+        res.send(result);
+      }
+    });
+  });
+
+  // app.get("/get-notes", (req, res) => {
+  //   const task_name = req.query.task_name;
+  //   console.log(task_name);
+  //   const getNotes = `SELECT task_note FROM task_notes WHERE task_name = ?`;
+  //   connection.query(getNotes, [task_name], (error, result) => {
+  //     if (error) throw error;
+  //     else {
+  //       res.send(result);
+  //     }
+  //   });
+  // });
+
   app.get("/get-open", (req, res) => {
     const getOpen = `SELECT * FROM task WHERE task_state = "Open"`;
     connection.query(getOpen, (error, result) => {
