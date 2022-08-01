@@ -1,27 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Plan from "./Plan";
-import axios from "axios";
-import { useParams } from "react-router-dom";
 
-const AllPlans = () => {
-  const [data, setData] = useState([]);
-  const param = useParams();
-
-  const getPlans = async () => {
-    const response = await axios.get("/get-plans", {
-      params: {
-        plan_app_acronym: param.app_acronym,
-      },
-    });
-    setData(response.data);
-  };
-  useEffect(() => {
-    getPlans();
-  }, [data]);
-
+const AllPlans = ({ plans }) => {
   return (
     <>
-      {data.map((plan) => {
+      {plans.map((plan) => {
         return (
           <div key={plan.plan_mvp_name}>
             <Plan

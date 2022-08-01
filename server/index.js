@@ -15,6 +15,7 @@ const addUserToGroup = require("../controller/addUserToGroup");
 const removeUserFromGroup = require("../controller/removeUserFromGroup");
 const userUpdate = require("../controller/userUpdate");
 const addupdateApp = require("../controller/addupdateApp");
+const addGetPlan = require("../controller/addGetPlan");
 const getApplications = require("../controller/getApplications");
 const addupdateTask = require("../controller/addupdateTask");
 const getTasks = require("../controller/getTasks");
@@ -75,6 +76,8 @@ userUpdate(app);
 checkGroup(app);
 
 addupdateApp(app);
+
+addGetPlan(app);
 
 getApplications(app);
 

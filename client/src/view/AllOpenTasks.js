@@ -1,29 +1,19 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import Task from "./Task";
+import Button from "react-bootstrap/esm/Button";
 
 // ALL OPEN TASKS
-const AllOpenTasks = () => {
-  const [data, setData] = useState([]);
-
-  const fetchOpen = async () => {
-    const response = await axios.get("/get-open");
-    setData(response.data);
-  };
-
-  useEffect(() => {
-    fetchOpen();
-  }, [data]);
+const AllOpenTasks = ({ openTasks }) => {
   return (
     <>
-      {data.map((open) => {
+      {openTasks.map((openTask) => {
         return (
-          <div key={open.task_name}>
+          <div key={openTask.task_name}>
             <Task
-              taskName={open.task_name}
-              taskDescription={open.task_description}
-              taskState={open.task_state}
-              taskOwner={open.task_owner}
+              taskName={openTask.task_name}
+              taskDescription={openTask.task_description}
+              taskState={openTask.task_state}
+              taskOwner={openTask.task_owner}
             />
           </div>
         );

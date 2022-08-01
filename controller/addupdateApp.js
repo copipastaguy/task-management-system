@@ -230,29 +230,15 @@ const addupdateApp = function (app) {
             (error, result) => {
               if (error) throw error;
               else {
-                console.log("added");
+                res.send();
               }
             }
           );
-          res.send();
         }
       });
     } else {
       return next(errorHandler("Plan name cannot be empty!", req, res));
     }
-  });
-
-  app.get("/get-plans", (req, res) => {
-    const plan_app_acronym = req.query.plan_app_acronym;
-    // console.log(plan_app_acronym);
-
-    const getPlan = `SELECT *, date_format(plan_startDate, '%d/%m/%y') as startDate, date_format(plan_endDate, '%d/%m/%y') as endDate FROM plan WHERE plan_app_acronym = ?`;
-    connection.query(getPlan, [plan_app_acronym], (error, result) => {
-      if (error) throw error;
-      else if (result.length > 0) {
-        res.send(result);
-      }
-    });
   });
 };
 

@@ -1,6 +1,7 @@
 const connection = require("../server/connection");
 const errorHandler = require("./errorHandler");
-const addTask = function (app) {
+
+const addupdateTask = function (app) {
   app.post("/add-task", (req, res, next) => {
     // checkGroup(userid, usergroup)
     const {
@@ -12,7 +13,8 @@ const addTask = function (app) {
       taskState,
       taskCreator,
       taskOwner,
-      taskCreateDate,
+      taskPlan,
+      note,
     } = req.body;
     console.log(req.body);
 
@@ -21,7 +23,6 @@ const addTask = function (app) {
     const year = new Date().getFullYear();
     const time = new Date().toTimeString().slice(0, 8);
     const now = `${date}/${month}/${year} ${time}`;
-    // console.log(now);
 
     if (taskName) {
       const checkTask = `SELECT task_name FROM task WHERE task_name = ?`;
@@ -32,28 +33,45 @@ const addTask = function (app) {
           return next(errorHandler("Task name exist!", req, res));
         } else {
           //////////////////////////// GET APP ACRONYM, RUNNING NUMBER FOR TASK_ID /////////////////////////////////
-          const task_app_acronym = app_acronym.concat(
-            "_",
-            taskName.toLowerCase().replaceAll(" ", "")
-          );
-          const auditNotes = `${now}: ${taskState} \n${taskCreator} \n${taskNotes}`;
+          // const task_app_acronym = app_acronym.concat(
+          //   "_",
+          //   taskName.toLowerCase().replaceAll(" ", "")
+          // );
+
           const taskId = app_acronym.concat("_", app_Rnum);
+
           //////////////////////////// ADD TASK /////////////////////////////////
-          const addTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_notes, task_state, task_creator, task_createDate) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`;
+          const addTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_plan, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
           connection.query(
             addTask,
             [
-              task_app_acronym,
+              app_acronym,
               taskId,
               taskName,
               taskDescription,
-              auditNotes,
+
+              taskPlan,
               taskState,
               taskCreator,
+              taskOwner,
             ],
             (error, result) => {
               if (error) throw error;
-              res.send(`New task created!`);
+              else {
+                const auditNotes = `${now}: ${taskState} \n${taskCreator} \n${taskNotes}`;
+                const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
+                connection.query(
+                  addNote,
+                  [taskName, auditNotes],
+                  (error, result) => {
+                    if (error) throw error;
+                    else {
+                      console.log("hi");
+                    }
+                  }
+                );
+                res.send(`New task created!`);
+              }
             }
           );
         }
@@ -63,17 +81,53 @@ const addTask = function (app) {
     }
   });
 
+  // PROJECT MANAGER APPROVE TASK
   app.post("/approve-task", (req, res, next) => {
-    const { task_name, newState, note } = req.body;
+    const { task_name, newState, note, taskOwner } = req.body;
     console.log(req.body);
-    const updateTask = `UPDATE task SET task_state = ? WHERE task_name = ? `;
-    connection.query(updateTask, [newState, task_name], (error, result) => {
+    console.log(note);
+    const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
+    connection.query(addNote, [task_name, note], (error, result) => {
       if (error) throw error;
       else {
-        res.send();
+        console.log(result);
       }
+    });
+
+    // const getNotes = `SELECT task_notes FROM task WHERE task_name = ? `;
+    // connection.query(getNotes, [task_name], (error, result) => {
+    //   if (error) throw error;
+    //   else {
+    //     res.send(result[0].task_notes);
+    //   }
+    // });
+
+    // const updateTask = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
+    // connection.query(
+    //   updateTask,
+    //   [newState, taskOwner, task_name],
+    //   (error, result) => {
+    //     if (error) throw error;
+    //     else {
+    //       // FETCH NOTES
+
+    //       const updateNotes = `UPDATE task SET task_notes = ? WHERE task_name = ?`;
+    //       connection.query(updateNotes, [note], (error, result) => {});
+    //       res.send();
+    //     }
+    //   }
+    // );
+  });
+
+  app.get("/task/get-notes", (req, res) => {
+    const task_name = req.query.task_name;
+    console.log(task_name);
+    const getNotes = `SELECT task_note FROM task_notes WHERE task_name = ?`;
+    connection.query(getNotes, [task_name], (error, result) => {
+      if (error) throw error;
+      res.send(result);
     });
   });
 };
 
-module.exports = addTask;
+module.exports = addupdateTask;
