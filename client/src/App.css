@@ -351,3 +351,20 @@ form span {
   display: flex;
   flex-direction: row;
 }
+
+.buttons-container {
+  display: flex;
+}
+
+.buttons-container button {
+  flex-grow: 1;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+.col-header {
+  font-weight: 600;
+  font-size: 16px;
+}

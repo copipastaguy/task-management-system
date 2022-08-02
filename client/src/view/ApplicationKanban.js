@@ -10,12 +10,16 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { toast } from "react-toastify";
 import Header from "./Header";
+import {
+  AiOutlineArrowRight,
+  AiOutlineArrowLeft,
+  AiFillEdit,
+  AiFillCheckCircle,
+} from "react-icons/ai";
 
 import AllPlans from "./AllPlans";
-import AllOpenTasks from "./AllOpenTasks";
 
 import Task from "./Task";
-import AllTodoTasks from "./AllOpenTasks";
 
 const ApplicationKanban = () => {
   const { app_acronym } = useParams();
@@ -25,6 +29,8 @@ const ApplicationKanban = () => {
   const [plans, setPlans] = useState([]);
   const [open, setOpen] = useState([]);
   const [todo, setTodo] = useState([]);
+  const [doing, setDoing] = useState([]);
+  const [done, setDone] = useState([]);
 
   const [openEdit, setOpenEdit] = useState(false);
   const openEditForm = () => setOpenEdit(true);
@@ -77,13 +83,39 @@ const ApplicationKanban = () => {
   };
 
   const fetchOpen = async () => {
-    const response = await axios.get("/get-open");
+    const response = await axios.get("/get-open", {
+      params: {
+        plan_app_acronym: app_acronym,
+      },
+    });
     setOpen(response.data);
   };
 
   const fetchTodo = async () => {
-    const response = await axios.get("/get-todo");
+    const response = await axios.get("/get-todo", {
+      params: {
+        plan_app_acronym: app_acronym,
+      },
+    });
     setTodo(response.data);
+  };
+
+  const fetchDoing = async () => {
+    const response = await axios.get("/get-doing", {
+      params: {
+        plan_app_acronym: app_acronym,
+      },
+    });
+    setDoing(response.data);
+  };
+
+  const fetchDone = async () => {
+    const response = await axios.get("/get-done", {
+      params: {
+        plan_app_acronym: app_acronym,
+      },
+    });
+    setDone(response.data);
   };
 
   useEffect(() => {
@@ -91,6 +123,8 @@ const ApplicationKanban = () => {
     getPlans();
     fetchOpen();
     fetchTodo();
+    fetchDoing();
+    fetchDone();
 
     const userGroup = localStorage.getItem("user-group");
     if (userGroup === "project manager") {
@@ -482,9 +516,9 @@ const ApplicationKanban = () => {
         });
         console.log(response);
         if (!response.data.error) {
-          toast.success("New task created!", {
+          toast.success(response.data, {
             position: "top-center",
-            autoClose: 700,
+            autoClose: 800,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
@@ -499,7 +533,7 @@ const ApplicationKanban = () => {
         if (response.data.error) {
           toast.error(response.data.error, {
             position: "top-center",
-            autoClose: 700,
+            autoClose: 800,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
@@ -607,115 +641,6 @@ const ApplicationKanban = () => {
     );
   };
 
-  // const EditTask = () => {
-  //   const [taskName, setTaskName] = useState("");
-  //   const [taskDescription, setTaskDescription] = useState("");
-  //   const [taskNotes, setTaskNotes] = useState("");
-  //   // const [taskState, setTaskState] = useState("Open");
-  //   // const [taskPlan, setTaskPlan] = useState();
-
-  //   // const [selectedState, setSelectedState] = useState();
-  //   // const [selectedPlan, setSelectedPlan] = useState();
-
-  //   const handleSubmit = (e) => {};
-
-  //   return (
-  //     <Modal
-  //       show={openEditTaskForm}
-  //       onHide={closeEditTaskForm}
-  //       size="lg"
-  //       centered
-  //     >
-  //       <Form onSubmit={handleSubmit}>
-  //         <Modal.Header>
-  //           <Modal.Title>Update</Modal.Title>
-  //         </Modal.Header>
-
-  //         <Modal.Body>
-  //           <Row>
-  //             <Col>
-  //               <Form.Group>
-  //                 <Form.Label>Task name</Form.Label>
-  //                 <Form.Control
-  //                   type="text"
-  //                   id="app_name"
-  //                   value={taskName}
-  //                   onChange={(e) => setTaskName(e.target.value)}
-  //                 />
-  //               </Form.Group>
-  //             </Col>
-  //           </Row>
-  //           <br />
-
-  //           <Row>
-  //             <Form.Group>
-  //               <Form.Label>Description</Form.Label>
-  //               <Form.Control
-  //                 as="textarea"
-  //                 rows={3}
-  //                 id="app_description"
-  //                 value={taskDescription}
-  //                 onChange={(e) => setTaskDescription(e.target.value)}
-  //               />
-  //             </Form.Group>
-  //           </Row>
-  //           <br />
-
-  //           <Row>
-  //             <Col>
-  //               <Form.Group>
-  //                 <Form.Label>Existing notes</Form.Label>
-  //                 <Form.Control readOnly rows={3} id="app_notes" />
-  //               </Form.Group>
-  //             </Col>
-  //             <Col>
-  //               <Form.Group>
-  //                 <Form.Label>Task notes</Form.Label>
-  //                 <Form.Control
-  //                   as="textarea"
-  //                   rows={3}
-  //                   id="app_notes"
-  //                   value={taskNotes}
-  //                   onChange={(e) => setTaskNotes(e.target.value)}
-  //                 />
-  //               </Form.Group>
-  //             </Col>
-  //           </Row>
-  //           <br />
-
-  //           {/* <Row>
-  //             <Col>
-  //               <Form.Group>
-  //                 <Form.Label>Assign a Plan</Form.Label>
-  //                 <Select
-  //                   // options={availPlans}
-  //                   name="task_plan"
-  //                   value={selectedPlan}
-  //                   // onChange={handleTaskPlan}
-  //                   // getOptionValue={(option) => option.value}
-  //                 />
-  //               </Form.Group>
-  //             </Col>
-  //           </Row> */}
-  //           <br />
-
-  //           <Row>
-  //             <p>Created by: {taskCreator}</p>
-  //           </Row>
-
-  //           <Row>
-  //             <Col>
-  //               <Button className="btn-success" type="submit" xs={4}>
-  //                 Update task
-  //               </Button>
-  //             </Col>
-  //           </Row>
-  //         </Modal.Body>
-  //       </Form>
-  //     </Modal>
-  //   );
-  // };
-
   return (
     <div className="application-kanban">
       <Header />
@@ -761,38 +686,40 @@ const ApplicationKanban = () => {
 
         <div className="tasks-container">
           <div>
-            <div>
-              <h3>Plan</h3>
+            <div className="col-header">
+              <p>Plan</p>
             </div>
             <AllPlans plans={plans} />
           </div>
 
           <div>
-            <div>
-              <h3>Open</h3>
+            <div className="col-header">
+              <p>Open</p>
             </div>
             <div>
-              {/* {openEditTask && (
-                <EditTask show={openEditTask} onHide={closeEditTaskForm} />
-              )} */}
-
               {open.map((task) => {
                 const approveTask = async () => {
                   const newState = "ToDo";
                   const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
+                  // alert(note);
                   try {
                     const response = await axios.post("/approve-task", {
                       task_name: task.task_name,
                       newState,
                       note,
-                      taskOwner: localStorage.getItem("username"),
+                      taskOwner,
                     });
+                    if (response.data) {
+                      toast.success(`Move ${task.task_name} to ToDo!`, {
+                        position: "top-center",
+                        autoClose: 700,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                      });
+                    }
                     fetchOpen();
                     fetchTodo();
-
-                    if (!response.data.error) {
-                      alert("Success");
-                    }
                   } catch (e) {
                     console.warn(e);
                   }
@@ -809,14 +736,15 @@ const ApplicationKanban = () => {
                       taskState={task.task_state}
                       taskOwner={task.task_owner}
                     />
-
                     <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                      <Button style={{ width: "100%" }}>Edit</Button>
+                      <Button style={{ width: "100%" }}>
+                        <AiFillEdit />
+                      </Button>
                     </Link>
 
                     {projectManager && (
                       <Button variant="success" onClick={approveTask}>
-                        Approve
+                        <AiFillCheckCircle />
                       </Button>
                     )}
                   </Card>
@@ -826,36 +754,126 @@ const ApplicationKanban = () => {
           </div>
 
           <div>
-            <div>
-              <h3>To-Do</h3>
+            <div className="col-header">
+              <p>To-Do</p>
             </div>
 
             <div>
               {todo.map((task) => {
+                const MoveTaskToDoing = async () => {
+                  const newState = "Doing";
+                  const response = await axios.post("/move-task-doing", {
+                    task_name: task.task_name,
+                    newState,
+                    taskOwner,
+                  });
+                  if (response.data) {
+                    toast.success(`Move ${task.task_name} to Doing!`, {
+                      position: "top-center",
+                      autoClose: 700,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                    });
+                  }
+                  fetchTodo();
+                  fetchDoing();
+                };
                 return (
-                  <div key={task.task_name}>
+                  <Card
+                    style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    key={task.task_name}
+                  >
                     <Task
                       taskName={task.task_name}
                       taskDescription={task.task_description}
                       taskState={task.task_state}
                       taskOwner={task.task_owner}
                     />
-                  </div>
+                    <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                      <Button style={{ width: "100%" }}>
+                        <AiFillEdit />
+                      </Button>
+                    </Link>
+                    <Button variant="success" onClick={() => MoveTaskToDoing()}>
+                      <AiOutlineArrowRight />
+                    </Button>
+                  </Card>
                 );
               })}
             </div>
           </div>
 
           <div>
-            <h3>Doing</h3>
+            <div className="col-header">
+              <p>Doing</p>
+            </div>
+            <div>
+              {doing.map((task) => {
+                const MoveTaskToDone = async () => {
+                  const newState = "Done";
+                  // alert("Moving to Done");
+                  const response = await axios.post("/move-task-done", {
+                    task_name: task.task_name,
+                    newState,
+                    taskOwner,
+                  });
+                };
+
+                const MoveTaskToDo = async () => {
+                  const newState = "ToDo  ";
+                  // alert("Moving back to ToDo");
+                  const response = await axios.post("/approve-task", {
+                    task_name: task.task_name,
+                    newState,
+                    taskOwner,
+                  });
+                  fetchTodo();
+                  fetchDoing();
+                };
+                return (
+                  <Card
+                    style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    key={task.task_name}
+                  >
+                    <Task
+                      taskName={task.task_name}
+                      taskDescription={task.task_description}
+                      taskState={task.task_state}
+                      taskOwner={task.task_owner}
+                    />
+                    <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                      <Button style={{ width: "100%" }}>
+                        <AiFillEdit />
+                      </Button>
+                    </Link>
+                    <div className="buttons-container">
+                      <Button variant="danger" onClick={() => MoveTaskToDo()}>
+                        <AiOutlineArrowLeft />
+                      </Button>
+                      <Button
+                        variant="success"
+                        onClick={() => MoveTaskToDone()}
+                      >
+                        <AiOutlineArrowRight />
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
 
           <div>
-            <h3>Done</h3>
+            <div className="col-header">
+              <p>Done</p>
+            </div>
           </div>
 
           <div>
-            <h3>Close</h3>
+            <div className="col-header">
+              <p>Close</p>
+            </div>
           </div>
         </div>
       </div>

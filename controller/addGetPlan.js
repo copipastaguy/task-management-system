@@ -4,11 +4,8 @@ const errorHandler = require("./errorHandler");
 const addGetPlan = function (app) {
   app.post("/add-plan", (req, res, next) => {
     const { app_acronym, planName, startDate, endDate } = req.body;
-    // console.log(req.body);
 
-    if (planName) {
-      // const plan_app_acronym = `${planName.replaceAll(" ", "")}_${app_acronym}`;
-      // console.log(plan_app_acronym);
+    if (planName && startDate && endDate) {
       const checkPlan = `SELECT plan_mvp_name FROM plan WHERE plan_mvp_name = ?`;
       connection.query(checkPlan, [planName], (error, result) => {
         if (error) throw error;
@@ -26,17 +23,17 @@ const addGetPlan = function (app) {
               }
             }
           );
-          res.send();
+          res.send(result);
         }
       });
     } else {
-      return next(errorHandler("Plan name cannot be empty!", req, res));
+      return next(errorHandler("Fill in all fields!", req, res));
     }
   });
 
   app.get("/get-plans", (req, res) => {
     const plan_app_acronym = req.query.plan_app_acronym;
-    console.log("getting plans for ", plan_app_acronym);
+    // console.log("getting plans for ", plan_app_acronym);
 
     const getPlan = `SELECT *, date_format(plan_startDate, '%d/%m/%y') as startDate, date_format(plan_endDate, '%d/%m/%y') as endDate FROM plan WHERE plan_app_acronym = ?`;
     connection.query(getPlan, [plan_app_acronym], (error, result) => {

@@ -106,6 +106,11 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - view applications
 - not able to edit/ view tasks linked to applications not assigned to them
 
+- [x] Running Number: auto increment after adding the 1st Application
+- compare largest running number and +1
+
+- [] Check group for different permit (fetch from backend)
+
 ==============================================
 
 - [] Project Lead

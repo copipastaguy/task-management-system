@@ -27,6 +27,21 @@ const addupdateApp = function (app) {
           );
         } else {
           // CHECK FOR OTHER CONDITIONS
+          // GET PREV RUNNING NUMBER
+          // const getRnum = `SELECT app_Rnum FROM application`;
+          // connection.query(getRnum, (error, result) => {
+          //   if (error) throw error;
+          //   else {
+          //     const arr = [];
+          //     // console.log(result);
+          //     // COMPARE RUNNING NUMBER
+          //     result.forEach((num) => {
+          //       arr.push(num.app_Rnum);
+          //     });
+          //     const maxNum = Math.max(...arr);
+          //     console.log(maxNum);
+          //   }
+          // });
           const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
           connection.query(
             addNewApp,
@@ -208,37 +223,6 @@ const addupdateApp = function (app) {
         res.send();
       }
     });
-  });
-
-  app.post("/add-plan", (req, res, next) => {
-    const { app_acronym, planName, startDate, endDate } = req.body;
-    // console.log(req.body);
-
-    if (planName) {
-      // const plan_app_acronym = `${planName.replaceAll(" ", "")}_${app_acronym}`;
-      // console.log(plan_app_acronym);
-      const checkPlan = `SELECT plan_mvp_name FROM plan WHERE plan_mvp_name = ?`;
-      connection.query(checkPlan, [planName], (error, result) => {
-        if (error) throw error;
-        else if (result.length > 0) {
-          return next(errorHandler("Plan name exist!", req, res));
-        } else {
-          const addPlan = `INSERT INTO plan (plan_mvp_name, plan_app_acronym, plan_startDate, plan_endDate) VALUES (?, ?, ?, ?)`;
-          connection.query(
-            addPlan,
-            [planName, app_acronym, startDate, endDate],
-            (error, result) => {
-              if (error) throw error;
-              else {
-                res.send();
-              }
-            }
-          );
-        }
-      });
-    } else {
-      return next(errorHandler("Plan name cannot be empty!", req, res));
-    }
   });
 };
 

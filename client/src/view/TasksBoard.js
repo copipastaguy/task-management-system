@@ -26,6 +26,8 @@ const TasksBoard = () => {
   const openCreateTask = () => setOpenTaskForm(true);
   const closeCreateTask = () => setOpenTaskForm(false);
 
+  const [rNum, setRnum] = useState("");
+
   // CHECK IF USER IS A PROJECT LEAD FUNCTION
   const checkGroup = async () => {
     const response_lead = await axios.get("/checkgroup", {
@@ -57,7 +59,9 @@ const TasksBoard = () => {
 
   const getApplications = async () => {
     const response = await axios.get("/get-applications");
-    setApplications(response.data);
+    // console.log(response.data[1].max);
+    setApplications(response.data[0]);
+    setRnum(response.data[1].max);
   };
 
   const getTasks = async () => {
@@ -196,7 +200,8 @@ const TasksBoard = () => {
 
                   <Form.Control
                     type="number"
-                    value={app_Rnum}
+                    value={rNum + 1}
+                    readOnly={rNum > 0 ? true : false}
                     onChange={(e) => setAppRnum(e.target.value)}
                   />
                 </Form.Group>

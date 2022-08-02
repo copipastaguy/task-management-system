@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Card from "react-bootstrap/Card";
 import axios from "axios";
 import Select from "react-select";
+import { toast } from "react-toastify";
 
 const EditTask = () => {
   const { task_name } = useParams();
@@ -18,7 +18,10 @@ const EditTask = () => {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [taskNotes, setTaskNotes] = useState("");
-  // const [taskState, setTaskState] = useState("Open");
+
+  const [auditNotes, setAuditNotes] = useState([]);
+
+  const [taskState, setTaskState] = useState("");
   // const [taskPlan, setTaskPlan] = useState();
 
   // const [selectedState, setSelectedState] = useState();
@@ -30,7 +33,16 @@ const EditTask = () => {
         task_name,
       },
     });
+    console.log(response.data);
     setData(response.data[0]);
+
+    const notes = await axios.get("/get-task-notes", {
+      params: {
+        task_name,
+      },
+    });
+    console.log(notes.data);
+    setAuditNotes(notes.data);
   };
 
   useEffect(() => {
@@ -40,18 +52,31 @@ const EditTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const response = await axios.post("/edit-task", {
-      //   params: {
-      //     task_name,
-      //   },
-      // });
+      console.log("Updating form");
+      const response = await axios.post("/edit-task", {
+        task_name,
+        taskNotes,
+        taskState: data.task_state,
+        taskCreator,
+      });
+      if (response.data) {
+        toast.success(response.data, {
+          position: "top-center",
+          autoClose: 800,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+        });
+        fetchTask();
+        setTaskNotes("");
+      }
     } catch (e) {
       console.warn(e);
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit} style={{ width: "70%", margin: "5% auto" }}>
+    <Form onSubmit={handleSubmit} style={{ width: "65%", margin: "2% auto" }}>
       <Modal.Header>
         <Modal.Title>Update: {task_name}</Modal.Title>
       </Modal.Header>
@@ -71,7 +96,7 @@ const EditTask = () => {
           </Col>
           <Col>
             <Form.Group>
-              <Form.Label>Task name</Form.Label>
+              <Form.Label>Task state</Form.Label>
               <Form.Control defaultValue={data.task_state} readOnly />
             </Form.Group>
           </Col>
@@ -82,6 +107,7 @@ const EditTask = () => {
           <Form.Group>
             <Form.Label>Description</Form.Label>
             <Form.Control
+              readOnly
               as="textarea"
               rows={3}
               id="app_description"
@@ -96,15 +122,24 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Existing notes</Form.Label>
-              <Form.Control readOnly rows={3} id="app_notes" />
+
+              <Form.Control
+                as="textarea"
+                type="text"
+                readOnly
+                rows={7}
+                id="app_notes"
+                defaultValue={auditNotes}
+              />
             </Form.Group>
           </Col>
           <Col>
             <Form.Group>
               <Form.Label>Task notes</Form.Label>
               <Form.Control
+                // autoFocus
                 as="textarea"
-                rows={3}
+                rows={4}
                 id="app_notes"
                 value={taskNotes}
                 onChange={(e) => setTaskNotes(e.target.value)}
@@ -121,7 +156,7 @@ const EditTask = () => {
               <Select
                 // options={availPlans}
                 name="task_plan"
-                // value={data.task_plan}
+                // value={data[0].task_plan}
                 // onChange={handleTaskPlan}
                 // getOptionValue={(option) => option.value}
               />
@@ -136,12 +171,7 @@ const EditTask = () => {
 
         <Row>
           <Col>
-            <Button
-              className="btn-danger"
-              type="submit"
-              xs={4}
-              onClick={() => navigate(-1)}
-            >
+            <Button className="btn-danger" xs={4} onClick={() => navigate(-1)}>
               Back
             </Button>
           </Col>

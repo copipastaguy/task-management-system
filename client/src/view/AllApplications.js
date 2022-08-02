@@ -8,8 +8,8 @@ const AllApplications = () => {
   useEffect(() => {
     const getApplications = async () => {
       const response = await axios.get("/get-applications");
-      setData(response.data);
-      console.log(response.data);
+      setData(response.data[0]);
+      // console.log(response.data[0]);
     };
     getApplications();
   }, []);

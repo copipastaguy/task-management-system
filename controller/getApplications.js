@@ -6,7 +6,16 @@ const getApplication = function (app) {
     const getApplications = `SELECT *, date_format(app_endDate, '%d/%m/%Y') as endDate FROM application`;
     connection.query(getApplications, (error, applications) => {
       if (error) throw error;
-      res.send(applications);
+      else {
+        const getMax = `SELECT MAX(app_Rnum) as max FROM application`;
+        connection.query(getMax, (error, max) => {
+          if (error) throw error;
+          else {
+            console.log(max);
+          }
+          res.send([applications, max[0]]);
+        });
+      }
     });
   });
 
