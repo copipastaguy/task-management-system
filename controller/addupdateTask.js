@@ -77,7 +77,7 @@ const addupdateTask = function (app) {
   // PROJECT MANAGER APPROVE TASK
   app.post("/approve-task", (req, res, next) => {
     const { task_name, newState, note, taskOwner } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     // console.log(note);
     // const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
     // connection.query(addNote, [task_name, note], (error, result) => {
@@ -100,11 +100,31 @@ const addupdateTask = function (app) {
   });
 
   app.post("/edit-task", (req, res, next) => {
-    const { task_name, taskNotes, taskState, taskCreator } = req.body;
+    const { task_name, taskNotes, taskState, taskCreator, taskPlan } = req.body;
     // console.log(req.body);
 
     const auditNotes = `${now}: ${taskState} \n${taskCreator} \n${taskNotes}`;
     // console.log(auditNotes);
+
+    // if (taskPlan) {
+    //   const updateTask = `UPDATE task, task_notes SET task.task_plan = ? WHERE task.task_name = ?`;
+    //   connection.query(updateTask, [taskPlan, task_name], (error, result) => {
+    //     if (error) throw error;
+    //     else {
+    //       console.log("updated task");
+    //       const planNote = `${now}: ${taskState} \n${taskCreator} \nUpdated task plan`;
+    //       const addPlanNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
+    //       connection.query(
+    //         addPlanNote,
+    //         [task_name, planNote],
+    //         (error, result) => {
+    //           if (error) throw error;
+    //           console.log("added plan note to task_notes");
+    //         }
+    //       );
+    //     }
+    //   });
+    // }
 
     // POST INTO task_notes
     const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
@@ -118,7 +138,7 @@ const addupdateTask = function (app) {
 
   app.post("/move-task-doing", (req, res, next) => {
     const { task_name, newState, taskOwner } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     // const auditNotes = `${now}: ${taskState} \n${taskCreator} \n${taskNotes}`;
     // console.log(auditNotes);

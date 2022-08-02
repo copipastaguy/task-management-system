@@ -44,10 +44,6 @@ const ApplicationKanban = () => {
   const openAddTaskForm = () => setOpenAddTask(true);
   const closeAddTaskForm = () => setOpenAddTask(false);
 
-  const [openEditTask, setOpenEditTask] = useState(false);
-  const openEditTaskForm = () => setOpenEditTask(true);
-  const closeEditTaskForm = () => setOpenEditTask(false);
-
   const [projectLead, setProjectLead] = useState(false);
   const [projectManager, setProjectManager] = useState(false);
 
@@ -73,7 +69,6 @@ const ApplicationKanban = () => {
   }, []);
 
   const getPlans = async () => {
-    // console.log(app_acronym);
     const response = await axios.get("/get-plans", {
       params: {
         plan_app_acronym: app_acronym,

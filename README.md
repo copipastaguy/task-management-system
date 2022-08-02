@@ -122,7 +122,7 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - [] Edit Application
 - [] description
 - [] deadline
-- [] permits
+- [] permits check
 
 - [] Edit Task
 - [] description

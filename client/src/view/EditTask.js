@@ -8,9 +8,11 @@ import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import Select from "react-select";
 import { toast } from "react-toastify";
+import { useApi } from "../utils/useApi";
 
 const EditTask = () => {
-  const { task_name } = useParams();
+  const { task_name, app_acronym } = useParams();
+  // console.log(app_acronym);
   const navigate = useNavigate();
   const taskCreator = localStorage.getItem("username");
 
@@ -22,10 +24,12 @@ const EditTask = () => {
   const [auditNotes, setAuditNotes] = useState([]);
 
   const [taskState, setTaskState] = useState("");
-  // const [taskPlan, setTaskPlan] = useState();
+  const [taskPlan, setTaskPlan] = useState();
+
+  const [plans, setPlans] = useState([]);
 
   // const [selectedState, setSelectedState] = useState();
-  // const [selectedPlan, setSelectedPlan] = useState();
+  const [selectedPlan, setSelectedPlan] = useState();
 
   const fetchTask = async () => {
     const response = await axios.get("/get-task", {
@@ -33,7 +37,7 @@ const EditTask = () => {
         task_name,
       },
     });
-    console.log(response.data);
+    // console.log(response.data);
     setData(response.data[0]);
 
     const notes = await axios.get("/get-task-notes", {
@@ -41,13 +45,50 @@ const EditTask = () => {
         task_name,
       },
     });
-    console.log(notes.data);
+    // console.log(notes.data);
     setAuditNotes(notes.data);
+  };
+
+  const fetchPlans = async () => {
+    const plans = await axios.get("/get-plans", {
+      params: {
+        plan_app_acronym: app_acronym,
+      },
+    });
+    setPlans(plans.data);
   };
 
   useEffect(() => {
     fetchTask();
+    setTaskPlan(data.task_plan);
   }, []);
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  const options = plans.map((plan) => {
+    const value = plan.plan_mvp_name;
+    return {
+      label: value,
+      value: value,
+    };
+  });
+
+  // const currentPlan = () => {
+  //   const value = data.task_plan;
+  //   return {
+  //     label: value,
+  //     value: value,
+  //   };
+  // };
+  // console.log(data.task_plan);
+
+  const handleTaskPlan = (selectedPlan) => {
+    setSelectedPlan(selectedPlan);
+    const value = selectedPlan.value;
+    setTaskPlan(value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,6 +99,7 @@ const EditTask = () => {
         taskNotes,
         taskState: data.task_state,
         taskCreator,
+        taskPlan,
       });
       if (response.data) {
         toast.success(response.data, {
@@ -69,6 +111,7 @@ const EditTask = () => {
         });
         fetchTask();
         setTaskNotes("");
+        setSelectedPlan(null);
       }
     } catch (e) {
       console.warn(e);
@@ -154,10 +197,14 @@ const EditTask = () => {
             <Form.Group>
               <Form.Label>Assign a Plan</Form.Label>
               <Select
-                // options={availPlans}
+                options={options}
                 name="task_plan"
-                // value={data[0].task_plan}
-                // onChange={handleTaskPlan}
+                value={selectedPlan}
+                // defaultValue={{
+                //   label: data.task_plan,
+                //   value: data.task_plan,
+                // }}
+                onChange={handleTaskPlan}
                 // getOptionValue={(option) => option.value}
               />
             </Form.Group>

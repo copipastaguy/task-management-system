@@ -32,10 +32,10 @@ const getTasks = function (app) {
         result.forEach((note) => {
           // console.log(note.task_note + "\n");
           noteArr.push(note.task_note);
-          console.log(noteArr);
+          // console.log(noteArr);
         });
         const noteStr = noteArr.reverse().join("\n");
-        console.log(noteStr);
+        // console.log(noteStr);
         res.send(noteStr);
       }
     });
