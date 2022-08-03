@@ -33,8 +33,7 @@ const addGetPlan = function (app) {
 
   app.get("/get-plans", (req, res) => {
     const plan_app_acronym = req.query.plan_app_acronym;
-    console.log(plan_app_acronym);
-    // console.log("getting plans for ", plan_app_acronym);
+    // console.log(plan_app_acronym);
 
     const getPlan = `SELECT *, date_format(plan_startDate, '%d/%m/%y') as startDate, date_format(plan_endDate, '%d/%m/%y') as endDate FROM plan WHERE plan_app_acronym = ?`;
     connection.query(getPlan, [plan_app_acronym], (error, result) => {

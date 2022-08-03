@@ -38,7 +38,6 @@ const LoginForm = () => {
                 usergroup: "admin",
               },
             });
-
             if (admin.data === true) {
               localStorage.setItem("isAdmin", "admin");
               navigate("/management");

@@ -20,7 +20,6 @@ const EditTask = () => {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState();
   const [taskNotes, setTaskNotes] = useState("");
-  // const [taskCreator, setTaskCreator] = useState("");
 
   const [auditNotes, setAuditNotes] = useState([]);
 
@@ -30,43 +29,32 @@ const EditTask = () => {
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
 
-  // const [selectedState, setSelectedState] = useState();
-
   const fetchTask = async () => {
     const response = await axios.get("/get-task", {
       params: {
         task_name,
       },
     });
-    console.log(response.data[0].task_plan);
     setData(response.data[0]);
 
+    // GET AUDIT NOTES
     const notes = await axios.get("/get-task-notes", {
       params: {
         task_name,
       },
     });
-    // console.log(notes.data);
     setAuditNotes(notes.data);
   };
 
+  // FETCH PLANS ASSOCIATED WITH APPLICATION
   const fetchPlans = async () => {
     const plans = await axios.get("/get-plans", {
       params: {
         plan_app_acronym: app_acronym,
       },
     });
-    console.log(plans);
     setPlans(plans.data);
   };
-
-  useEffect(() => {
-    fetchTask();
-  }, []);
-
-  useEffect(() => {
-    fetchPlans();
-  }, []);
 
   const options = plans.map((plan) => {
     const value = plan.plan_mvp_name;
@@ -75,6 +63,14 @@ const EditTask = () => {
       value: value,
     };
   });
+
+  useEffect(() => {
+    fetchTask();
+  }, []);
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
 
   const handleTaskPlan = (selectedPlan) => {
     setSelectedPlan(selectedPlan);
@@ -85,7 +81,6 @@ const EditTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // console.log("Updating form");
       const response = await axios.post("/edit-task", {
         task_name,
         taskNotes,
@@ -172,12 +167,18 @@ const EditTask = () => {
             <Form.Group>
               <Form.Label>Task notes</Form.Label>
               <Form.Control
-                // autoFocus
                 as="textarea"
                 rows={4}
                 id="app_notes"
                 value={taskNotes}
                 onChange={(e) => setTaskNotes(e.target.value)}
+                readOnly={
+                  data.task_state === "Closed" ||
+                  data.task_state === "Done" ||
+                  (data.task_state === "Open" &&
+                    taskOwner != data.task_creator &&
+                    true)
+                }
               />
             </Form.Group>
           </Col>
@@ -193,9 +194,12 @@ const EditTask = () => {
                 options={options}
                 name="task_plan"
                 value={selectedPlan}
-                // defaultValue={currentPlan}
                 onChange={handleTaskPlan}
                 getOptionValue={(option) => option.value}
+                isDisabled={
+                  data.task_state === "Closed" ||
+                  (taskOwner != data.task_creator && true)
+                }
               />
             </Form.Group>
           </Col>

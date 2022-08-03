@@ -30,6 +30,7 @@ const ApplicationKanban = () => {
   const [data, setData] = useState([]);
   const [plans, setPlans] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [groups, setGroups] = useState([]);
 
   const [openEdit, setOpenEdit] = useState(false);
   const openEditForm = () => setOpenEdit(true);
@@ -63,6 +64,7 @@ const ApplicationKanban = () => {
   const now = `${year}-${month}-${day}`;
   const time = new Date().toTimeString().slice(0, 8);
 
+  // FETCH APPLICATION INFORMATIONS
   const fetchApplication = async () => {
     const response = await axios.get("/get-application", {
       params: {
@@ -70,9 +72,54 @@ const ApplicationKanban = () => {
       },
     });
     setData(response.data[0]);
-    console.log("fetch app");
+
+    const fetchPermitOpen = async () => {
+      const permitOpenUser = await axios.get("/checkgroup", {
+        params: {
+          username: taskOwner,
+          usergroup: response.data[0].app_permitOpen,
+        },
+      });
+      if (permitOpenUser.data === true) setPermitOpen(true);
+    };
+
+    const fetchPermitTodo = async () => {
+      const permitTodoUser = await axios.get("/checkgroup", {
+        params: {
+          username: taskOwner,
+          usergroup: response.data[0].app_permitToDo,
+        },
+      });
+      if (permitTodoUser.data === true) setPermitTodo(true);
+    };
+
+    const fetchPermitDoing = async () => {
+      const permitDoingUser = await axios.get("/checkgroup", {
+        params: {
+          username: taskOwner,
+          usergroup: response.data[0].app_permitDoing,
+        },
+      });
+      if (permitDoingUser.data === true) setPermitDoing(true);
+    };
+
+    const fetchPermitDone = async () => {
+      const permitDoingUser = await axios.get("/checkgroup", {
+        params: {
+          username: taskOwner,
+          usergroup: response.data[0].app_permitDone,
+        },
+      });
+      if (permitDoingUser.data === true) setPermitDone(true);
+    };
+
+    fetchPermitOpen();
+    fetchPermitTodo();
+    fetchPermitDoing();
+    fetchPermitDone();
   };
 
+  // GET PLANS ASSOCIATED WITH APPLICATION
   const getPlans = async () => {
     const response = await axios.get("/get-plans", {
       params: {
@@ -82,72 +129,38 @@ const ApplicationKanban = () => {
     setPlans(response.data);
   };
 
+  // GET TASKS ASSOCIATED WITH APPLICATION
   const fetchTasks = async () => {
     const response = await axios.get("/get-tasks", {
       params: {
         plan_app_acronym: app_acronym,
       },
     });
-    // console.log(response.data);
     setTasks(response.data);
   };
 
-  const fetchPermitOpen = async () => {
-    const permitOpenUser = await axios.get("/checkgroup", {
-      params: {
-        username: taskOwner,
-        usergroup: data.app_permitOpen,
-      },
-    });
-    if (permitOpenUser.data === true) setPermitOpen(true);
-  };
-
-  const fetchPermitTodo = async () => {
-    const permitTodoUser = await axios.get("/checkgroup", {
-      params: {
-        username: taskOwner,
-        usergroup: data.app_permitToDo,
-      },
-    });
-
-    if (permitTodoUser.data === true) setPermitTodo(true);
-  };
-
-  const fetchPermitDoing = async () => {
-    const permitDoingUser = await axios.get("/checkgroup", {
-      params: {
-        username: taskOwner,
-        usergroup: data.app_permitDoing,
-      },
-    });
-    if (permitDoingUser.data === true) setPermitDoing(true);
-  };
-
-  const fetchPermitDone = async () => {
-    const permitDoingUser = await axios.get("/checkgroup", {
-      params: {
-        username: taskOwner,
-        usergroup: data.app_permitDone,
-      },
-    });
-    if (permitDoingUser.data === true) setPermitDone(true);
-  };
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
   useEffect(() => {
     fetchApplication();
     getPlans();
-    fetchTasks();
-
     // CHECK GROUP FOR DIFFERENT STATE CHANGE
     const userGroup = localStorage.getItem("user-group");
     if (userGroup === "project manager") {
       setProjectManager(true);
     }
+
     if (userGroup === "project lead") {
       setProjectLead(true);
     }
 
-    // checkGroup();
+    const getGroups = async () => {
+      const response = await axios.get("/user-groups");
+      setGroups(response.data);
+    };
+    getGroups();
   }, []);
 
   const EditApp = ({ show, onHide }) => {
@@ -216,20 +229,13 @@ const ApplicationKanban = () => {
       setPermitDone(value);
     };
 
-    const options = [
-      {
-        value: "project manager",
-        label: "project manager",
-      },
-      {
-        value: "project lead",
-        label: "project lead",
-      },
-      {
-        value: "team member",
-        label: "team member",
-      },
-    ];
+    const options = groups.map((group) => {
+      const value = group.groupname;
+      return {
+        label: value,
+        value: value,
+      };
+    });
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -264,7 +270,6 @@ const ApplicationKanban = () => {
           <Modal.Header>
             <Modal.Title>Update application: {app_acronym}</Modal.Title>
           </Modal.Header>
-
           <Modal.Body>
             <Row>
               <Col>
@@ -306,6 +311,7 @@ const ApplicationKanban = () => {
               <Form.Group as={Col}>
                 <Form.Label>Start Date</Form.Label>
                 <Form.Control
+                  readOnly={!projectLead && true}
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -315,6 +321,7 @@ const ApplicationKanban = () => {
               <Form.Group as={Col}>
                 <Form.Label>End Date</Form.Label>
                 <Form.Control
+                  readOnly={!projectLead && true}
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
@@ -327,9 +334,9 @@ const ApplicationKanban = () => {
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit Open</Form.Label>
                 <Select
+                  isDisabled={!projectLead && true}
                   options={options}
                   name="permit_open"
-                  // key={defaultOpen}
                   defaultValue={defaultOpen}
                   value={selectedOpen}
                   onChange={handleOpen}
@@ -340,6 +347,7 @@ const ApplicationKanban = () => {
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit ToDo</Form.Label>
                 <Select
+                  isDisabled={!projectLead && true}
                   options={options}
                   name="permit_todo"
                   value={selectedTodo}
@@ -351,6 +359,7 @@ const ApplicationKanban = () => {
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit Doing</Form.Label>
                 <Select
+                  isDisabled={!projectLead && true}
                   options={options}
                   name="permit_doing"
                   defaultValue={defaultDoing}
@@ -361,6 +370,7 @@ const ApplicationKanban = () => {
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit Done</Form.Label>
                 <Select
+                  isDisabled={!projectLead && true}
                   options={options}
                   name="permit_done"
                   defaultValue={defaultDone}
@@ -373,9 +383,11 @@ const ApplicationKanban = () => {
 
             <Row>
               <Col>
-                <Button className="btn-success" type="submit" xs={4}>
-                  Update
-                </Button>
+                {projectLead && (
+                  <Button className="btn-success" type="submit" xs={4}>
+                    Update
+                  </Button>
+                )}
               </Col>
             </Row>
           </Modal.Body>
@@ -390,6 +402,8 @@ const ApplicationKanban = () => {
 
     const [startDate, setStartDate] = useState(now);
     const [endDate, setEndDate] = useState(now);
+
+    const [planColor, setPlanColor] = useState();
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -446,6 +460,21 @@ const ApplicationKanban = () => {
                   />
                 </Form.Group>
               </Col>
+
+              <Col>
+                <Form.Group>
+                  <Form.Label>Choose a color</Form.Label>
+                  <Form.Control
+                    type="color"
+                    defaultValue="#000000"
+                    value={planColor}
+                    onChange={(e) => {
+                      console.log(planColor);
+                      setPlanColor(e.target.value);
+                    }}
+                  />
+                </Form.Group>
+              </Col>
             </Row>
             <br />
 
@@ -490,7 +519,6 @@ const ApplicationKanban = () => {
     const [taskState, setTaskState] = useState("Open");
     const [taskPlan, setTaskPlan] = useState();
 
-    const [selectedState, setSelectedState] = useState();
     const [selectedPlan, setSelectedPlan] = useState();
 
     // FETCH ALL PLANS AVAILABLE
@@ -683,6 +711,7 @@ const ApplicationKanban = () => {
                 <IoIosAddCircle /> Plan
               </Button>
             )}
+
             {projectLead && (
               <Button onClick={openAddTaskForm}>
                 <IoIosAddCircle /> Task
@@ -717,7 +746,6 @@ const ApplicationKanban = () => {
                 const approveTask = async () => {
                   const newState = "ToDo";
                   const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
-                  // alert(note);
                   try {
                     const response = await axios.post("/move-task-todo", {
                       task_name: task.task_name,
@@ -725,6 +753,7 @@ const ApplicationKanban = () => {
                       note,
                       taskOwner,
                     });
+                    fetchTasks();
                     if (response.data) {
                       toast.success(`Move ${task.task_name} to ToDo!`, {
                         position: "top-center",
@@ -733,14 +762,12 @@ const ApplicationKanban = () => {
                         closeOnClick: true,
                         pauseOnHover: false,
                       });
-                      fetchTasks();
                     }
                   } catch (e) {
                     console.warn(e);
                   }
                 };
                 if (task.task_state === "Open") {
-                  fetchPermitOpen();
                   return (
                     <Card
                       style={{ borderRadius: "15px", marginBottom: "10px" }}
@@ -795,7 +822,7 @@ const ApplicationKanban = () => {
                   fetchTasks();
                 };
                 if (task.task_state === "ToDo") {
-                  fetchPermitTodo();
+                  // fetchPermitTodo();
                   return (
                     <Card
                       style={{ borderRadius: "15px", marginBottom: "10px" }}
@@ -841,6 +868,16 @@ const ApplicationKanban = () => {
                     newState,
                     taskOwner,
                   });
+                  if (response.data) {
+                    toast.success(`Move ${task.task_name} to Done!`, {
+                      position: "top-center",
+                      autoClose: 700,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                    });
+                    fetchTasks();
+                  }
                 };
                 const MoveTaskToDo = async () => {
                   const newState = "ToDo  ";
@@ -849,10 +886,19 @@ const ApplicationKanban = () => {
                     newState,
                     taskOwner,
                   });
-                  fetchTasks();
+
+                  if (response.data) {
+                    toast.success(`Move ${task.task_name} to To-Do!`, {
+                      position: "top-center",
+                      autoClose: 700,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                    });
+                    fetchTasks();
+                  }
                 };
                 if (task.task_state === "Doing") {
-                  fetchPermitDoing();
                   return (
                     <Card
                       style={{ borderRadius: "15px", marginBottom: "10px" }}
@@ -904,7 +950,16 @@ const ApplicationKanban = () => {
                   newState,
                   taskOwner,
                 });
-                fetchTasks();
+                if (response.data) {
+                  toast.success(`Move ${task.task_name} to Doing!`, {
+                    position: "top-center",
+                    autoClose: 700,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                  });
+                  fetchTasks();
+                }
               };
               const MoveTaskToClose = async () => {
                 const newState = "Closed";
@@ -913,11 +968,19 @@ const ApplicationKanban = () => {
                   newState,
                   taskOwner,
                 });
-                fetchTasks();
+                if (response.data) {
+                  toast.success(`Move ${task.task_name} to Closed!`, {
+                    position: "top-center",
+                    autoClose: 700,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                  });
+                  fetchTasks();
+                }
               };
 
               if (task.task_state === "Done") {
-                fetchPermitDone();
                 return (
                   <Card
                     style={{ borderRadius: "15px", marginBottom: "10px" }}
@@ -929,30 +992,28 @@ const ApplicationKanban = () => {
                       taskState={task.task_state}
                       taskOwner={task.task_owner}
                     />
+                    <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                      <Button style={{ width: "100%" }}>
+                        <AiFillEdit />
+                      </Button>
+                    </Link>
 
-                    <div className="buttons-container">
-                      {permitDone && (
+                    {permitDone && (
+                      <div className="buttons-container">
                         <Button
                           variant="danger"
                           onClick={() => MoveTaskDoing()}
                         >
                           <AiOutlineArrowLeft />
                         </Button>
-                      )}
-                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                        <Button style={{ width: "100%" }}>
-                          <AiFillEdit />
-                        </Button>
-                      </Link>
-                      {permitDone && (
                         <Button
                           variant="success"
                           onClick={() => MoveTaskToClose()}
                         >
                           <AiOutlineArrowRight />
                         </Button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </Card>
                 );
               }
@@ -963,10 +1024,8 @@ const ApplicationKanban = () => {
             <div className="col-header">
               <p>Close</p>
             </div>
-
             {tasks.map((task) => {
               if (task.task_state === "Closed") {
-                fetchPermitDone();
                 return (
                   <Card
                     style={{ borderRadius: "15px", marginBottom: "10px" }}

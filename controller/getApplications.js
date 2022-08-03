@@ -11,9 +11,8 @@ const getApplication = function (app) {
         connection.query(getMax, (error, max) => {
           if (error) throw error;
           else {
-            console.log(max);
+            res.send([applications, max[0]]);
           }
-          res.send([applications, max[0]]);
         });
       }
     });

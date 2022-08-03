@@ -82,8 +82,14 @@ admin:
 - change email
 - disable account
 
+==============================================
+
 PHASE 2 TASK MANAGEMENT FLOW
 TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
+
+OPEN state:
+
+- Project lead able to edit description
 
 - [] MYSQL MODEL
 - PRIMARY KEY: app_acronym, plan_app_acronym, task_app_acronym
@@ -116,7 +122,7 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - [] Project Lead
 - [x] create new apps
 - [x] create new open tasks
-- [x] assign permit
+- [x] assign permits
 - [x] close tasks, demote tasks to doing
 
 - [] Edit Application
@@ -124,7 +130,7 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - [] deadline
 - [] permits check
 
-- [] Edit Task
+- [] Edit Task (OPEN - DOING)
 - [x] new notes
 - [] assign plan
 
@@ -135,6 +141,10 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - [] approve tasks
 - [] assign task to plan
 - [] approve done to close task
+
+- [] Edit tasks (OPEN - DOING)
+- [] new notes
+- [] assign plan
 
 ==============================================
 

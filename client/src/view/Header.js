@@ -9,15 +9,20 @@ import Modal from "@mui/material/Modal";
 
 const Header = () => {
   const user = localStorage.getItem("username");
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const handleOpenUpdate = () => {
+    setOpenUpdate(true);
+  };
+  const handleCloseUpdate = () => {
+    setOpenUpdate(false);
+  };
 
-  const [displayUpdate, setDisplayUpdate] = useState(false);
+  // const [displayUpdate, setDisplayUpdate] = useState(false);
   const navigate = useNavigate();
 
   const handleSignout = (e) => {
     e.preventDefault();
-    console.log("sign out");
     localStorage.clear();
-    sessionStorage.clear();
     navigate("/");
   };
 
@@ -35,40 +40,15 @@ const Header = () => {
     const [selectedActive, setSelectedActive] = useState();
 
     // - - - PASS IN EMPTY DEPENDACY ARRAY FOR FUNCTION TO RUN ONCE - - -
+    const getGroups = async () => {
+      const response = await axios.get("/user-groups");
+      const data = response.data;
+      setUserOptions(data);
+    };
+
     useEffect(() => {
-      const getGroups = async () => {
-        const response = await axios.get("/user-groups");
-        const data = response.data;
-        setUserOptions(data);
-      };
-      getGroups();
+      // getGroups();
     }, []);
-
-    const activeOptions = [
-      { value: "Active", label: "Active" },
-      { value: "Inactive", label: "Inactive" },
-    ];
-
-    const handleUserGroup = (selectedOption) => {
-      setUserGroup(selectedOption);
-
-      // access value from option and push to array
-      selectedOption.forEach((option) => {
-        const value = option.value;
-        setUserGroup([...userGroup, value]);
-      });
-    };
-
-    const handleActive = (selectedActive) => {
-      const value = selectedActive.value;
-      setActive(value);
-    };
-
-    // map out reactselect options
-    const options = userOptions.map((option) => {
-      // object for react-select options
-      return { value: option.groupname, label: option.groupname };
-    });
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -141,13 +121,6 @@ const Header = () => {
         </Form>
       </Modal>
     );
-  };
-  const [openUpdate, setOpenUpdate] = useState(false);
-  const handleOpenUpdate = () => {
-    setOpenUpdate(true);
-  };
-  const handleCloseUpdate = () => {
-    setOpenUpdate(false);
   };
 
   return (

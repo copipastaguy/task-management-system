@@ -14,7 +14,7 @@ const addupdateApp = function (app) {
       permitDoing,
       permitDone,
     } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     if (app_acronym && app_description) {
       const checkApp = `SELECT app_acronym FROM application WHERE app_acronym = ?`;
@@ -65,14 +65,12 @@ const addupdateApp = function (app) {
       permitDoing,
       permitDone,
     } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     const getData = `SELECT * FROM application WHERE app_acronym = ?`;
     connection.query(getData, [app_acronym], (error, result) => {
       if (error) throw error;
       else if (result.length > 0) {
-        console.log(result[0]);
-
         //////////////////// DATES ////////////////////
         if (!startDate) {
           const old_startDate = result[0].app_startDate;

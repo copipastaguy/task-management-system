@@ -17,10 +17,10 @@ const TasksBoard = () => {
   const [groups, setGroups] = useState([]);
 
   const [projectlead, setProjectLead] = useState(false);
-  const [projectmanager, setProjectManager] = useState(false);
+  // const [projectManager, setProjectManager] = useState(false);
 
   const [applications, setApplications] = useState([]);
-  const [tasks, setTasks] = useState([]);
+  // const [tasks, setTasks] = useState([]);
   const [rNum, setRnum] = useState("");
 
   const [openCreateForm, setOpenCreateForm] = useState(false);
@@ -48,32 +48,24 @@ const TasksBoard = () => {
     });
     if (response_manager.data === true) {
       localStorage.setItem("user-group", "project manager");
-      setProjectManager("project manager");
+      // setProjectManager(true);
     }
   };
 
   const getApplications = async () => {
     const response = await axios.get("/get-applications");
-    // console.log(response.data[1].max);
     setApplications(response.data[0]);
     setRnum(response.data[1].max + 1);
   };
 
-  // const getTasks = async () => {
-  //   const response = await axios.get("/get-tasks");
-  //   setTasks(response.data);
-  // };
-
   const getGroups = async () => {
     const response = await axios.get("/user-groups");
-    // console.log(response);
     setGroups(response.data);
   };
 
   useEffect(() => {
     checkGroup();
     getApplications();
-    // getTasks();
     getGroups();
   }, []);
 
