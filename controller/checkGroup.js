@@ -4,6 +4,7 @@ const checkGroup = function (app) {
     // checkGroup(userid, usergroup)
     const currentUser = req.query.username;
     const userGroup = req.query.usergroup;
+    // console.log(currentUser, userGroup);
     const checkIsAdmin = `SELECT * FROM usergroup WHERE username = ? AND user_group = ? `;
     connection.query(
       checkIsAdmin,

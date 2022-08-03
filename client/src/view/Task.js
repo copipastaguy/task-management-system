@@ -1,6 +1,6 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
-import { Link } from "react-router-dom";
+import { CgProfile } from "react-icons/cg";
 
 const Task = ({
   taskName,
@@ -8,6 +8,7 @@ const Task = ({
   taskPlan,
   taskDescription,
   taskOwner,
+  taskCreator,
 }) => {
   return (
     <Card
@@ -27,8 +28,11 @@ const Task = ({
         <p>{taskDescription}</p>
       </div>
 
-      <div>
-        <p>{taskOwner}</p>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <p>
+          <CgProfile />
+        </p>
+        {taskOwner}
       </div>
     </Card>
   );

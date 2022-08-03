@@ -12,14 +12,15 @@ import { useApi } from "../utils/useApi";
 
 const EditTask = () => {
   const { task_name, app_acronym } = useParams();
-  // console.log(app_acronym);
   const navigate = useNavigate();
-  const taskCreator = localStorage.getItem("username");
+
+  const taskOwner = localStorage.getItem("username");
 
   const [data, setData] = useState([]);
   const [taskName, setTaskName] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
+  const [taskDescription, setTaskDescription] = useState();
   const [taskNotes, setTaskNotes] = useState("");
+  // const [taskCreator, setTaskCreator] = useState("");
 
   const [auditNotes, setAuditNotes] = useState([]);
 
@@ -27,9 +28,9 @@ const EditTask = () => {
   const [taskPlan, setTaskPlan] = useState();
 
   const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   // const [selectedState, setSelectedState] = useState();
-  const [selectedPlan, setSelectedPlan] = useState();
 
   const fetchTask = async () => {
     const response = await axios.get("/get-task", {
@@ -37,7 +38,7 @@ const EditTask = () => {
         task_name,
       },
     });
-    // console.log(response.data);
+    console.log(response.data[0].task_plan);
     setData(response.data[0]);
 
     const notes = await axios.get("/get-task-notes", {
@@ -55,12 +56,12 @@ const EditTask = () => {
         plan_app_acronym: app_acronym,
       },
     });
+    console.log(plans);
     setPlans(plans.data);
   };
 
   useEffect(() => {
     fetchTask();
-    setTaskPlan(data.task_plan);
   }, []);
 
   useEffect(() => {
@@ -75,15 +76,6 @@ const EditTask = () => {
     };
   });
 
-  // const currentPlan = () => {
-  //   const value = data.task_plan;
-  //   return {
-  //     label: value,
-  //     value: value,
-  //   };
-  // };
-  // console.log(data.task_plan);
-
   const handleTaskPlan = (selectedPlan) => {
     setSelectedPlan(selectedPlan);
     const value = selectedPlan.value;
@@ -93,12 +85,12 @@ const EditTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Updating form");
+      // console.log("Updating form");
       const response = await axios.post("/edit-task", {
         task_name,
         taskNotes,
         taskState: data.task_state,
-        taskCreator,
+        taskOwner,
         taskPlan,
       });
       if (response.data) {
@@ -196,16 +188,14 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Assign a Plan</Form.Label>
+              <p>Current plan assigned: {data.task_plan}</p>
               <Select
                 options={options}
                 name="task_plan"
                 value={selectedPlan}
-                // defaultValue={{
-                //   label: data.task_plan,
-                //   value: data.task_plan,
-                // }}
+                // defaultValue={currentPlan}
                 onChange={handleTaskPlan}
-                // getOptionValue={(option) => option.value}
+                getOptionValue={(option) => option.value}
               />
             </Form.Group>
           </Col>
@@ -213,7 +203,7 @@ const EditTask = () => {
         <br />
 
         <Row>
-          <p>Created by: {taskCreator}</p>
+          <p>Created by: {data.task_creator}</p>
         </Row>
 
         <Row>

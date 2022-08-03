@@ -15,10 +15,12 @@ import {
   AiOutlineArrowLeft,
   AiFillEdit,
   AiFillCheckCircle,
+  AiFillEye,
 } from "react-icons/ai";
 
-import AllPlans from "./AllPlans";
+import { IoIosAddCircle } from "react-icons/io";
 
+import AllPlans from "./AllPlans";
 import Task from "./Task";
 
 const ApplicationKanban = () => {
@@ -27,10 +29,7 @@ const ApplicationKanban = () => {
 
   const [data, setData] = useState([]);
   const [plans, setPlans] = useState([]);
-  const [open, setOpen] = useState([]);
-  const [todo, setTodo] = useState([]);
-  const [doing, setDoing] = useState([]);
-  const [done, setDone] = useState([]);
+  const [tasks, setTasks] = useState([]);
 
   const [openEdit, setOpenEdit] = useState(false);
   const openEditForm = () => setOpenEdit(true);
@@ -50,6 +49,11 @@ const ApplicationKanban = () => {
   const taskCreator = localStorage.getItem("username");
   const taskOwner = localStorage.getItem("username");
 
+  const [permitOpen, setPermitOpen] = useState(false);
+  const [permitTodo, setPermitTodo] = useState(false);
+  const [permitDoing, setPermitDoing] = useState(false);
+  const [permitDone, setPermitDone] = useState(false);
+
   const today = new Date();
   let day = today.getDate();
   if (day < 10) day = "0" + day;
@@ -59,14 +63,15 @@ const ApplicationKanban = () => {
   const now = `${year}-${month}-${day}`;
   const time = new Date().toTimeString().slice(0, 8);
 
-  const fetchApplication = useCallback(async () => {
+  const fetchApplication = async () => {
     const response = await axios.get("/get-application", {
       params: {
         app_acronym: app_acronym,
       },
     });
     setData(response.data[0]);
-  }, []);
+    console.log("fetch app");
+  };
 
   const getPlans = async () => {
     const response = await axios.get("/get-plans", {
@@ -77,58 +82,72 @@ const ApplicationKanban = () => {
     setPlans(response.data);
   };
 
-  const fetchOpen = async () => {
-    const response = await axios.get("/get-open", {
+  const fetchTasks = async () => {
+    const response = await axios.get("/get-tasks", {
       params: {
         plan_app_acronym: app_acronym,
       },
     });
-    setOpen(response.data);
+    // console.log(response.data);
+    setTasks(response.data);
   };
 
-  const fetchTodo = async () => {
-    const response = await axios.get("/get-todo", {
+  const fetchPermitOpen = async () => {
+    const permitOpenUser = await axios.get("/checkgroup", {
       params: {
-        plan_app_acronym: app_acronym,
+        username: taskOwner,
+        usergroup: data.app_permitOpen,
       },
     });
-    setTodo(response.data);
+    if (permitOpenUser.data === true) setPermitOpen(true);
   };
 
-  const fetchDoing = async () => {
-    const response = await axios.get("/get-doing", {
+  const fetchPermitTodo = async () => {
+    const permitTodoUser = await axios.get("/checkgroup", {
       params: {
-        plan_app_acronym: app_acronym,
+        username: taskOwner,
+        usergroup: data.app_permitToDo,
       },
     });
-    setDoing(response.data);
+
+    if (permitTodoUser.data === true) setPermitTodo(true);
   };
 
-  const fetchDone = async () => {
-    const response = await axios.get("/get-done", {
+  const fetchPermitDoing = async () => {
+    const permitDoingUser = await axios.get("/checkgroup", {
       params: {
-        plan_app_acronym: app_acronym,
+        username: taskOwner,
+        usergroup: data.app_permitDoing,
       },
     });
-    setDone(response.data);
+    if (permitDoingUser.data === true) setPermitDoing(true);
+  };
+
+  const fetchPermitDone = async () => {
+    const permitDoingUser = await axios.get("/checkgroup", {
+      params: {
+        username: taskOwner,
+        usergroup: data.app_permitDone,
+      },
+    });
+    if (permitDoingUser.data === true) setPermitDone(true);
   };
 
   useEffect(() => {
     fetchApplication();
     getPlans();
-    fetchOpen();
-    fetchTodo();
-    fetchDoing();
-    fetchDone();
+    fetchTasks();
 
+    // CHECK GROUP FOR DIFFERENT STATE CHANGE
     const userGroup = localStorage.getItem("user-group");
     if (userGroup === "project manager") {
       setProjectManager(true);
     }
-
     if (userGroup === "project lead") {
       setProjectLead(true);
     }
+
+    // checkGroup();
   }, []);
 
   const EditApp = ({ show, onHide }) => {
@@ -522,8 +541,7 @@ const ApplicationKanban = () => {
           setTaskDescription("");
           setTaskNotes("");
           setTaskState("Open");
-          fetchOpen();
-          fetchTodo();
+          fetchTasks();
         }
         if (response.data.error) {
           toast.error(response.data.error, {
@@ -584,12 +602,6 @@ const ApplicationKanban = () => {
             <Row>
               <Col>
                 <Form.Group>
-                  <Form.Label>Existing notes</Form.Label>
-                  <Form.Control readOnly rows={3} id="app_notes" />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
                   <Form.Label>Task notes</Form.Label>
                   <Form.Control
                     as="textarea"
@@ -620,7 +632,7 @@ const ApplicationKanban = () => {
             <br />
 
             <Row>
-              <p>Created by: {taskCreator}</p>
+              <p>Created by: project_lead</p>
             </Row>
 
             <Row>
@@ -661,11 +673,20 @@ const ApplicationKanban = () => {
             <Button variant="danger" onClick={() => navigate("/tasks")}>
               Back
             </Button>
-            <Button onClick={openEditForm}>Update Application</Button>
+            <Button onClick={openEditForm}>
+              <AiFillEdit />
+              Application
+            </Button>
 
-            {projectLead && <Button onClick={openAddPlanForm}>Add Plan</Button>}
+            {projectManager && (
+              <Button onClick={openAddPlanForm}>
+                <IoIosAddCircle /> Plan
+              </Button>
+            )}
             {projectLead && (
-              <Button onClick={openAddTaskForm}>Add tasks</Button>
+              <Button onClick={openAddTaskForm}>
+                <IoIosAddCircle /> Task
+              </Button>
             )}
           </div>
         </div>
@@ -692,13 +713,13 @@ const ApplicationKanban = () => {
               <p>Open</p>
             </div>
             <div>
-              {open.map((task) => {
+              {tasks.map((task) => {
                 const approveTask = async () => {
                   const newState = "ToDo";
                   const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
                   // alert(note);
                   try {
-                    const response = await axios.post("/approve-task", {
+                    const response = await axios.post("/move-task-todo", {
                       task_name: task.task_name,
                       newState,
                       note,
@@ -712,38 +733,39 @@ const ApplicationKanban = () => {
                         closeOnClick: true,
                         pauseOnHover: false,
                       });
+                      fetchTasks();
                     }
-                    fetchOpen();
-                    fetchTodo();
                   } catch (e) {
                     console.warn(e);
                   }
                 };
+                if (task.task_state === "Open") {
+                  fetchPermitOpen();
+                  return (
+                    <Card
+                      style={{ borderRadius: "15px", marginBottom: "10px" }}
+                      key={task.task_name}
+                    >
+                      <Task
+                        taskName={task.task_name}
+                        taskDescription={task.task_description}
+                        taskState={task.task_state}
+                        taskOwner={task.task_owner}
+                      />
+                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                        <Button style={{ width: "100%" }}>
+                          <AiFillEye />
+                        </Button>
+                      </Link>
 
-                return (
-                  <Card
-                    style={{ borderRadius: "15px", marginBottom: "10px" }}
-                    key={task.task_name}
-                  >
-                    <Task
-                      taskName={task.task_name}
-                      taskDescription={task.task_description}
-                      taskState={task.task_state}
-                      taskOwner={task.task_owner}
-                    />
-                    <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                      <Button style={{ width: "100%" }}>
-                        <AiFillEdit />
-                      </Button>
-                    </Link>
-
-                    {projectManager && (
-                      <Button variant="success" onClick={approveTask}>
-                        <AiFillCheckCircle />
-                      </Button>
-                    )}
-                  </Card>
-                );
+                      {permitOpen && (
+                        <Button variant="success" onClick={approveTask}>
+                          <AiFillCheckCircle />
+                        </Button>
+                      )}
+                    </Card>
+                  );
+                }
               })}
             </div>
           </div>
@@ -752,9 +774,8 @@ const ApplicationKanban = () => {
             <div className="col-header">
               <p>To-Do</p>
             </div>
-
             <div>
-              {todo.map((task) => {
+              {tasks.map((task) => {
                 const MoveTaskToDoing = async () => {
                   const newState = "Doing";
                   const response = await axios.post("/move-task-doing", {
@@ -771,30 +792,38 @@ const ApplicationKanban = () => {
                       pauseOnHover: false,
                     });
                   }
-                  fetchTodo();
-                  fetchDoing();
+                  fetchTasks();
                 };
-                return (
-                  <Card
-                    style={{ borderRadius: "15px", marginBottom: "10px" }}
-                    key={task.task_name}
-                  >
-                    <Task
-                      taskName={task.task_name}
-                      taskDescription={task.task_description}
-                      taskState={task.task_state}
-                      taskOwner={task.task_owner}
-                    />
-                    <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                      <Button style={{ width: "100%" }}>
-                        <AiFillEdit />
-                      </Button>
-                    </Link>
-                    <Button variant="success" onClick={() => MoveTaskToDoing()}>
-                      <AiOutlineArrowRight />
-                    </Button>
-                  </Card>
-                );
+                if (task.task_state === "ToDo") {
+                  fetchPermitTodo();
+                  return (
+                    <Card
+                      style={{ borderRadius: "15px", marginBottom: "10px" }}
+                      key={task.task_name}
+                    >
+                      <Task
+                        taskName={task.task_name}
+                        taskDescription={task.task_description}
+                        taskState={task.task_state}
+                        taskOwner={task.task_owner}
+                      />
+                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                        <Button style={{ width: "100%" }}>
+                          <AiFillEdit />
+                        </Button>
+                      </Link>
+
+                      {permitTodo && (
+                        <Button
+                          variant="success"
+                          onClick={() => MoveTaskToDoing()}
+                        >
+                          <AiOutlineArrowRight />
+                        </Button>
+                      )}
+                    </Card>
+                  );
+                }
               })}
             </div>
           </div>
@@ -804,28 +833,140 @@ const ApplicationKanban = () => {
               <p>Doing</p>
             </div>
             <div>
-              {doing.map((task) => {
+              {tasks.map((task) => {
                 const MoveTaskToDone = async () => {
                   const newState = "Done";
-                  // alert("Moving to Done");
                   const response = await axios.post("/move-task-done", {
                     task_name: task.task_name,
                     newState,
                     taskOwner,
                   });
                 };
-
                 const MoveTaskToDo = async () => {
                   const newState = "ToDo  ";
-                  // alert("Moving back to ToDo");
-                  const response = await axios.post("/approve-task", {
+                  const response = await axios.post("/move-task-todo", {
                     task_name: task.task_name,
                     newState,
                     taskOwner,
                   });
-                  fetchTodo();
-                  fetchDoing();
+                  fetchTasks();
                 };
+                if (task.task_state === "Doing") {
+                  fetchPermitDoing();
+                  return (
+                    <Card
+                      style={{ borderRadius: "15px", marginBottom: "10px" }}
+                      key={task.task_name}
+                    >
+                      <Task
+                        taskName={task.task_name}
+                        taskDescription={task.task_description}
+                        taskState={task.task_state}
+                        taskOwner={task.task_owner}
+                      />
+                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                        <Button style={{ width: "100%" }}>
+                          <AiFillEdit />
+                        </Button>
+                      </Link>
+                      {permitDoing && (
+                        <div className="buttons-container">
+                          <Button
+                            variant="danger"
+                            onClick={() => MoveTaskToDo()}
+                          >
+                            <AiOutlineArrowLeft />
+                          </Button>
+                          <Button
+                            variant="success"
+                            onClick={() => MoveTaskToDone()}
+                          >
+                            <AiOutlineArrowRight />
+                          </Button>
+                        </div>
+                      )}
+                    </Card>
+                  );
+                }
+              })}
+            </div>
+          </div>
+
+          <div>
+            <div className="col-header">
+              <p>Done</p>
+            </div>
+            {tasks.map((task) => {
+              const MoveTaskDoing = async () => {
+                const newState = "Doing";
+                const response = await axios.post("/move-task-doing", {
+                  task_name: task.task_name,
+                  newState,
+                  taskOwner,
+                });
+                fetchTasks();
+              };
+              const MoveTaskToClose = async () => {
+                const newState = "Closed";
+                const response = await axios.post("/move-task-close", {
+                  task_name: task.task_name,
+                  newState,
+                  taskOwner,
+                });
+                fetchTasks();
+              };
+
+              if (task.task_state === "Done") {
+                fetchPermitDone();
+                return (
+                  <Card
+                    style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    key={task.task_name}
+                  >
+                    <Task
+                      taskName={task.task_name}
+                      taskDescription={task.task_description}
+                      taskState={task.task_state}
+                      taskOwner={task.task_owner}
+                    />
+
+                    <div className="buttons-container">
+                      {permitDone && (
+                        <Button
+                          variant="danger"
+                          onClick={() => MoveTaskDoing()}
+                        >
+                          <AiOutlineArrowLeft />
+                        </Button>
+                      )}
+                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                        <Button style={{ width: "100%" }}>
+                          <AiFillEdit />
+                        </Button>
+                      </Link>
+                      {permitDone && (
+                        <Button
+                          variant="success"
+                          onClick={() => MoveTaskToClose()}
+                        >
+                          <AiOutlineArrowRight />
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                );
+              }
+            })}
+          </div>
+
+          <div>
+            <div className="col-header">
+              <p>Close</p>
+            </div>
+
+            {tasks.map((task) => {
+              if (task.task_state === "Closed") {
+                fetchPermitDone();
                 return (
                   <Card
                     style={{ borderRadius: "15px", marginBottom: "10px" }}
@@ -842,33 +983,10 @@ const ApplicationKanban = () => {
                         <AiFillEdit />
                       </Button>
                     </Link>
-                    <div className="buttons-container">
-                      <Button variant="danger" onClick={() => MoveTaskToDo()}>
-                        <AiOutlineArrowLeft />
-                      </Button>
-                      <Button
-                        variant="success"
-                        onClick={() => MoveTaskToDone()}
-                      >
-                        <AiOutlineArrowRight />
-                      </Button>
-                    </div>
                   </Card>
                 );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <div className="col-header">
-              <p>Done</p>
-            </div>
-          </div>
-
-          <div>
-            <div className="col-header">
-              <p>Close</p>
-            </div>
+              }
+            })}
           </div>
         </div>
       </div>

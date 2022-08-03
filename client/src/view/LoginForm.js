@@ -12,23 +12,16 @@ const LoginForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // const getLogin = () =>
-  //   axios.post("/auth", {
-  //     username,
-  //     password,
-  //   });
-  // const getLoginApi = useApi(getLogin);
-
   const login = async (e) => {
     e.preventDefault();
 
     // POST request for user database
     try {
-      // getLoginApi.request();
       const response = await axios.post("/auth", {
         username,
         password,
       });
+      console.log(response);
       if (!response.data.error) {
         try {
           // CHECK ACTIVE STATUS

@@ -9,26 +9,25 @@ import AllApplications from "./AllApplications";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Select from "react-select";
-import { useApi } from "../utils/useApi";
+// import { useApi } from "../utils/useApi";
 
 const TasksBoard = () => {
   // LOCALSTORAGE USERNAME
   const user = localStorage.getItem("username");
-  const [projectlead, setProjectLead] = useState();
+  const [groups, setGroups] = useState([]);
+
+  const [projectlead, setProjectLead] = useState(false);
+  const [projectmanager, setProjectManager] = useState(false);
+
   const [applications, setApplications] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [rNum, setRnum] = useState("");
 
   const [openCreateForm, setOpenCreateForm] = useState(false);
   const openCreateApp = () => setOpenCreateForm(true);
   const closeCreateApp = () => setOpenCreateForm(false);
 
-  const [openTaskForm, setOpenTaskForm] = useState(false);
-  const openCreateTask = () => setOpenTaskForm(true);
-  const closeCreateTask = () => setOpenTaskForm(false);
-
-  const [rNum, setRnum] = useState("");
-
-  // CHECK IF USER IS A PROJECT LEAD FUNCTION
+  // CHECK IF USER IS A SPECIFIC USER GROUP FUNCTION
   const checkGroup = async () => {
     const response_lead = await axios.get("/checkgroup", {
       params: {
@@ -38,7 +37,7 @@ const TasksBoard = () => {
     });
     if (response_lead.data === true) {
       localStorage.setItem("user-group", "project lead");
-      setProjectLead("project lead");
+      setProjectLead(true);
     }
 
     const response_manager = await axios.get("/checkgroup", {
@@ -47,33 +46,35 @@ const TasksBoard = () => {
         usergroup: "project manager",
       },
     });
-
     if (response_manager.data === true) {
       localStorage.setItem("user-group", "project manager");
-      setProjectLead("project manager");
+      setProjectManager("project manager");
     }
   };
-
-  // const getApplications = () => axios.get("/applications");
-  // const getApplicationsApi = useApi(getApplications);
 
   const getApplications = async () => {
     const response = await axios.get("/get-applications");
     // console.log(response.data[1].max);
     setApplications(response.data[0]);
-    setRnum(response.data[1].max);
+    setRnum(response.data[1].max + 1);
   };
 
-  const getTasks = async () => {
-    const response = await axios.get("/get-tasks");
-    setTasks(response.data);
+  // const getTasks = async () => {
+  //   const response = await axios.get("/get-tasks");
+  //   setTasks(response.data);
+  // };
+
+  const getGroups = async () => {
+    const response = await axios.get("/user-groups");
+    // console.log(response);
+    setGroups(response.data);
   };
 
   useEffect(() => {
     checkGroup();
     getApplications();
-    // getApplicationsApi.request();
-    getTasks();
+    // getTasks();
+    getGroups();
   }, []);
 
   const CreateApp = ({ show, onHide }) => {
@@ -89,25 +90,36 @@ const TasksBoard = () => {
     const [permitDone, setPermitDone] = useState();
 
     const [selectedOpen, setSelectedOpen] = useState();
+    const [selectedTodo, setSelectedTodo] = useState();
+    const [selectedDoing, setSelectedDoing] = useState();
+    const [selectedDone, setSelectedDone] = useState();
 
-    const options = [
-      {
-        value: "project manager",
-        label: "project manager",
-      },
-      {
-        value: "project lead",
-        label: "project lead",
-      },
-      {
-        value: "team member",
-        label: "team member",
-      },
-    ];
+    const options = groups.map((group) => {
+      const value = group.groupname;
+      return {
+        label: value,
+        value: value,
+      };
+    });
 
     const handlePermitOpen = (selectedOpen) => {
       const value = selectedOpen.value;
       setPermitOpen(value);
+    };
+
+    const handlePermitToDo = (selectedTodo) => {
+      const value = selectedTodo.value;
+      setPermitTodo(value);
+    };
+
+    const handlePermitDoing = (selectedDoing) => {
+      const value = selectedDoing.value;
+      setPermitDoing(value);
+    };
+
+    const handlePermitDone = (selectedDone) => {
+      const value = selectedDone.value;
+      setPermitDone(value);
     };
 
     const handleSubmit = async (e) => {
@@ -117,7 +129,7 @@ const TasksBoard = () => {
         const response = await axios.post("/add-application", {
           app_acronym,
           app_description,
-          app_Rnum,
+          rNum,
           app_startDate,
           app_endDate,
           permitOpen,
@@ -130,7 +142,7 @@ const TasksBoard = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
-          // setSelectedOpen(null);
+          getApplications();
         } else if (!response.data.error) {
           toast.success(`Added ${app_acronym}!`, {
             position: "top-center",
@@ -139,7 +151,6 @@ const TasksBoard = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
-          // getApplicationsApi.request();
           getApplications();
 
           // RESET FIELDS
@@ -147,6 +158,9 @@ const TasksBoard = () => {
           setAppDescription("");
           setAppRnum();
           setSelectedOpen(null);
+          setSelectedTodo(null);
+          setSelectedDoing(null);
+          setSelectedDoing(null);
         }
       } catch (e) {
         console.error(e);
@@ -200,9 +214,9 @@ const TasksBoard = () => {
 
                   <Form.Control
                     type="number"
-                    value={rNum + 1}
+                    value={rNum}
                     readOnly={rNum > 0 ? true : false}
-                    onChange={(e) => setAppRnum(e.target.value)}
+                    // onChange={(e) => setAppRnum(e.target.value)}
                   />
                 </Form.Group>
               </Col>
@@ -261,16 +275,34 @@ const TasksBoard = () => {
 
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit ToDo</Form.Label>
-                <Select options={options} name="permit_open" />
+                <Select
+                  options={options}
+                  name="permit_todo"
+                  onChange={handlePermitToDo}
+                  value={selectedTodo}
+                  getOptionValue={(option) => option.value}
+                />
               </Form.Group>
 
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit Doing</Form.Label>
-                <Select options={options} name="permit_open" />
+                <Select
+                  options={options}
+                  name="permit_doing"
+                  onChange={handlePermitDoing}
+                  value={selectedDoing}
+                  getOptionValue={(option) => option.value}
+                />
               </Form.Group>
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit Done</Form.Label>
-                <Select options={options} name="permit_open" />
+                <Select
+                  options={options}
+                  name="permit_done"
+                  onChange={handlePermitDone}
+                  value={selectedDone}
+                  getOptionValue={(option) => option.value}
+                />
               </Form.Group>
             </Row>
             <br />

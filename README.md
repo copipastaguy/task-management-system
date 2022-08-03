@@ -109,7 +109,7 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - [x] Running Number: auto increment after adding the 1st Application
 - compare largest running number and +1
 
-- [] Check group for different permit (fetch from backend)
+- [x] Check group for different permit (fetch from backend)
 
 ==============================================
 
@@ -117,7 +117,7 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - [x] create new apps
 - [x] create new open tasks
 - [x] assign permit
-- [] close tasks, demote tasks to doing
+- [x] close tasks, demote tasks to doing
 
 - [] Edit Application
 - [] description
@@ -125,8 +125,8 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 - [] permits check
 
 - [] Edit Task
-- [] description
-- [] new notes
+- [x] new notes
+- [] assign plan
 
 ==============================================
 
@@ -139,11 +139,10 @@ TASK FLOW: OPEN -> TODO -> DOING -> DONE -> CLOSE
 ==============================================
 
 - [] Team Member
-- [] complete tasks
-- [] add notes
+- [x] complete tasks
+- [x] add notes
 
 - Validation of which user-group can perform state actions
 - Email notification when team member complete tasks
 - SYSTEM GENERATED: task_id = app_acronym + app_runningNumber
 - audit trail of read-only notes
--

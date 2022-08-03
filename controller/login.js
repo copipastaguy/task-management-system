@@ -17,7 +17,7 @@ const login = function (app) {
     if (username && password) {
       // - - - CHECK IF USER EXIST - - -
       // - - - FETCH HASHED PASSWORD OF USER - - -
-      const query = `SELECT username, password, status, admin_privilege, email FROM accounts WHERE username = ? `;
+      const query = `SELECT * FROM accounts WHERE username = ? `;
       connection.query(query, [username], (error, result) => {
         if (error) throw error;
         // - - - VALID - - -

@@ -6,7 +6,7 @@ const addupdateApp = function (app) {
     const {
       app_acronym,
       app_description,
-      app_Rnum,
+      rNum,
       app_startDate,
       app_endDate,
       permitOpen,
@@ -14,41 +14,24 @@ const addupdateApp = function (app) {
       permitDoing,
       permitDone,
     } = req.body;
-    // console.log(req.body);
+    console.log(req.body);
 
-    if (app_acronym && app_description && app_Rnum) {
-      const checkApp = `SELECT app_acronym, app_Rnum FROM application WHERE app_acronym = ? OR app_Rnum = ?`;
-      connection.query(checkApp, [app_acronym, app_Rnum], (error, result) => {
+    if (app_acronym && app_description) {
+      const checkApp = `SELECT app_acronym FROM application WHERE app_acronym = ?`;
+      connection.query(checkApp, [app_acronym], (error, result) => {
         if (error) throw error;
         else if (result.length > 0) {
-          // console.log(result);
           return next(
             errorHandler("Application name or running number exist!", req, res)
           );
         } else {
-          // CHECK FOR OTHER CONDITIONS
-          // GET PREV RUNNING NUMBER
-          // const getRnum = `SELECT app_Rnum FROM application`;
-          // connection.query(getRnum, (error, result) => {
-          //   if (error) throw error;
-          //   else {
-          //     const arr = [];
-          //     // console.log(result);
-          //     // COMPARE RUNNING NUMBER
-          //     result.forEach((num) => {
-          //       arr.push(num.app_Rnum);
-          //     });
-          //     const maxNum = Math.max(...arr);
-          //     console.log(maxNum);
-          //   }
-          // });
           const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
           connection.query(
             addNewApp,
             [
               app_acronym,
               app_description,
-              app_Rnum,
+              rNum,
               app_startDate,
               app_endDate,
               permitOpen,
@@ -59,7 +42,7 @@ const addupdateApp = function (app) {
             (error, result) => {
               if (error) throw error;
               else {
-                res.send("New task added");
+                res.send("New application added");
               }
             }
           );
