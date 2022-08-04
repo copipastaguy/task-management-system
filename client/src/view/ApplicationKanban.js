@@ -1,15 +1,22 @@
 import axios from "axios";
-import React, { useEffect, useState, useCallback } from "react";
-import Select from "react-select";
+import React, { useEffect, useState } from "react";
+// import Select from "react-select";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import Card from "react-bootstrap/Card";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+// import Form from "react-bootstrap/Form";
+// import Modal from "react-bootstrap/Modal";
+// import Card from "react-bootstrap/Card";
+// import Row from "react-bootstrap/Row";
+// import Col from "react-bootstrap/Col";
 import { toast } from "react-toastify";
 import Header from "./Header";
+
+// MODALS
+import CreateTask from "./Modal/CreateTask";
+import EditApp from "./Modal/EditApp";
+import CreatePlan from "./Modal/CreatePlan";
+import ViewTask from "./Modal/ViewTask";
+
 import {
   AiOutlineArrowRight,
   AiOutlineArrowLeft,
@@ -43,6 +50,10 @@ const ApplicationKanban = () => {
   const [openAddTask, setOpenAddTask] = useState(false);
   const openAddTaskForm = () => setOpenAddTask(true);
   const closeAddTaskForm = () => setOpenAddTask(false);
+
+  const [openViewTask, setOpenViewTask] = useState(false);
+  const openViewTaskForm = () => setOpenViewTask(true);
+  const closeViewTaskForm = () => setOpenViewTask(false);
 
   const [projectLead, setProjectLead] = useState(false);
   const [projectManager, setProjectManager] = useState(false);
@@ -163,524 +174,6 @@ const ApplicationKanban = () => {
     getGroups();
   }, []);
 
-  const EditApp = ({ show, onHide }) => {
-    const app_acronym = data.app_acronym;
-    console.log(app_acronym);
-    const app_Rnum = data.app_Rnum;
-    const app_description = data.app_description;
-    const [startDate, setStartDate] = useState(data.startDate);
-    const [endDate, setEndDate] = useState(data.endDate);
-    console.log(data.startDate);
-
-    const [selectedOpen, setSelectedOpen] = useState();
-    const [selectedTodo, setSelectedTodo] = useState();
-    const [selectedDoing, setSelectedDoing] = useState();
-    const [selectedDone, setSelectedDone] = useState();
-
-    const [permitOpen, setPermitOpen] = useState(data.app_permitOpen);
-    const defaultOpen = () => {
-      return {
-        label: permitOpen,
-        value: permitOpen,
-      };
-    };
-    const handleOpen = (selectedOpen) => {
-      setSelectedOpen(selectedOpen);
-      const value = selectedOpen.value;
-      setPermitOpen(value);
-    };
-
-    const [permitTodo, setPermitTodo] = useState(data.app_permitToDo);
-    const defaultTodo = () => {
-      return {
-        label: permitTodo,
-        value: permitTodo,
-      };
-    };
-    const handleTodo = (selectedTodo) => {
-      setSelectedTodo(selectedTodo);
-      const value = selectedTodo.value;
-      setPermitTodo(value);
-    };
-
-    const [permitDoing, setPermitDoing] = useState(data.app_permitDoing);
-    const defaultDoing = () => {
-      return {
-        label: permitDoing,
-        value: permitDoing,
-      };
-    };
-    const handleDoing = (selectedDoing) => {
-      setSelectedDoing(selectedDoing);
-      const value = selectedDoing.value;
-      setPermitDoing(value);
-    };
-
-    const [permitDone, setPermitDone] = useState(data.app_permitDone);
-    const defaultDone = () => {
-      return {
-        label: permitDone,
-        value: permitDone,
-      };
-    };
-    const handleDone = (selectedDone) => {
-      setSelectedDone(selectedDone);
-      const value = selectedDone.value;
-      setPermitDone(value);
-    };
-
-    const options = groups.map((group) => {
-      const value = group.groupname;
-      return {
-        label: value,
-        value: value,
-      };
-    });
-
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.put("/update-application", {
-          app_acronym,
-          startDate,
-          endDate,
-          permitOpen,
-          permitTodo,
-          permitDoing,
-          permitDone,
-        });
-        console.log(response);
-
-        if (!response.data.error) {
-          toast.success(`Updated ${app_acronym}!`, {
-            position: "top-center",
-            autoClose: 700,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-          });
-          fetchApplication();
-        }
-      } catch (e) {}
-    };
-
-    return (
-      <Modal show={openEditForm} onHide={closeEditForm} size="xl" centered>
-        <Form onSubmit={handleSubmit}>
-          <Modal.Header>
-            <Modal.Title>Update application: {app_acronym}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>App name</Form.Label>
-                  <Form.Control
-                    readOnly
-                    type="text"
-                    placeholder={app_acronym}
-                    id="app_name"
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col xs={4}>
-                <Form.Group>
-                  <Form.Label>Running Number</Form.Label>
-                  <Form.Control type="number" readOnly placeholder={app_Rnum} />
-                </Form.Group>
-              </Col>
-            </Row>
-            <br />
-
-            <Row>
-              <Form.Group>
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  readOnly
-                  as="textarea"
-                  rows={3}
-                  placeholder={app_description}
-                  id="app_description"
-                />
-              </Form.Group>
-            </Row>
-            <br />
-
-            <Row>
-              <Form.Group as={Col}>
-                <Form.Label>Start Date</Form.Label>
-                <Form.Control
-                  readOnly={!projectLead && true}
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </Form.Group>
-
-              <Form.Group as={Col}>
-                <Form.Label>End Date</Form.Label>
-                <Form.Control
-                  readOnly={!projectLead && true}
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </Form.Group>
-            </Row>
-            <br />
-
-            <Row>
-              <Form.Group style={{ width: "400px" }} as={Col}>
-                <Form.Label>Permit Open</Form.Label>
-                <Select
-                  isDisabled={!projectLead && true}
-                  options={options}
-                  name="permit_open"
-                  defaultValue={defaultOpen}
-                  value={selectedOpen}
-                  onChange={handleOpen}
-                  isClearable
-                />
-              </Form.Group>
-
-              <Form.Group style={{ width: "400px" }} as={Col}>
-                <Form.Label>Permit ToDo</Form.Label>
-                <Select
-                  isDisabled={!projectLead && true}
-                  options={options}
-                  name="permit_todo"
-                  value={selectedTodo}
-                  defaultValue={defaultTodo}
-                  onChange={handleTodo}
-                />
-              </Form.Group>
-
-              <Form.Group style={{ width: "400px" }} as={Col}>
-                <Form.Label>Permit Doing</Form.Label>
-                <Select
-                  isDisabled={!projectLead && true}
-                  options={options}
-                  name="permit_doing"
-                  defaultValue={defaultDoing}
-                  value={selectedDoing}
-                  onChange={handleDoing}
-                />
-              </Form.Group>
-              <Form.Group style={{ width: "400px" }} as={Col}>
-                <Form.Label>Permit Done</Form.Label>
-                <Select
-                  isDisabled={!projectLead && true}
-                  options={options}
-                  name="permit_done"
-                  defaultValue={defaultDone}
-                  value={selectedDone}
-                  onChange={handleDone}
-                />
-              </Form.Group>
-            </Row>
-            <br />
-
-            <Row>
-              <Col>
-                {projectLead && (
-                  <Button className="btn-success" type="submit" xs={4}>
-                    Update
-                  </Button>
-                )}
-              </Col>
-            </Row>
-          </Modal.Body>
-        </Form>
-      </Modal>
-    );
-  };
-
-  const CreatePlan = ({ open, onHide }) => {
-    const app_acronym = data.app_acronym;
-    const [planName, setPlanName] = useState();
-
-    const [startDate, setStartDate] = useState(now);
-    const [endDate, setEndDate] = useState(now);
-
-    const [planColor, setPlanColor] = useState();
-
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.post("/add-plan", {
-          app_acronym,
-          planName,
-          startDate,
-          endDate,
-        });
-        console.log(response);
-        if (response.data.error) {
-          toast.error(response.data.error, {
-            position: "top-center",
-            autoClose: 700,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-          });
-        } else if (!response.data.error) {
-          toast.success("New plan created!", {
-            position: "top-center",
-            autoClose: 700,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-          });
-          setPlanName("");
-          await getPlans();
-        }
-      } catch (e) {
-        console.warn(e);
-      }
-    };
-    return (
-      <Modal
-        show={openAddPlanForm}
-        onHide={closeAddPlanForm}
-        size="lg"
-        centered
-      >
-        <Form onSubmit={handleSubmit}>
-          <Modal.Body>
-            <Modal.Title>{app_acronym}</Modal.Title>
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Plan name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    id="plan_name"
-                    value={planName}
-                    onChange={(e) => setPlanName(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col>
-                {/* <Form.Group>
-                  <Form.Label>Choose a color</Form.Label>
-                  <Form.Control
-                    type="color"
-                    defaultValue="#000000"
-                    value={planColor}
-                    onChange={(e) => {
-                      console.log(planColor);
-                      setPlanColor(e.target.value);
-                    }}
-                  />
-                </Form.Group> */}
-              </Col>
-            </Row>
-            <br />
-
-            <Row>
-              <Form.Group as={Col}>
-                <Form.Label>Start Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </Form.Group>
-
-              <Form.Group as={Col}>
-                <Form.Label>End Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </Form.Group>
-            </Row>
-            <br />
-
-            <Row>
-              <Col>
-                <Button className="btn-success" type="submit" xs={4}>
-                  Create new plan
-                </Button>
-              </Col>
-            </Row>
-          </Modal.Body>
-        </Form>
-      </Modal>
-    );
-  };
-
-  const CreateTask = ({ open, onHide }) => {
-    const [taskName, setTaskName] = useState("");
-    const [taskDescription, setTaskDescription] = useState("");
-    const [taskNotes, setTaskNotes] = useState("");
-    const [taskState, setTaskState] = useState("Open");
-    const [taskPlan, setTaskPlan] = useState();
-
-    const [selectedPlan, setSelectedPlan] = useState();
-
-    // FETCH ALL PLANS AVAILABLE
-    const availPlans = plans.map((plan) => {
-      const value = plan.plan_mvp_name;
-      return {
-        label: value,
-        value: value,
-      };
-    });
-
-    const handleTaskPlan = (selectedPlan) => {
-      // setSelectedPlan(selectedPlan);
-      const value = selectedPlan.value;
-      setTaskPlan(value);
-      console.log(value);
-    };
-
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      const app_acronym = data.app_acronym;
-      const app_Rnum = data.app_Rnum;
-      const note = `${now} ${time}: ${taskState}\n${taskCreator}\nNew task have been created`;
-
-      try {
-        const response = await axios.post("/add-task", {
-          app_Rnum,
-          app_acronym,
-          taskName,
-          taskDescription,
-          taskNotes,
-          taskPlan,
-          taskState,
-          taskCreator,
-          taskOwner,
-          note,
-        });
-        console.log(response);
-        if (!response.data.error) {
-          toast.success(response.data, {
-            position: "top-center",
-            autoClose: 800,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-          });
-          setTaskName("");
-          setTaskDescription("");
-          setTaskNotes("");
-          setTaskState("Open");
-          fetchTasks();
-        }
-        if (response.data.error) {
-          toast.error(response.data.error, {
-            position: "top-center",
-            autoClose: 800,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-          });
-        }
-      } catch {}
-    };
-
-    return (
-      <Modal
-        show={openAddTaskForm}
-        onHide={closeAddTaskForm}
-        size="lg"
-        centered
-      >
-        <Form
-          onSubmit={handleSubmit}
-          // style={{ backgroundColor: "#343A40", color: "white" }}
-          className="editTask"
-        >
-          <Modal.Header>
-            <Modal.Title>Create a new task</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Task name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Task name"
-                    id="app_name"
-                    value={taskName}
-                    onChange={(e) => setTaskName(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <br />
-
-            <Row>
-              <Form.Group>
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  placeholder="Some descriptions"
-                  id="app_description"
-                  value={taskDescription}
-                  onChange={(e) => setTaskDescription(e.target.value)}
-                />
-              </Form.Group>
-            </Row>
-            <br />
-
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Task notes</Form.Label>
-                  <Form.Control
-                    placeholder="Some notes"
-                    as="textarea"
-                    rows={3}
-                    id="app_notes"
-                    value={taskNotes}
-                    onChange={(e) => setTaskNotes(e.target.value)}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <br />
-
-            <Row>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Assign a Plan</Form.Label>
-                  <Select
-                    options={availPlans}
-                    name="task_plan"
-                    value={selectedPlan}
-                    onChange={handleTaskPlan}
-                    // getOptionValue={(option) => option.value}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <br />
-
-            <Row>
-              <p>Created by: project_lead</p>
-            </Row>
-
-            <Row>
-              <Col>
-                <Button className="btn-success" type="submit" xs={4}>
-                  Create new task
-                </Button>
-              </Col>
-            </Row>
-          </Modal.Body>
-        </Form>
-      </Modal>
-    );
-  };
-
   return (
     <div className="application-kanban">
       <Header />
@@ -729,13 +222,56 @@ const ApplicationKanban = () => {
           </div> */}
         </div>
 
-        {openEdit && <EditApp show={openEdit} onHide={closeEditForm} />}
+        {openEdit && (
+          <EditApp
+            show={openEdit}
+            onHide={closeEditForm}
+            data={data}
+            groups={groups}
+            fetchApplication={fetchApplication}
+            openEditForm={openEditForm}
+            closeEditForm={closeEditForm}
+            projectLead={projectLead}
+          />
+        )}
         {openAddPlan && (
-          <CreatePlan show={openAddPlan} onHide={closeAddPlanForm} />
+          <CreatePlan
+            show={openAddPlan}
+            onHide={closeAddPlanForm}
+            data={data}
+            now={now}
+            getPlans={getPlans}
+            openAddPlanForm={openAddPlan}
+            closeAddPlanForm={closeAddPlanForm}
+          />
         )}
 
         {openAddTask && (
-          <CreateTask show={openAddTask} onHide={closeAddTaskForm} />
+          <CreateTask
+            show={openAddTask}
+            onHide={closeAddTaskForm}
+            plans={plans}
+            data={data}
+            now={now}
+            time={time}
+            taskCreator={taskCreator}
+            taskOwner={taskOwner}
+            fetchTasks={fetchTasks}
+            openAddTaskForm={openAddTaskForm}
+            closeAddTaskForm={closeAddTaskForm}
+          />
+        )}
+
+        {openViewTask && (
+          <ViewTask
+            show={openViewTask}
+            onHide={closeViewTaskForm}
+            // data={data}
+            groups={groups}
+            openViewTaskForm={openViewTaskForm}
+            closeViewTaskForm={closeViewTaskForm}
+            // task_name={task_name}
+          />
         )}
 
         <div className="tasks-container">
@@ -778,7 +314,6 @@ const ApplicationKanban = () => {
                 };
                 if (task.task_state === "Open") {
                   return (
-                    // <Card style={{ marginBottom: "10px" }} key={task.task_name}>
                     <div
                       style={{ marginBottom: "10px", color: "#DEE2E6" }}
                       key={task.task_name}
@@ -789,6 +324,15 @@ const ApplicationKanban = () => {
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
                       />
+                      <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
+                        <Button
+                          style={{ width: "100%" }}
+                          onClick={openViewTaskForm}
+                        >
+                          <AiFillEye />
+                        </Button>
+                      </Link>
+
                       {permitOpen && (
                         <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                           <Button style={{ width: "100%" }}>
@@ -797,21 +341,14 @@ const ApplicationKanban = () => {
                         </Link>
                       )}
 
-                      {permitOpen ? (
+                      {permitOpen && (
                         <div className="buttons-container">
                           <Button variant="success" onClick={approveTask}>
                             <AiFillCheckCircle />
                           </Button>
                         </div>
-                      ) : (
-                        <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                          <Button style={{ width: "100%" }}>
-                            <AiFillEye />
-                          </Button>
-                        </Link>
                       )}
                     </div>
-                    // {/* </Card> */}
                   );
                 }
               })}
@@ -843,9 +380,7 @@ const ApplicationKanban = () => {
                   fetchTasks();
                 };
                 if (task.task_state === "ToDo") {
-                  // fetchPermitTodo();
                   return (
-                    // <Card style={{ marginBottom: "10px" }} key={task.task_name}>
                     <div
                       style={{
                         marginBottom: "10px",
@@ -860,13 +395,8 @@ const ApplicationKanban = () => {
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
                       />
-                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                        <Button style={{ width: "100%" }}>
-                          <AiFillEye />
-                        </Button>
-                      </Link>
 
-                      {permitTodo && (
+                      {permitTodo ? (
                         <div>
                           <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                             <Button style={{ width: "100%" }}>
@@ -881,9 +411,16 @@ const ApplicationKanban = () => {
                             <AiOutlineArrowRight />
                           </Button>
                         </div>
+                      ) : (
+                        <Link
+                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
+                        >
+                          <Button style={{ width: "100%" }}>
+                            <AiFillEye />
+                          </Button>
+                        </Link>
                       )}
                     </div>
-                    //  </Card>
                   );
                 }
               })}
@@ -935,7 +472,6 @@ const ApplicationKanban = () => {
                 };
                 if (task.task_state === "Doing") {
                   return (
-                    //<Card style={{ marginBottom: "10px" }} key={task.task_name}>
                     <div
                       style={{ marginBottom: "10px", color: "#DEE2E6" }}
                       key={task.task_name}
@@ -947,35 +483,39 @@ const ApplicationKanban = () => {
                         taskOwner={task.task_owner}
                       />
 
-                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                        <Button style={{ width: "100%" }}>
-                          <AiFillEye />
-                        </Button>
-                      </Link>
-
-                      {permitDoing && (
-                        <div className="buttons-container">
+                      {permitDoing ? (
+                        <>
                           <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                             <Button style={{ width: "100%" }}>
                               <AiFillEdit />
                             </Button>
                           </Link>
-                          <Button
-                            variant="danger"
-                            onClick={() => MoveTaskToDo()}
-                          >
-                            <AiOutlineArrowLeft />
+                          <div className="buttons-container">
+                            <Button
+                              variant="danger"
+                              onClick={() => MoveTaskToDo()}
+                            >
+                              <AiOutlineArrowLeft />
+                            </Button>
+
+                            <Button
+                              variant="success"
+                              onClick={() => MoveTaskToDone()}
+                            >
+                              <AiOutlineArrowRight />
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <Link
+                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
+                        >
+                          <Button style={{ width: "100%" }}>
+                            <AiFillEye />
                           </Button>
-                          <Button
-                            variant="success"
-                            onClick={() => MoveTaskToDone()}
-                          >
-                            <AiOutlineArrowRight />
-                          </Button>
-                        </div>
+                        </Link>
                       )}
                     </div>
-                    //</Card>
                   );
                 }
               })}

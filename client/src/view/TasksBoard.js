@@ -48,14 +48,13 @@ const TasksBoard = () => {
     });
     if (response_manager.data === true) {
       localStorage.setItem("user-group", "project manager");
-      // setProjectManager(true);
     }
   };
 
   const getApplications = async () => {
     const response = await axios.get("/get-applications");
-    setApplications(response.data[0]);
-    setRnum(response.data[1].max + 1);
+    setApplications(response.data);
+    // setRnum(response.data[1].max + 1);
   };
 
   const getGroups = async () => {
@@ -73,8 +72,8 @@ const TasksBoard = () => {
     const [app_acronym, setAppAcronym] = useState("");
     const [app_Rnum, setAppRnum] = useState("");
     const [app_description, setAppDescription] = useState("");
-    const [app_startDate, setStartDate] = useState(null);
-    const [app_endDate, setEndDate] = useState(null);
+    const [app_startDate, setStartDate] = useState();
+    const [app_endDate, setEndDate] = useState();
 
     const [permitOpen, setPermitOpen] = useState();
     const [permitTodo, setPermitTodo] = useState();
@@ -121,7 +120,7 @@ const TasksBoard = () => {
         const response = await axios.post("/add-application", {
           app_acronym,
           app_description,
-          rNum,
+          app_Rnum,
           app_startDate,
           app_endDate,
           permitOpen,
@@ -136,6 +135,7 @@ const TasksBoard = () => {
           });
           getApplications();
         } else if (!response.data.error) {
+          getApplications();
           toast.success(`Added ${app_acronym}!`, {
             position: "top-center",
             autoClose: 700,
@@ -143,7 +143,6 @@ const TasksBoard = () => {
             closeOnClick: true,
             pauseOnHover: false,
           });
-          getApplications();
 
           // RESET FIELDS
           setAppAcronym("");
@@ -206,9 +205,9 @@ const TasksBoard = () => {
 
                   <Form.Control
                     type="number"
-                    value={rNum}
-                    readOnly={rNum > 0 ? true : false}
-                    // onChange={(e) => setAppRnum(e.target.value)}
+                    value={app_Rnum}
+                    // readOnly={rNum > 0 ? true : false}
+                    onChange={(e) => setAppRnum(e.target.value)}
                   />
                 </Form.Group>
               </Col>
@@ -324,7 +323,7 @@ const TasksBoard = () => {
       )}
 
       <div className="application-container">
-        <AllApplications />
+        <AllApplications data={applications} />
       </div>
 
       <div className="tasks-container"></div>

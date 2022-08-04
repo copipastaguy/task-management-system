@@ -27,48 +27,67 @@ const addupdateTask = function (app) {
     // console.log(req.body);
 
     if (taskName) {
-      const checkTask = `SELECT task_name FROM task WHERE task_name = ?`;
-      connection.query(checkTask, [taskName], (error, result) => {
+      const checkTask = `SELECT task_name FROM task WHERE task_name = ? AND task_app_acronym = ?`;
+      connection.query(checkTask, [taskName, app_acronym], (error, result) => {
         if (error) throw error;
         else if (result.length > 0) {
-          //////////////////////////// CHECK IF TASK NAME EXIST /////////////////////////////////
-          return next(errorHandler("Task name exist!", req, res));
+          ////////////////////////// CHECK IF TASK NAME EXIST /////////////////////////////////
+          return next(
+            errorHandler(`Task name exist for ${app_acronym}`, req, res)
+          );
         } else {
           //////////////////////////// GET APP ACRONYM, RUNNING NUMBER FOR TASK_ID /////////////////////////////////
-          const taskId = app_acronym.concat("_", app_Rnum);
-
-          //////////////////////////// ADD TASK /////////////////////////////////
-          const addTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_plan, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
-          connection.query(
-            addTask,
-            [
-              app_acronym,
-              taskId,
-              taskName,
-              taskDescription,
-              taskPlan,
-              taskState,
-              taskCreator,
-              taskOwner,
-            ],
-            (error, result) => {
-              if (error) throw error;
-              else {
-                const auditNotes = `${now}: ${taskState} \nDone by: ${taskCreator} \n${taskNotes}`;
-                const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
-                connection.query(
-                  addNote,
-                  [taskName, auditNotes],
-                  (error, result) => {
-                    if (error) throw error;
-                    else {
-                      res.send(`Task ${taskName} created!`);
-                    }
+          // GET APP RUNNING NUMBER
+          const getRnum = `SELECT app_Rnum FROM application WHERE app_acronym = ?`;
+          connection.query(getRnum, [app_acronym], (error, result) => {
+            if (error) throw error;
+            else {
+              const taskId = app_acronym.concat("_", app_Rnum + 1);
+              //////////////////////////// ADD TASK /////////////////////////////////
+              const addTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_plan, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+              connection.query(
+                addTask,
+                [
+                  app_acronym,
+                  taskId,
+                  taskName,
+                  taskDescription,
+                  taskPlan,
+                  taskState,
+                  taskCreator,
+                  taskOwner,
+                ],
+                (error, result) => {
+                  if (error) throw error;
+                  else {
+                    // ADD AUDIT NOTES
+                    const auditNotes = `${now}: ${taskState} \nDone by: ${taskCreator} \n${taskNotes}`;
+                    const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
+                    connection.query(
+                      addNote,
+                      [taskName, auditNotes],
+                      (error, result) => {
+                        if (error) throw error;
+                        else {
+                          // res.send(`Task ${taskName} created!`);
+                        }
+                      }
+                    );
                   }
-                );
-              }
+                }
+              );
+              // UPDATE APP RNUM
+              const updateRnum = `UPDATE application SET app_Rnum = ? WHERE app_acronym = ?`;
+              connection.query(
+                updateRnum,
+                [app_Rnum + 1, app_acronym],
+                (error, result) => {
+                  if (error) throw error;
+                }
+              );
             }
-          );
+          });
+          res.send(`Task ${taskName} created!`);
         }
       });
     } else if (!taskName) {

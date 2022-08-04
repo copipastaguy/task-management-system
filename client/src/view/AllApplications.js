@@ -1,19 +1,7 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Application from "./Application";
 
-const AllApplications = () => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    const getApplications = async () => {
-      const response = await axios.get("/get-applications");
-      setData(response.data[0]);
-      // console.log(response.data[0]);
-    };
-    getApplications();
-  }, []);
-
+const AllApplications = ({ data }) => {
   return (
     <>
       {data.map((application) => {

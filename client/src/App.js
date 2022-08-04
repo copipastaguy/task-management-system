@@ -16,6 +16,7 @@ import EditTask from "./view/EditTask";
 
 import AdminRoutes from "./utils/AdminRoutes";
 import UserRoutes from "./utils/UserRoutes";
+import ViewTask from "./view/Modal/ViewTask";
 
 function App() {
   return (
@@ -46,6 +47,10 @@ function App() {
             <Route
               path="/tasks/:app_acronym/:task_name"
               element={<EditTask />}
+            />
+            <Route
+              path="/tasks/:app_acronym/view/:task_name"
+              element={<ViewTask />}
             />
           </Route>
         </Routes>

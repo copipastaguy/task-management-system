@@ -6,7 +6,7 @@ const addupdateApp = function (app) {
     const {
       app_acronym,
       app_description,
-      rNum,
+      app_Rnum,
       app_startDate,
       app_endDate,
       permitOpen,
@@ -16,14 +16,12 @@ const addupdateApp = function (app) {
     } = req.body;
     // console.log(req.body);
 
-    if (app_acronym && app_description) {
+    if (app_acronym && app_description && app_Rnum) {
       const checkApp = `SELECT app_acronym FROM application WHERE app_acronym = ?`;
       connection.query(checkApp, [app_acronym], (error, result) => {
         if (error) throw error;
         else if (result.length > 0) {
-          return next(
-            errorHandler("Application name or running number exist!", req, res)
-          );
+          return next(errorHandler("Application name exist!", req, res));
         } else {
           const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
           connection.query(
@@ -31,7 +29,7 @@ const addupdateApp = function (app) {
             [
               app_acronym,
               app_description,
-              rNum,
+              app_Rnum,
               app_startDate,
               app_endDate,
               permitOpen,
@@ -56,8 +54,6 @@ const addupdateApp = function (app) {
   app.put(`/update-application`, (req, res, next) => {
     const {
       app_acronym,
-      app_description,
-      app_Rnum,
       startDate,
       endDate,
       permitOpen,

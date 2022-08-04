@@ -7,13 +7,14 @@ const getApplication = function (app) {
     connection.query(getApplications, (error, applications) => {
       if (error) throw error;
       else {
-        const getMax = `SELECT MAX(app_Rnum) as max FROM application`;
-        connection.query(getMax, (error, max) => {
-          if (error) throw error;
-          else {
-            res.send([applications, max[0]]);
-          }
-        });
+        // const getMax = `SELECT MAX(app_Rnum) as max FROM application`;
+        // connection.query(getMax, (error, max) => {
+        //   if (error) throw error;
+        //   else {
+        //     res.send([applications, max[0]]);
+        //   }
+        // });
+        res.send(applications);
       }
     });
   });
