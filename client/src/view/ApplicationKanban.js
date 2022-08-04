@@ -147,6 +147,7 @@ const ApplicationKanban = () => {
         plan_app_acronym: app_acronym,
       },
     });
+    console.log(response.data);
     setTasks(response.data);
   };
 
@@ -287,6 +288,7 @@ const ApplicationKanban = () => {
               <p>OPEN</p>
             </div>
             <div>
+              {/* {tasks.fliter((task) => task.task_state === "Open")} */}
               {tasks.map((task) => {
                 const approveTask = async () => {
                   const newState = "ToDo";
@@ -624,9 +626,9 @@ const ApplicationKanban = () => {
                       taskState={task.task_state}
                       taskOwner={task.task_owner}
                     />
-                    <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                    <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
                       <Button style={{ width: "100%" }}>
-                        <AiFillEdit />
+                        <AiFillEye />
                       </Button>
                     </Link>
                   </div>

@@ -6,6 +6,24 @@ const getTasks = function (app) {
     connection.query(getTasks, [plan_app_acronym], (error, result) => {
       if (error) throw error;
       else {
+        // const taskStates = ["Open", "ToDo", "Doing", "Done", "Closed"];
+        // const getCount = `SELECT COUNT(*) as count FROM task WHERE task_app_acronym = ? AND task_state = ?`;
+
+        // taskStates.forEach((state) => {
+        //   function fetchCount() {
+        //     connection.query(
+        //       getCount,
+        //       [plan_app_acronym, state],
+        //       (error, result) => {
+        //         if (error) throw error;
+        //         else {
+        //           console.log(state, result[0].count);
+        //         }
+        //       }
+        //     );
+        //   }
+        //   fetchCount();
+        // });
         res.send(result);
       }
     });
