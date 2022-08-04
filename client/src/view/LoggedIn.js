@@ -29,11 +29,9 @@ const LoggedIn = () => {
 
   return (
     <div className="login-header nav-bar">
-      <div className="nav-bar-welcome">
-        <h3>
-          Welcome: <span>{local_user}</span>
-        </h3>
-      </div>
+      <h4>
+        Welcome: <span>{local_user}</span>
+      </h4> 
 
       <Form>
         <Button onClick={goHome}>Home</Button>

@@ -125,7 +125,9 @@ const Header = () => {
 
   return (
     <div className="login-header nav-bar">
-      <h2>Welcome: {user}</h2>
+      <h4>
+        Welcome: <span>{user}</span>
+      </h4>
       <Form>
         <Button onClick={handleOpenUpdate}>Update Details</Button>
         <Button className="btn-danger" onClick={handleSignout}>

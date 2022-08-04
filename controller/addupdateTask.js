@@ -1,5 +1,7 @@
 const connection = require("../server/connection");
 const errorHandler = require("./errorHandler");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const addupdateTask = function (app) {
   const date = new Date().getDate();
@@ -81,7 +83,7 @@ const addupdateTask = function (app) {
     if (taskNotes.length > 0) {
       // UPDATED TASK NOTES
       const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
-      const updateNotes = `${now}: ${taskState} \n${taskOwner} \n${taskNotes} \n`;
+      const updateNotes = `${now}: ${taskState} \nDone by: ${taskOwner} \n${taskNotes} \n`;
 
       connection.query(addNote, [task_name, updateNotes], (error, result) => {
         if (error) throw error;
@@ -209,7 +211,38 @@ const addupdateTask = function (app) {
           connection.query(addNote, [task_name, auditNote], (error, result) => {
             if (error) throw error;
             else {
-              res.send(result);
+              const fetchEmail = `SELECT email FROM accounts WHERE username = ?`;
+              connection.query(fetchEmail, [taskOwner], (error, result) => {
+                if (error) throw error;
+                else if (result.length > 0) {
+                  // SEND EMAIL WITH NODEMAILER
+                  // async function sendEmail() {
+                  //   let testAccount = await nodemailer.createTestAccount();
+
+                  //   // create reusable transporter object using the default SMTP transport
+                  //   let transporter = nodemailer.createTransport({
+                  //     host: process.env.MAILTRAP_HOST,
+                  //     port: process.env.MAILTRAP_PORT,
+                  //     secure: false, // true for 465, false for other ports
+                  //     auth: {
+                  //       user: process.env.MAILTRAP_USER, // generated ethereal user
+                  //       pass: process.env.MAILTRAP_PASS, // generated ethereal password
+                  //     },
+                  //   });
+
+                  //   // send mail with defined transport object
+                  //   let info = await transporter.sendMail({
+                  //     from: `${taskOwner}@tms.com`, // sender address
+                  //     to: "project_lead@tms.com", // list of receivers
+                  //     subject: "Task is done!", // Subject line
+                  //     text: `${taskOwner} has finished task: ${task_name}. Review now!`, // plain text body
+                  //     html: `${taskOwner} has finished task: ${task_name}`, // html body
+                  //   });
+                  // }
+                  // sendEmail();
+                  console.log(result);
+                }
+              });
             }
           });
         }

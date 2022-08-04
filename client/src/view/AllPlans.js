@@ -8,7 +8,7 @@ const AllPlans = ({ plans }) => {
         return (
           <div key={plan.plan_mvp_name}>
             <Plan
-              // planColor={}
+              // planColor={`#${plan.color_tag}`}
               planName={plan.plan_mvp_name}
               startDate={plan.startDate}
               endDate={plan.endDate}

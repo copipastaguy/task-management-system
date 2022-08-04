@@ -2,6 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+require("dotenv").config();
 
 const login = require("../controller/login");
 const add = require("../controller/add");
@@ -20,8 +21,8 @@ const getApplications = require("../controller/getApplications");
 const addupdateTask = require("../controller/addupdateTask");
 const getTasks = require("../controller/getTasks");
 
-// server port
-const port = 3002;
+const port = process.env.API_PORT;
+console.log(process.env.API_PORT);
 
 const app = express();
 app.use(
@@ -84,15 +85,6 @@ getApplications(app);
 addupdateTask(app);
 
 getTasks(app);
-
-app.get("/", (req, res) => {
-  // redirect users to login page
-  res.redirect("/login");
-});
-
-app.get("/test", (req, res) => {
-  res.send("hello this is testing page");
-});
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);

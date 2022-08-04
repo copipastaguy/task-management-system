@@ -7,6 +7,7 @@ import axios from "axios";
 import { useApi } from "../utils/useApi";
 
 import LoggedIn from "./LoggedIn";
+// import Header from "./Header";
 import MaterialTable from "./MaterialTable";
 
 import Form from "react-bootstrap/Form";
@@ -221,7 +222,7 @@ const UserManagement = () => {
       console.log(username);
     };
 
-    const userOptions = users.map((user) => {
+    const userOptions = getUsersApi.data.map((user) => {
       const value = user.username;
       return {
         label: value,

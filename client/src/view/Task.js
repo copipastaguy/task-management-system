@@ -12,16 +12,18 @@ const Task = ({
 }) => {
   return (
     <Card
-      className="application"
+      className="task"
       style={{
-        height: "150px",
+        height: "100px",
         width: "250px",
         boxShadow: "7px 7px 8px -6px rgba(87,87,87,0.8)",
-        borderRadius: "15px",
+        backgroundColor: "#343A40",
+        // borderRadius: "10px",
       }}
     >
       <div>
-        <h4>{taskName}</h4>
+        {taskPlan}
+        <p>{taskName}</p>
       </div>
 
       <div>

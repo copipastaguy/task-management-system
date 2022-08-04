@@ -8,7 +8,6 @@ import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { useApi } from "../utils/useApi";
 
 const EditTask = () => {
   const { task_name, app_acronym } = useParams();
@@ -28,6 +27,14 @@ const EditTask = () => {
 
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
+
+  const [app, setApp] = useState([]);
+  const [permitOpen, setPermitOpen] = useState(false);
+  const [permitTodo, setPermitTodo] = useState(false);
+  const [permitDoing, setPermitDoing] = useState(false);
+  const [permitDone, setPermitDone] = useState(false);
+
+  // const [permitUser, setPermitUser] = useState(false);
 
   const fetchTask = async () => {
     const response = await axios.get("/get-task", {
@@ -64,8 +71,19 @@ const EditTask = () => {
     };
   });
 
+  const fetchApp = async () => {
+    const response = await axios.get("/get-application", {
+      params: {
+        app_acronym: app_acronym,
+      },
+    });
+    setApp(response.data[0]);
+    console.log(response.data[0]);
+  };
+
   useEffect(() => {
     fetchTask();
+    fetchApp();
   }, []);
 
   useEffect(() => {
@@ -106,9 +124,9 @@ const EditTask = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmit} style={{ width: "65%", margin: "2% auto" }}>
+    <Form onSubmit={handleSubmit} className="updateTask">
       <Modal.Header>
-        <Modal.Title>Update: {task_name}</Modal.Title>
+        <Modal.Title className="taskTitle">Update: {task_name}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -139,7 +157,7 @@ const EditTask = () => {
             <Form.Control
               readOnly
               as="textarea"
-              rows={3}
+              rows={5}
               id="app_description"
               value={data.task_description}
               onChange={(e) => setTaskDescription(e.target.value)}
@@ -152,7 +170,6 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Existing notes</Form.Label>
-
               <Form.Control
                 as="textarea"
                 type="text"
@@ -168,17 +185,11 @@ const EditTask = () => {
               <Form.Label>Task notes</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={4}
+                rows={7}
                 id="app_notes"
                 value={taskNotes}
                 onChange={(e) => setTaskNotes(e.target.value)}
-                readOnly={
-                  data.task_state === "Closed" ||
-                  data.task_state === "Done" ||
-                  (data.task_state === "Open" &&
-                    taskOwner != data.task_creator &&
-                    true)
-                }
+                // readOnly={!permitUser && true}
               />
             </Form.Group>
           </Col>
@@ -196,10 +207,8 @@ const EditTask = () => {
                 value={selectedPlan}
                 onChange={handleTaskPlan}
                 getOptionValue={(option) => option.value}
-                isDisabled={
-                  data.task_state === "Closed" ||
-                  (taskOwner != data.task_creator && true)
-                }
+                // isDisabled={!permitOpen && true}
+                styles={{ color: "black" }}
               />
             </Form.Group>
           </Col>

@@ -8,19 +8,24 @@ const Plan = ({ planName, startDate, endDate, planColor }) => {
     <Card
       className="application"
       style={{
-        height: "150px",
-        width: "250px",
+        height: "100px",
+        width: "200px",
         boxShadow: "7px 7px 8px -6px rgba(87,87,87,0.8)",
         borderRadius: "15px",
-        gap: "10px",
+        backgroundColor: planColor,
+        // gap: "5px",
       }}
     >
-      <span
-        className="color-tag"
-        style={{ backgroundColor: { planColor } }}
-      ></span>
-      <h3>{planName}</h3>
-      <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+      <p style={{ color: !planColor && "#000000" }}>{planName}</p>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "10px",
+          color: "black",
+        }}
+      >
         <p>
           <FcClock />
         </p>

@@ -462,7 +462,7 @@ const ApplicationKanban = () => {
               </Col>
 
               <Col>
-                <Form.Group>
+                {/* <Form.Group>
                   <Form.Label>Choose a color</Form.Label>
                   <Form.Control
                     type="color"
@@ -473,7 +473,7 @@ const ApplicationKanban = () => {
                       setPlanColor(e.target.value);
                     }}
                   />
-                </Form.Group>
+                </Form.Group> */}
               </Col>
             </Row>
             <br />
@@ -590,7 +590,11 @@ const ApplicationKanban = () => {
         size="lg"
         centered
       >
-        <Form onSubmit={handleSubmit}>
+        <Form
+          onSubmit={handleSubmit}
+          // style={{ backgroundColor: "#343A40", color: "white" }}
+          className="editTask"
+        >
           <Modal.Header>
             <Modal.Title>Create a new task</Modal.Title>
           </Modal.Header>
@@ -602,7 +606,7 @@ const ApplicationKanban = () => {
                   <Form.Label>Task name</Form.Label>
                   <Form.Control
                     type="text"
-                    // placeholder={app_acronym}
+                    placeholder="Task name"
                     id="app_name"
                     value={taskName}
                     onChange={(e) => setTaskName(e.target.value)}
@@ -618,7 +622,7 @@ const ApplicationKanban = () => {
                 <Form.Control
                   as="textarea"
                   rows={3}
-                  // placeholder={app_description}
+                  placeholder="Some descriptions"
                   id="app_description"
                   value={taskDescription}
                   onChange={(e) => setTaskDescription(e.target.value)}
@@ -632,6 +636,7 @@ const ApplicationKanban = () => {
                 <Form.Group>
                   <Form.Label>Task notes</Form.Label>
                   <Form.Control
+                    placeholder="Some notes"
                     as="textarea"
                     rows={3}
                     id="app_notes"
@@ -688,9 +693,10 @@ const ApplicationKanban = () => {
             justifyContent: "center",
           }}
         >
-          <h2 style={{ textAlign: "center" }}>
-            Kanban for: {data.app_acronym}
+          <h2 style={{ textAlign: "center", fontSize: "40px" }}>
+            {data.app_acronym}
           </h2>
+
           <div
             style={{
               display: "flex",
@@ -718,6 +724,9 @@ const ApplicationKanban = () => {
               </Button>
             )}
           </div>
+          {/* <div>
+            <div>App running number: </div>
+          </div> */}
         </div>
 
         {openEdit && <EditApp show={openEdit} onHide={closeEditForm} />}
@@ -732,14 +741,14 @@ const ApplicationKanban = () => {
         <div className="tasks-container">
           <div>
             <div className="col-header">
-              <p>Plan</p>
+              <p>PLAN</p>
             </div>
             <AllPlans plans={plans} />
           </div>
 
           <div>
             <div className="col-header">
-              <p>Open</p>
+              <p>OPEN</p>
             </div>
             <div>
               {tasks.map((task) => {
@@ -769,8 +778,9 @@ const ApplicationKanban = () => {
                 };
                 if (task.task_state === "Open") {
                   return (
-                    <Card
-                      style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    // <Card style={{ marginBottom: "10px" }} key={task.task_name}>
+                    <div
+                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
                       key={task.task_name}
                     >
                       <Task
@@ -779,18 +789,29 @@ const ApplicationKanban = () => {
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
                       />
-                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                        <Button style={{ width: "100%" }}>
-                          <AiFillEye />
-                        </Button>
-                      </Link>
-
                       {permitOpen && (
-                        <Button variant="success" onClick={approveTask}>
-                          <AiFillCheckCircle />
-                        </Button>
+                        <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                          <Button style={{ width: "100%" }}>
+                            <AiFillEdit />
+                          </Button>
+                        </Link>
                       )}
-                    </Card>
+
+                      {permitOpen ? (
+                        <div className="buttons-container">
+                          <Button variant="success" onClick={approveTask}>
+                            <AiFillCheckCircle />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                          <Button style={{ width: "100%" }}>
+                            <AiFillEye />
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                    // {/* </Card> */}
                   );
                 }
               })}
@@ -799,7 +820,7 @@ const ApplicationKanban = () => {
 
           <div>
             <div className="col-header">
-              <p>To-Do</p>
+              <p>TO-DO</p>
             </div>
             <div>
               {tasks.map((task) => {
@@ -824,8 +845,13 @@ const ApplicationKanban = () => {
                 if (task.task_state === "ToDo") {
                   // fetchPermitTodo();
                   return (
-                    <Card
-                      style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    // <Card style={{ marginBottom: "10px" }} key={task.task_name}>
+                    <div
+                      style={{
+                        marginBottom: "10px",
+                        color: "#DEE2E6",
+                        width: "100%",
+                      }}
                       key={task.task_name}
                     >
                       <Task
@@ -836,19 +862,28 @@ const ApplicationKanban = () => {
                       />
                       <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                         <Button style={{ width: "100%" }}>
-                          <AiFillEdit />
+                          <AiFillEye />
                         </Button>
                       </Link>
 
                       {permitTodo && (
-                        <Button
-                          variant="success"
-                          onClick={() => MoveTaskToDoing()}
-                        >
-                          <AiOutlineArrowRight />
-                        </Button>
+                        <div>
+                          <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                            <Button style={{ width: "100%" }}>
+                              <AiFillEdit />
+                            </Button>
+                          </Link>
+                          <Button
+                            style={{ width: "100%" }}
+                            variant="success"
+                            onClick={() => MoveTaskToDoing()}
+                          >
+                            <AiOutlineArrowRight />
+                          </Button>
+                        </div>
                       )}
-                    </Card>
+                    </div>
+                    //  </Card>
                   );
                 }
               })}
@@ -857,7 +892,7 @@ const ApplicationKanban = () => {
 
           <div>
             <div className="col-header">
-              <p>Doing</p>
+              <p>DOING</p>
             </div>
             <div>
               {tasks.map((task) => {
@@ -900,8 +935,9 @@ const ApplicationKanban = () => {
                 };
                 if (task.task_state === "Doing") {
                   return (
-                    <Card
-                      style={{ borderRadius: "15px", marginBottom: "10px" }}
+                    //<Card style={{ marginBottom: "10px" }} key={task.task_name}>
+                    <div
+                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
                       key={task.task_name}
                     >
                       <Task
@@ -910,13 +946,20 @@ const ApplicationKanban = () => {
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
                       />
+
                       <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                         <Button style={{ width: "100%" }}>
-                          <AiFillEdit />
+                          <AiFillEye />
                         </Button>
                       </Link>
+
                       {permitDoing && (
                         <div className="buttons-container">
+                          <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                            <Button style={{ width: "100%" }}>
+                              <AiFillEdit />
+                            </Button>
+                          </Link>
                           <Button
                             variant="danger"
                             onClick={() => MoveTaskToDo()}
@@ -931,7 +974,8 @@ const ApplicationKanban = () => {
                           </Button>
                         </div>
                       )}
-                    </Card>
+                    </div>
+                    //</Card>
                   );
                 }
               })}
@@ -940,7 +984,7 @@ const ApplicationKanban = () => {
 
           <div>
             <div className="col-header">
-              <p>Done</p>
+              <p>DONE</p>
             </div>
             {tasks.map((task) => {
               const MoveTaskDoing = async () => {
@@ -982,8 +1026,9 @@ const ApplicationKanban = () => {
 
               if (task.task_state === "Done") {
                 return (
-                  <Card
-                    style={{ borderRadius: "15px", marginBottom: "10px" }}
+                  //<Card style={{ marginBottom: "10px" }} key={task.task_name}>
+                  <div
+                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
                     key={task.task_name}
                   >
                     <Task
@@ -1014,7 +1059,8 @@ const ApplicationKanban = () => {
                         </Button>
                       </div>
                     )}
-                  </Card>
+                  </div>
+                  //</Card>
                 );
               }
             })}
@@ -1022,13 +1068,14 @@ const ApplicationKanban = () => {
 
           <div>
             <div className="col-header">
-              <p>Close</p>
+              <p>CLOSE</p>
             </div>
             {tasks.map((task) => {
               if (task.task_state === "Closed") {
                 return (
-                  <Card
-                    style={{ borderRadius: "15px", marginBottom: "10px" }}
+                  //<Card style={{ marginBottom: "10px" }} key={task.task_name}>
+                  <div
+                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
                     key={task.task_name}
                   >
                     <Task
@@ -1042,7 +1089,8 @@ const ApplicationKanban = () => {
                         <AiFillEdit />
                       </Button>
                     </Link>
-                  </Card>
+                  </div>
+                  //</Card>
                 );
               }
             })}

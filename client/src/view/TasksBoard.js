@@ -315,7 +315,7 @@ const TasksBoard = () => {
   return (
     <div className="main-container tasks-board">
       <ToastContainer />
-      <h3>Applications</h3>
+      <h3 style={{ color: "white" }}>Applications</h3>
       {projectlead && (
         <div>
           <Button onClick={openCreateApp}>Create new App</Button>
