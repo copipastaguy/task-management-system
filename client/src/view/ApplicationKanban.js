@@ -66,6 +66,8 @@ const ApplicationKanban = () => {
   const [permitDoing, setPermitDoing] = useState(false);
   const [permitDone, setPermitDone] = useState(false);
 
+  const [openCount, setOpenCount] = useState(0);
+
   const today = new Date();
   let day = today.getDate();
   if (day < 10) day = "0" + day;
@@ -149,6 +151,11 @@ const ApplicationKanban = () => {
     });
     console.log(response.data);
     setTasks(response.data);
+
+    const openTask = response.data.filter(
+      (task) => task.task_state === "Open"
+    ).length;
+    setOpenCount(openTask);
   };
 
   useEffect(() => {
@@ -285,10 +292,16 @@ const ApplicationKanban = () => {
 
           <div>
             <div className="col-header">
-              <p>OPEN</p>
+              <p>
+                OPEN <span>{openCount}</span>
+              </p>
             </div>
             <div>
-              {/* {tasks.fliter((task) => task.task_state === "Open")} */}
+              {/* {tasks
+                .filter((task) => task.task_state === "Open")
+                .map((task) => {
+                  return <p>hi</p>;
+                })} */}
               {tasks.map((task) => {
                 const approveTask = async () => {
                   const newState = "ToDo";

@@ -387,6 +387,10 @@ form span {
   color: white;
 }
 
+.col-header span {
+  color: #d00000;
+}
+
 .task {
   display: flex;
   justify-content: center;
