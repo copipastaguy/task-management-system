@@ -7,7 +7,6 @@ import axios from "axios";
 import { useApi } from "../utils/useApi";
 
 import LoggedIn from "./LoggedIn";
-// import Header from "./Header";
 import MaterialTable from "./MaterialTable";
 
 import Form from "react-bootstrap/Form";
@@ -15,8 +14,6 @@ import Button from "react-bootstrap/Button";
 import Modal from "@mui/material/Modal";
 
 const UserManagement = () => {
-  // const getGroups = async () => axios.get("/user-groups");
-  // const getGroupsApi = useApi(getGroups);
   const [groupOptions, setGroupOptions] = useState([]);
   useEffect(() => {
     const getGroups = async () => {
@@ -261,12 +258,6 @@ const UserManagement = () => {
         setUserGroup([...userGroup, value]);
       });
     };
-
-    // map out reactselect options
-    const groups = groupOptions.map((option) => {
-      // object for react-select options
-      return { value: option.groupname, label: option.groupname };
-    });
 
     const handleSubmit = async (e) => {
       e.preventDefault();

@@ -3,9 +3,10 @@ const AdminRoutes = () => {
   // LOCALSTORAGE
   const authAdmin = () => {
     const admin = localStorage.getItem("isAdmin");
-    if (admin === "admin") {
+    // console.log(admin);
+    if (admin === "true") {
       return true;
-    } else if (admin === "non-admin") {
+    } else if (admin === "false") {
       return false;
     }
   };

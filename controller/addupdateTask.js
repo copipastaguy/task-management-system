@@ -2,6 +2,7 @@ const connection = require("../server/connection");
 const errorHandler = require("./errorHandler");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+const checkgroup = require("./checkGroup");
 
 const addupdateTask = function (app) {
   const date = new Date().getDate();
@@ -24,7 +25,6 @@ const addupdateTask = function (app) {
       taskPlan,
       note,
     } = req.body;
-    // console.log(req.body);
 
     if (taskName) {
       const checkTask = `SELECT task_name FROM task WHERE task_name = ? AND task_app_acronym = ?`;
@@ -231,15 +231,17 @@ const addupdateTask = function (app) {
             if (error) throw error;
             else {
               // FETCH ALL EMAILS OF PROJECT LEAD USER GROUP
-              const fetchEmail = `SELECT accounts.email FROM accounts,usergroup WHERE usergroup.user_group = "project lead" `;
+              const fetchEmail = `SELECT accounts.email, usergroup.user_group FROM accounts, usergroup WHERE accounts.username = usergroup.username AND usergroup.user_group = "project lead"`;
               connection.query(fetchEmail, (error, result) => {
                 if (error) throw error;
                 else if (result.length > 0) {
-                  result.forEach((email) => {
-                    console.log(`Sending email to ${email.email}`);
+                  console.log(result);
+
+                  result.forEach((user) => {
+                    console.log(`Sending email to ${user.email}`);
                     // SEND EMAIL WITH NODEMAILER
-                    async function sendEmail() {
-                      // create reusable transporter object using the default SMTP transport
+                    function sendEmail() {
+                      // // create reusable transporter object using the default SMTP transport
                       let transporter = nodemailer.createTransport({
                         host: process.env.MAILTRAP_HOST,
                         port: process.env.MAILTRAP_PORT,
@@ -249,9 +251,8 @@ const addupdateTask = function (app) {
                           pass: process.env.MAILTRAP_PASS,
                         },
                       });
-
                       // send mail with defined transport object
-                      let info = await transporter.sendMail({
+                      let info = transporter.sendMail({
                         from: `${taskOwner}@tms.com`, // sender address
                         to: "project_lead@tms.com", // list of receivers
                         subject: "Task is done!", // Subject line

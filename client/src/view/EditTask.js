@@ -189,7 +189,7 @@ const EditTask = () => {
                 id="app_notes"
                 value={taskNotes}
                 onChange={(e) => setTaskNotes(e.target.value)}
-                // readOnly={!permitUser && true}
+                readOnly={data.task_state === "Done" && true}
               />
             </Form.Group>
           </Col>
@@ -207,7 +207,7 @@ const EditTask = () => {
                 value={selectedPlan}
                 onChange={handleTaskPlan}
                 getOptionValue={(option) => option.value}
-                // isDisabled={!permitOpen && true}
+                isDisabled={data.task_state === "Done" && true}
                 styles={{ color: "black" }}
               />
             </Form.Group>

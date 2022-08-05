@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useApi } from "../utils/useApi";
-
 import { ToastContainer, toast } from "react-toastify";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -25,25 +23,25 @@ const LoginForm = () => {
       if (!response.data.error) {
         try {
           // CHECK ACTIVE STATUS
-          const active = response.data[0].status;
-          if (active === "Active") {
-            localStorage.setItem("username", response.data[0].username);
-            localStorage.setItem("email", response.data[0].email);
+          const active = response.data.userInfo.status;
+          const isAdmin = response.data.isAdmin;
+          const isLead = response.data.isLead;
+          const isManager = response.data.isManager;
 
-            // CHECK ADMIN STATUS
-            const currentUser = localStorage.getItem("username");
-            const admin = await axios.get("/checkgroup", {
-              params: {
-                username: currentUser,
-                usergroup: "admin",
-              },
-            });
-            if (admin.data === true) {
-              localStorage.setItem("isAdmin", "admin");
+          console.log(isAdmin);
+          if (active === "Active") {
+            if (isAdmin === true) {
+              localStorage.setItem("username", username);
+              localStorage.setItem("isAdmin", isAdmin);
               navigate("/management");
-            } else {
-              localStorage.setItem("isAdmin", "non-admin");
+            } else if (isAdmin === false) {
+              localStorage.setItem("username", username);
               navigate("/tasks");
+              if (isLead === true) {
+                localStorage.setItem("isLead", isLead);
+              } else if (isManager === true) {
+                localStorage.setItem("isManager", isManager);
+              }
             }
           } else if (active === "Inactive") {
             toast.error("Unable to login", {
@@ -60,11 +58,6 @@ const LoginForm = () => {
         } catch (e) {
           console.log(e);
         }
-      } else {
-        // RESET FIELDS
-        setUsername("");
-        setPassword("");
-        navigate("/");
       }
       if (response.data.error) {
         toast.error(response.data.error, {

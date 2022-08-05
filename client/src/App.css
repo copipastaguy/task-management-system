@@ -17,6 +17,12 @@ body {
   height: 100%;
   width: 100%;
   background-color: #343a40 !important;
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 a {
@@ -325,6 +331,12 @@ a {
   /* box-shadow: 7px 7px 8px -6px rgba(87, 87, 87, 0.8); */
 }
 
+.app-info {
+  margin: 20px auto;
+  display: flex;
+  gap: 10px;
+}
+
 .application {
   width: 350px;
   height: 300px;
@@ -380,15 +392,25 @@ form span {
 }
 
 .col-header {
-  /* padding: 5px; */
+  display: flex;
   font-weight: 600;
   letter-spacing: 2px;
   font-size: 16px;
   color: white;
+  gap: 20px;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .col-header span {
-  color: #d00000;
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #adb5bd;
 }
 
 .task {

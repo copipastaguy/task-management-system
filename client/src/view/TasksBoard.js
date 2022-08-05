@@ -16,7 +16,8 @@ const TasksBoard = () => {
   const user = localStorage.getItem("username");
   const [groups, setGroups] = useState([]);
 
-  const [projectlead, setProjectLead] = useState(false);
+  const lead = localStorage.getItem("isLead");
+  const [projectlead, setProjectLead] = useState(lead);
   // const [projectManager, setProjectManager] = useState(false);
 
   const [applications, setApplications] = useState([]);
@@ -27,34 +28,9 @@ const TasksBoard = () => {
   const openCreateApp = () => setOpenCreateForm(true);
   const closeCreateApp = () => setOpenCreateForm(false);
 
-  // CHECK IF USER IS A SPECIFIC USER GROUP FUNCTION
-  const checkGroup = async () => {
-    const response_lead = await axios.get("/checkgroup", {
-      params: {
-        username: user,
-        usergroup: "project lead",
-      },
-    });
-    if (response_lead.data === true) {
-      localStorage.setItem("user-group", "project lead");
-      setProjectLead(true);
-    }
-
-    const response_manager = await axios.get("/checkgroup", {
-      params: {
-        username: user,
-        usergroup: "project manager",
-      },
-    });
-    if (response_manager.data === true) {
-      localStorage.setItem("user-group", "project manager");
-    }
-  };
-
   const getApplications = async () => {
     const response = await axios.get("/get-applications");
     setApplications(response.data);
-    // setRnum(response.data[1].max + 1);
   };
 
   const getGroups = async () => {
@@ -63,7 +39,6 @@ const TasksBoard = () => {
   };
 
   useEffect(() => {
-    checkGroup();
     getApplications();
     getGroups();
   }, []);
@@ -124,6 +99,9 @@ const TasksBoard = () => {
           app_startDate,
           app_endDate,
           permitOpen,
+          permitTodo,
+          permitDoing,
+          permitDone,
         });
         if (response.data.error) {
           toast.error(response.data.error, {

@@ -8,7 +8,6 @@ const login = require("../controller/login");
 const add = require("../controller/add");
 const update = require("../controller/update");
 const accounts = require("../controller/accounts");
-const checkAdmin = require("../controller/checkAdmin");
 const checkGroup = require("../controller/checkGroup");
 const userGroup = require("../controller/userGroup");
 const addGroup = require("../controller/addGroup");
@@ -20,6 +19,7 @@ const addGetPlan = require("../controller/addGetPlan");
 const getApplications = require("../controller/getApplications");
 const addupdateTask = require("../controller/addupdateTask");
 const getTasks = require("../controller/getTasks");
+const checkPermit = require("../controller/checkPermit");
 
 const port = process.env.API_PORT;
 console.log(process.env.API_PORT);
@@ -57,9 +57,6 @@ add(app);
 // - - - UPDATE USER - - -
 update(app);
 
-// - - - CHECK ADMIN USER - - -
-checkAdmin(app);
-
 // - - - FETCH USER GROUP - - -
 userGroup(app);
 
@@ -73,8 +70,11 @@ removeUserFromGroup(app);
 
 userUpdate(app);
 
+// checkGroup(app);
+
 //////////////////////////// PHASE 2 TASK FLOW MANAGEMENT /////////////////////////////////
-checkGroup(app);
+
+checkPermit(app);
 
 addupdateApp(app);
 

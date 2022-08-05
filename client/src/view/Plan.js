@@ -1,6 +1,6 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
-import { AiFillFlag } from "react-icons/ai";
+
 import { FcClock } from "react-icons/fc";
 
 const Plan = ({ planName, startDate, endDate, planColor }) => {
@@ -9,7 +9,7 @@ const Plan = ({ planName, startDate, endDate, planColor }) => {
       className="application"
       style={{
         height: "100px",
-        width: "200px",
+        width: "210px",
         boxShadow: "7px 7px 8px -6px rgba(87,87,87,0.8)",
         borderRadius: "15px",
         backgroundColor: planColor,

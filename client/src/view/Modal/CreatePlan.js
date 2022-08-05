@@ -17,7 +17,7 @@ const CreatePlan = ({
   closeAddPlanForm,
 }) => {
   const app_acronym = data.app_acronym;
-  const [planName, setPlanName] = useState();
+  const [planName, setPlanName] = useState("");
 
   const [startDate, setStartDate] = useState(now);
   const [endDate, setEndDate] = useState(now);

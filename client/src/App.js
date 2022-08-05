@@ -28,7 +28,7 @@ function App() {
 
           {/* admin page */}
           <Route element={<AdminRoutes />}>
-            <Route path="/management" element={<UserManagement />} exact />
+            <Route path="/management" element={<UserManagement />} />
             <Route path="/group-management" element={<GroupManagement />} />
           </Route>
 

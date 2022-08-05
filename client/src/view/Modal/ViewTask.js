@@ -15,10 +15,8 @@ const ViewTask = ({
   groups,
   openViewTaskForm,
   closeViewTaskForm,
-  // auditNotes,
   selectedPlan,
   taskNotes,
-  //   task_name,
 }) => {
   const [auditNotes, setAuditNotes] = useState([]);
   const [data, setData] = useState([]);
@@ -48,14 +46,6 @@ const ViewTask = ({
   useEffect(() => {
     fetchTask();
   }, []);
-
-  //   const options = groups.map((group) => {
-  //     const value = group.groupname;
-  //     return {
-  //       label: value,
-  //       value: value,
-  //     };
-  //   });
 
   return (
     <Form className="updateTask">

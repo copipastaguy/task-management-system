@@ -23,7 +23,10 @@ import {
   AiFillEdit,
   AiFillCheckCircle,
   AiFillEye,
+  AiFillClockCircle,
 } from "react-icons/ai";
+
+import { FcClock } from "react-icons/fc";
 
 import { IoIosAddCircle } from "react-icons/io";
 
@@ -55,18 +58,25 @@ const ApplicationKanban = () => {
   const openViewTaskForm = () => setOpenViewTask(true);
   const closeViewTaskForm = () => setOpenViewTask(false);
 
-  const [projectLead, setProjectLead] = useState(false);
-  const [projectManager, setProjectManager] = useState(false);
+  const lead = localStorage.getItem("isLead");
+  const [projectLead, setProjectLead] = useState(lead);
+
+  const manager = localStorage.getItem("isManager");
+  const [projectManager, setProjectManager] = useState(manager);
 
   const taskCreator = localStorage.getItem("username");
   const taskOwner = localStorage.getItem("username");
 
-  const [permitOpen, setPermitOpen] = useState(false);
+  const [permitOpen, setPermitOpen] = useState(true);
   const [permitTodo, setPermitTodo] = useState(false);
   const [permitDoing, setPermitDoing] = useState(false);
   const [permitDone, setPermitDone] = useState(false);
 
   const [openCount, setOpenCount] = useState(0);
+  const [todoCount, setTodoCount] = useState(0);
+  const [doingCount, setDoingCount] = useState(0);
+  const [doneCount, setDoneCount] = useState(0);
+  const [closeCount, setCloseCount] = useState(0);
 
   const today = new Date();
   let day = today.getDate();
@@ -86,50 +96,50 @@ const ApplicationKanban = () => {
     });
     setData(response.data[0]);
 
-    const fetchPermitOpen = async () => {
-      const permitOpenUser = await axios.get("/checkgroup", {
-        params: {
-          username: taskOwner,
-          usergroup: response.data[0].app_permitOpen,
-        },
-      });
-      if (permitOpenUser.data === true) setPermitOpen(true);
-    };
+    // const fetchPermitOpen = async () => {
+    //   const permitOpenUser = await axios.get("/checkgroup", {
+    //     params: {
+    //       username: taskOwner,
+    //       usergroup: response.data[0].app_permitOpen,
+    //     },
+    //   });
+    //   if (permitOpenUser.data === true) setPermitOpen(true);
+    // };
 
-    const fetchPermitTodo = async () => {
-      const permitTodoUser = await axios.get("/checkgroup", {
-        params: {
-          username: taskOwner,
-          usergroup: response.data[0].app_permitToDo,
-        },
-      });
-      if (permitTodoUser.data === true) setPermitTodo(true);
-    };
+    // const fetchPermitTodo = async () => {
+    //   const permitTodoUser = await axios.get("/checkgroup", {
+    //     params: {
+    //       username: taskOwner,
+    //       usergroup: response.data[0].app_permitToDo,
+    //     },
+    //   });
+    //   if (permitTodoUser.data === true) setPermitTodo(true);
+    // };
 
-    const fetchPermitDoing = async () => {
-      const permitDoingUser = await axios.get("/checkgroup", {
-        params: {
-          username: taskOwner,
-          usergroup: response.data[0].app_permitDoing,
-        },
-      });
-      if (permitDoingUser.data === true) setPermitDoing(true);
-    };
+    // const fetchPermitDoing = async () => {
+    //   const permitDoingUser = await axios.get("/checkgroup", {
+    //     params: {
+    //       username: taskOwner,
+    //       usergroup: response.data[0].app_permitDoing,
+    //     },
+    //   });
+    //   if (permitDoingUser.data === true) setPermitDoing(true);
+    // };
 
-    const fetchPermitDone = async () => {
-      const permitDoingUser = await axios.get("/checkgroup", {
-        params: {
-          username: taskOwner,
-          usergroup: response.data[0].app_permitDone,
-        },
-      });
-      if (permitDoingUser.data === true) setPermitDone(true);
-    };
+    // const fetchPermitDone = async () => {
+    //   const permitDoingUser = await axios.get("/checkgroup", {
+    //     params: {
+    //       username: taskOwner,
+    //       usergroup: response.data[0].app_permitDone,
+    //     },
+    //   });
+    //   if (permitDoingUser.data === true) setPermitDone(true);
+    // };
 
-    fetchPermitOpen();
-    fetchPermitTodo();
-    fetchPermitDoing();
-    fetchPermitDone();
+    // fetchPermitOpen();
+    // fetchPermitTodo();
+    // fetchPermitDoing();
+    // fetchPermitDone();
   };
 
   // GET PLANS ASSOCIATED WITH APPLICATION
@@ -156,6 +166,26 @@ const ApplicationKanban = () => {
       (task) => task.task_state === "Open"
     ).length;
     setOpenCount(openTask);
+
+    const todoTask = response.data.filter(
+      (task) => task.task_state === "ToDo"
+    ).length;
+    setTodoCount(todoTask);
+
+    const doingTask = response.data.filter(
+      (task) => task.task_state === "Doing"
+    ).length;
+    setDoingCount(doingTask);
+
+    const doneTask = response.data.filter(
+      (task) => task.task_state === "Done"
+    ).length;
+    setDoneCount(doneTask);
+
+    const closeTask = response.data.filter(
+      (task) => task.task_state === "Closed"
+    ).length;
+    setCloseCount(closeTask);
   };
 
   useEffect(() => {
@@ -166,14 +196,14 @@ const ApplicationKanban = () => {
     fetchApplication();
     getPlans();
     // CHECK GROUP FOR DIFFERENT STATE CHANGE
-    const userGroup = localStorage.getItem("user-group");
-    if (userGroup === "project manager") {
-      setProjectManager(true);
-    }
+    // const userGroup = localStorage.getItem("user-group");
+    // if (userGroup === "project manager") {
+    //   setProjectManager(true);
+    // }
 
-    if (userGroup === "project lead") {
-      setProjectLead(true);
-    }
+    // if (userGroup === "project lead") {
+    //   setProjectLead(true);
+    // }
 
     const getGroups = async () => {
       const response = await axios.get("/user-groups");
@@ -208,10 +238,18 @@ const ApplicationKanban = () => {
             <Button variant="danger" onClick={() => navigate("/tasks")}>
               Back
             </Button>
-            <Button onClick={openEditForm}>
-              <AiFillEdit />
-              Application
-            </Button>
+
+            {!projectLead && (
+              <Button onClick={openEditForm}>
+                <AiFillEye /> Application
+              </Button>
+            )}
+
+            {projectLead && (
+              <Button onClick={openEditForm}>
+                <AiFillEdit /> Application
+              </Button>
+            )}
 
             {projectManager && (
               <Button onClick={openAddPlanForm}>
@@ -225,9 +263,12 @@ const ApplicationKanban = () => {
               </Button>
             )}
           </div>
-          {/* <div>
-            <div>App running number: </div>
-          </div> */}
+          <div className="app-info">
+            <div style={{ gap: "10px", display: "flex", alignItems: "center" }}>
+              <AiFillClockCircle /> {data.startDate}
+              <AiFillClockCircle /> {data.endDate}
+            </div>
+          </div>
         </div>
 
         {openEdit && (
@@ -292,42 +333,37 @@ const ApplicationKanban = () => {
 
           <div>
             <div className="col-header">
-              <p>
-                OPEN <span>{openCount}</span>
-              </p>
+              <p>OPEN</p>
+              <span>{openCount}</span>
             </div>
             <div>
-              {/* {tasks
+              {tasks
                 .filter((task) => task.task_state === "Open")
                 .map((task) => {
-                  return <p>hi</p>;
-                })} */}
-              {tasks.map((task) => {
-                const approveTask = async () => {
-                  const newState = "ToDo";
-                  const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
-                  try {
-                    const response = await axios.post("/move-task-todo", {
-                      task_name: task.task_name,
-                      newState,
-                      note,
-                      taskOwner,
-                    });
-                    fetchTasks();
-                    if (response.data) {
-                      toast.success(`Move ${task.task_name} to ToDo!`, {
-                        position: "top-center",
-                        autoClose: 700,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
+                  const approveTask = async () => {
+                    const newState = "ToDo";
+                    const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
+                    try {
+                      const response = await axios.post("/move-task-todo", {
+                        task_name: task.task_name,
+                        newState,
+                        note,
+                        taskOwner,
                       });
+                      fetchTasks();
+                      if (response.data) {
+                        toast.success(`Move ${task.task_name} to ToDo!`, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                      }
+                    } catch (e) {
+                      console.warn(e);
                     }
-                  } catch (e) {
-                    console.warn(e);
-                  }
-                };
-                if (task.task_state === "Open") {
+                  };
                   return (
                     <div
                       style={{ marginBottom: "10px", color: "#DEE2E6" }}
@@ -339,14 +375,18 @@ const ApplicationKanban = () => {
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
                       />
-                      <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
-                        <Button
-                          style={{ width: "100%" }}
-                          onClick={openViewTaskForm}
+                      {!permitOpen && (
+                        <Link
+                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
                         >
-                          <AiFillEye />
-                        </Button>
-                      </Link>
+                          <Button
+                            style={{ width: "100%" }}
+                            onClick={openViewTaskForm}
+                          >
+                            <AiFillEye />
+                          </Button>
+                        </Link>
+                      )}
 
                       {permitOpen && (
                         <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
@@ -365,14 +405,14 @@ const ApplicationKanban = () => {
                       )}
                     </div>
                   );
-                }
-              })}
+                })}
             </div>
           </div>
 
           <div>
             <div className="col-header">
               <p>TO-DO</p>
+              <span>{todoCount}</span>
             </div>
             <div>
               {tasks.map((task) => {
@@ -445,6 +485,7 @@ const ApplicationKanban = () => {
           <div>
             <div className="col-header">
               <p>DOING</p>
+              <span>{doingCount}</span>
             </div>
             <div>
               {tasks.map((task) => {
@@ -540,6 +581,7 @@ const ApplicationKanban = () => {
           <div>
             <div className="col-header">
               <p>DONE</p>
+              <span>{doneCount}</span>
             </div>
             {tasks.map((task) => {
               const MoveTaskDoing = async () => {
@@ -594,7 +636,7 @@ const ApplicationKanban = () => {
                     />
                     <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                       <Button style={{ width: "100%" }}>
-                        <AiFillEdit />
+                        <AiFillEye />
                       </Button>
                     </Link>
 
@@ -624,11 +666,11 @@ const ApplicationKanban = () => {
           <div>
             <div className="col-header">
               <p>CLOSE</p>
+              <span>{closeCount}</span>
             </div>
             {tasks.map((task) => {
               if (task.task_state === "Closed") {
                 return (
-                  //<Card style={{ marginBottom: "10px" }} key={task.task_name}>
                   <div
                     style={{ marginBottom: "10px", color: "#DEE2E6" }}
                     key={task.task_name}
@@ -645,7 +687,6 @@ const ApplicationKanban = () => {
                       </Button>
                     </Link>
                   </div>
-                  //</Card>
                 );
               }
             })}
