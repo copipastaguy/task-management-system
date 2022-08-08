@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const AdminUpdateUser = () => {
   // array of usernames fetched
-  const username = localStorage.getItem("username");
+  const username = sessionStorage.getItem("username");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 

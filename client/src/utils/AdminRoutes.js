@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 const AdminRoutes = () => {
-  // LOCALSTORAGE
-  const admin = localStorage.getItem("isAdmin");
+  // sessionStorage
+  const admin = sessionStorage.getItem("isAdmin");
   const authAdmin = () => {
     if (admin === "true") {
       return true;

@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
 const AdminRoutes = () => {
-  // LOCALSTORAGE
+  // sessionStorage
   const authUsername = () => {
-    const username = localStorage.getItem("username");
+    const username = sessionStorage.getItem("username");
     if (username) {
       return true;
     } else {

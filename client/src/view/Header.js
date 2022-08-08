@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Modal from "@mui/material/Modal";
 
 const Header = () => {
-  const user = localStorage.getItem("username");
+  const user = sessionStorage.getItem("username");
   const [openUpdate, setOpenUpdate] = useState(false);
   const handleOpenUpdate = () => {
     setOpenUpdate(true);
@@ -22,12 +22,12 @@ const Header = () => {
 
   const handleSignout = (e) => {
     e.preventDefault();
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/");
   };
 
   const UserUpdate = ({ open, handleClose }) => {
-    const username = localStorage.getItem("username");
+    const username = sessionStorage.getItem("username");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const [enable, setEnable] = useState("");

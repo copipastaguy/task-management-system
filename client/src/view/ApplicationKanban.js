@@ -50,14 +50,14 @@ const ApplicationKanban = () => {
   const openViewTaskForm = () => setOpenViewTask(true);
   const closeViewTaskForm = () => setOpenViewTask(false);
 
-  const lead = localStorage.getItem("isLead");
+  const lead = sessionStorage.getItem("isLead");
   const [projectLead, setProjectLead] = useState(lead);
 
-  const manager = localStorage.getItem("isManager");
+  const manager = sessionStorage.getItem("isManager");
   const [projectManager, setProjectManager] = useState(manager);
 
-  const taskCreator = localStorage.getItem("username");
-  const taskOwner = localStorage.getItem("username");
+  const taskCreator = sessionStorage.getItem("username");
+  const taskOwner = sessionStorage.getItem("username");
 
   const [permitOpen, setPermitOpen] = useState(true);
   const [permitTodo, setPermitTodo] = useState(false);

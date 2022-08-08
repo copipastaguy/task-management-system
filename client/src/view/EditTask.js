@@ -13,7 +13,7 @@ const EditTask = () => {
   const { task_name, app_acronym } = useParams();
   const navigate = useNavigate();
 
-  const taskOwner = localStorage.getItem("username");
+  const taskOwner = sessionStorage.getItem("username");
 
   const [data, setData] = useState([]);
   const [taskName, setTaskName] = useState("");
@@ -97,7 +97,6 @@ const EditTask = () => {
   };
 
   // GET PERMIT BASED ON TASK STATE
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -6,13 +6,13 @@ import { useNavigate } from "react-router-dom";
 
 const LoggedIn = () => {
   const navigate = useNavigate();
-  const local_user = localStorage.getItem("username");
+  const local_user = sessionStorage.getItem("username");
 
   const handleSignout = (e) => {
     e.preventDefault();
 
     // CLEAR ALL STORAGE
-    localStorage.clear("username");
+    sessionStorage.clear("username");
     sessionStorage.clear("username");
     navigate("/");
   };
@@ -31,7 +31,7 @@ const LoggedIn = () => {
     <div className="login-header nav-bar">
       <h4>
         Welcome: <span>{local_user}</span>
-      </h4> 
+      </h4>
 
       <Form>
         <Button onClick={goHome}>Home</Button>

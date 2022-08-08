@@ -31,19 +31,19 @@ const LoginForm = () => {
           const jwtToken = response.data.jwtToken;
 
           if (active === "Active") {
-            localStorage.setItem("isAdmin", isAdmin);
-            localStorage.setItem("username", username);
-            localStorage.setItem("usergroup", usergroup);
-            localStorage.setItem("jwtToken", jwtToken);
+            sessionStorage.setItem("isAdmin", isAdmin);
+            sessionStorage.setItem("username", username);
+            sessionStorage.setItem("usergroup", usergroup);
+            sessionStorage.setItem("jwtToken", jwtToken);
 
             if (isAdmin === true) {
               navigate("/management");
             } else if (isAdmin === false) {
               navigate("/tasks");
               if (isLead === true) {
-                localStorage.setItem("isLead", isLead);
+                sessionStorage.setItem("isLead", isLead);
               } else if (isManager === true) {
-                localStorage.setItem("isManager", isManager);
+                sessionStorage.setItem("isManager", isManager);
               }
             }
           } else if (active === "Inactive") {

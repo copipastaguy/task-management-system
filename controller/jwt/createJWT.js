@@ -7,7 +7,7 @@ const createToken = ({ username, isAdmin }) => {
       { username, isAdmin },
       process.env.JWT_SECRET,
       {
-        expiresIn: process.env.JWT_EXPIRATION,
+        expiresIn: process.env.JWT_REFRESH_TOKEN,
       },
       (error, result) => {
         // console.log(result);

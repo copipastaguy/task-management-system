@@ -11,11 +11,11 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 
 const TasksBoard = () => {
-  // LOCALSTORAGE USERNAME
-  const user = localStorage.getItem("username");
+  // sessionStorage USERNAME
+  const user = sessionStorage.getItem("username");
   const [groups, setGroups] = useState([]);
 
-  const lead = localStorage.getItem("isLead");
+  const lead = sessionStorage.getItem("isLead");
   const [projectlead, setProjectLead] = useState(lead);
 
   const [applications, setApplications] = useState([]);
@@ -107,7 +107,7 @@ const TasksBoard = () => {
           permitTodo,
           permitDoing,
           permitDone,
-          token: localStorage.getItem("jwtToken"),
+          token: sessionStorage.getItem("jwtToken"),
         });
         if (response.data.error) {
           toast.error(response.data.error, {
