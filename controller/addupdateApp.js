@@ -18,50 +18,44 @@ const addupdateApp = function (app) {
     } = req.body;
     console.log(req.body);
 
-    const verifyToken = await verifyJWT({ token });
-    console.log(verifyToken);
-    if (verifyToken) {
-      // if (app_acronym && app_description && app_Rnum) {
-      //   const checkApp = `SELECT app_acronym FROM application WHERE app_acronym = ?`;
-      //   connection.query(checkApp, [app_acronym], (error, result) => {
-      //     if (error) throw error;
-      //     else if (result.length > 0) {
-      //       return next(errorHandler("Application name exist!", req, res));
-      //     } else {
-      //       const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      //       connection.query(
-      //         addNewApp,
-      //         [
-      //           app_acronym,
-      //           app_description,
-      //           app_Rnum,
-      //           app_startDate,
-      //           app_endDate,
-      //           permitOpen,
-      //           permitTodo,
-      //           permitDoing,
-      //           permitDone,
-      //         ],
-      //         (error, result) => {
-      //           if (error) throw error;
-      //           else {
-      //             res.send("New application added");
-      //           }
-      //         }
-      //       );
-      //     }
-      //   });
-      // } else {
-      //   return next(errorHandler("Input all fields", req, res));
-      // }
+    if (app_acronym && app_description && app_Rnum) {
+      const checkApp = `SELECT app_acronym FROM application WHERE app_acronym = ?`;
+      connection.query(checkApp, [app_acronym], (error, result) => {
+        if (error) throw error;
+        else if (result.length > 0) {
+          return next(errorHandler("Application name exist!", req, res));
+        } else {
+          const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+          connection.query(
+            addNewApp,
+            [
+              app_acronym,
+              app_description,
+              app_Rnum,
+              app_startDate,
+              app_endDate,
+              permitOpen,
+              permitTodo,
+              permitDoing,
+              permitDone,
+            ],
+            (error, result) => {
+              if (error) throw error;
+              else {
+                res.send("New application added");
+              }
+            }
+          );
+        }
+      });
     } else {
-      return next(errorHandler("Session expired.", req, res));
+      return next(errorHandler("Input all fields", req, res));
     }
   });
 
   app.put(`/update-application`, (req, res, next) => {
-    const { app_acronym, startDate, endDate, permitOpen, permitTodo, permitDoing, permitDone } = req.body;
-    // console.log(req.body);
+    const { app_acronym, startDate, endDate, permitCreate, permitOpen, permitTodo, permitDoing, permitDone } = req.body;
+    console.log(req.body);
 
     const getData = `SELECT * FROM application WHERE app_acronym = ?`;
     connection.query(getData, [app_acronym], (error, result) => {
@@ -90,6 +84,20 @@ const addupdateApp = function (app) {
         } else {
           const updateInfo = `UPDATE application SET app_endDate = ? WHERE app_acronym = ?`;
           connection.query(updateInfo, [endDate, app_acronym], (error, result) => {
+            if (error) throw error;
+          });
+        }
+
+        //////////////////// PERMIT OPEN ////////////////////
+        if (!permitCreate) {
+          const oldPermitCreate = result[0].app_permitCreate;
+          const updateInfo = `UPDATE application SET app_permitCreate = ? WHERE app_acronym = ?`;
+          connection.query(updateInfo, [oldPermitCreate, app_acronym], (error, result) => {
+            if (error) throw error;
+          });
+        } else {
+          const updateInfo = `UPDATE application SET app_permitCreate = ? WHERE app_acronym = ?`;
+          connection.query(updateInfo, [permitCreate, app_acronym], (error, result) => {
             if (error) throw error;
           });
         }

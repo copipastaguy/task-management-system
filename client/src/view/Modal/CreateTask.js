@@ -51,6 +51,7 @@ const CreateTask = ({
     const app_Rnum = data.app_Rnum;
     const permitCreate = data.app_permitCreate;
     console.log(permitCreate);
+    console.log(permitCreate);
     const note = `${now} ${time}: ${taskState}\n${taskCreator}\nNew task have been created`;
 
     try {

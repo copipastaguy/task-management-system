@@ -28,6 +28,7 @@ const addupdateTask = function (app) {
     } = req.body;
 
     const permitCreate = await checkgroup({ username: taskOwner, usergroup: permitUser });
+    // console.log(taskOwner, permitUser);
     if (permitCreate === false) {
       return next(errorHandler("No access!", req, res));
     } else {
@@ -47,7 +48,6 @@ const addupdateTask = function (app) {
               else {
                 const taskId = app_acronym.concat("_", app_Rnum + 1);
                 //////////////////////////// ADD TASK /////////////////////////////////
-
                 // FETCH PLAN COLOR FROM PLAN TABLE
                 if (taskPlan) {
                   const getPlanColor = `SELECT plan_color FROM plan WHERE plan_mvp_name = ?`;
@@ -92,10 +92,34 @@ const addupdateTask = function (app) {
                       );
                     }
                   });
+                  res.send(`Task ${taskName} created!`);
+                } else if (!taskPlan) {
+                  const addTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_plan, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+                  connection.query(
+                    addTask,
+                    [app_acronym, taskId, taskName, taskDescription, taskPlan, taskState, taskCreator, taskOwner],
+                    (error, result) => {
+                      if (error) throw error;
+                      else {
+                        // ADD AUDIT NOTES
+                        const auditNotes = `${now}: ${taskState} \nDone by: ${taskCreator} \n${taskNotes}`;
+                        const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
+                        connection.query(addNote, [taskName, auditNotes], (error, result) => {
+                          if (error) throw error;
+                        });
+
+                        // UPDATE APP RNUM
+                        const updateRnum = `UPDATE application SET app_Rnum = ? WHERE app_acronym = ?`;
+                        connection.query(updateRnum, [app_Rnum + 1, app_acronym], (error, result) => {
+                          if (error) throw error;
+                        });
+                      }
+                    }
+                  );
+                  res.send(`Task ${taskName} created!`);
                 }
               }
             });
-            res.send(`Task ${taskName} created!`);
           }
         });
       } else if (!taskName) {

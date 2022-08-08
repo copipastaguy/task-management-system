@@ -323,12 +323,8 @@ a {
   justify-content: center;
   gap: 20px;
   flex-wrap: wrap;
-  /* background-color: #212529; */
   padding: 20px 10px;
   color: white;
-  /* border-radius: 1.2em; */
-  /* border: 1px solid;  */
-  /* box-shadow: 7px 7px 8px -6px rgba(87, 87, 87, 0.8); */
 }
 
 .app-info {
@@ -338,8 +334,8 @@ a {
 }
 
 .application {
-  width: 350px;
-  height: 300px;
+  width: 300px;
+  height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;

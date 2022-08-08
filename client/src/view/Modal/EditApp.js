@@ -32,7 +32,7 @@ const EditApp = ({ show, onHide, data, groups, fetchApplication, openEditForm, c
   const handleCreate = (selectedCreate) => {
     setSelectedCreate(selectedCreate);
     const value = selectedCreate.value;
-    setPermitOpen(value);
+    setPermitCreate(value);
   };
 
   const [permitOpen, setPermitOpen] = useState(data.app_permitOpen);
