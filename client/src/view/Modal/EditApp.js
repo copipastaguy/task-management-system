@@ -9,26 +9,31 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const EditApp = ({
-  show,
-  onHide,
-  data,
-  groups,
-  fetchApplication,
-  openEditForm,
-  closeEditForm,
-  projectLead,
-}) => {
+const EditApp = ({ show, onHide, data, groups, fetchApplication, openEditForm, closeEditForm, projectLead }) => {
   const app_acronym = data.app_acronym;
   const app_Rnum = data.app_Rnum;
   const app_description = data.app_description;
   const [startDate, setStartDate] = useState(data.startDate);
   const [endDate, setEndDate] = useState(data.endDate);
 
+  const [selectedCreate, setSelectedCreate] = useState();
   const [selectedOpen, setSelectedOpen] = useState();
   const [selectedTodo, setSelectedTodo] = useState();
   const [selectedDoing, setSelectedDoing] = useState();
   const [selectedDone, setSelectedDone] = useState();
+
+  const [permitCreate, setPermitCreate] = useState(data.app_permitCreate);
+  const defaultCreate = () => {
+    return {
+      label: permitCreate,
+      value: permitCreate,
+    };
+  };
+  const handleCreate = (selectedCreate) => {
+    setSelectedCreate(selectedCreate);
+    const value = selectedCreate.value;
+    setPermitOpen(value);
+  };
 
   const [permitOpen, setPermitOpen] = useState(data.app_permitOpen);
   const defaultOpen = () => {
@@ -97,6 +102,7 @@ const EditApp = ({
         app_acronym,
         startDate,
         endDate,
+        permitCreate,
         permitOpen,
         permitTodo,
         permitDoing,
@@ -128,12 +134,7 @@ const EditApp = ({
             <Col>
               <Form.Group>
                 <Form.Label>App name</Form.Label>
-                <Form.Control
-                  readOnly
-                  type="text"
-                  placeholder={app_acronym}
-                  id="app_name"
-                />
+                <Form.Control readOnly type="text" placeholder={app_acronym} id="app_name" />
               </Form.Group>
             </Col>
 
@@ -149,13 +150,7 @@ const EditApp = ({
           <Row>
             <Form.Group>
               <Form.Label>Description</Form.Label>
-              <Form.Control
-                readOnly
-                as="textarea"
-                rows={3}
-                placeholder={app_description}
-                id="app_description"
-              />
+              <Form.Control readOnly as="textarea" rows={3} placeholder={app_description} id="app_description" />
             </Form.Group>
           </Row>
           <br />
@@ -184,8 +179,21 @@ const EditApp = ({
           <br />
 
           <Row>
+            <Form.Label>Permissions</Form.Label>
             <Form.Group style={{ width: "400px" }} as={Col}>
-              <Form.Label>Permit Open</Form.Label>
+              <Form.Label> Create</Form.Label>
+              <Select
+                isDisabled={!projectLead && true}
+                options={options}
+                name="permit_create"
+                defaultValue={defaultCreate}
+                value={selectedCreate}
+                onChange={handleCreate}
+              />
+            </Form.Group>
+
+            <Form.Group style={{ width: "400px" }} as={Col}>
+              <Form.Label> Open</Form.Label>
               <Select
                 isDisabled={!projectLead && true}
                 options={options}
@@ -193,12 +201,11 @@ const EditApp = ({
                 defaultValue={defaultOpen}
                 value={selectedOpen}
                 onChange={handleOpen}
-                isClearable
               />
             </Form.Group>
 
             <Form.Group style={{ width: "400px" }} as={Col}>
-              <Form.Label>Permit ToDo</Form.Label>
+              <Form.Label> ToDo</Form.Label>
               <Select
                 isDisabled={!projectLead && true}
                 options={options}
@@ -210,7 +217,7 @@ const EditApp = ({
             </Form.Group>
 
             <Form.Group style={{ width: "400px" }} as={Col}>
-              <Form.Label>Permit Doing</Form.Label>
+              <Form.Label> Doing</Form.Label>
               <Select
                 isDisabled={!projectLead && true}
                 options={options}
@@ -221,7 +228,7 @@ const EditApp = ({
               />
             </Form.Group>
             <Form.Group style={{ width: "400px" }} as={Col}>
-              <Form.Label>Permit Done</Form.Label>
+              <Form.Label> Done</Form.Label>
               <Select
                 isDisabled={!projectLead && true}
                 options={options}

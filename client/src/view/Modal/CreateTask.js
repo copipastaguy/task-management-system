@@ -40,7 +40,6 @@ const CreateTask = ({
   });
 
   const handleTaskPlan = (selectedPlan) => {
-    // setSelectedPlan(selectedPlan);
     const value = selectedPlan.value;
     setTaskPlan(value);
     console.log(value);
@@ -50,6 +49,8 @@ const CreateTask = ({
     e.preventDefault();
     const app_acronym = data.app_acronym;
     const app_Rnum = data.app_Rnum;
+    const permitCreate = data.app_permitCreate;
+    console.log(permitCreate);
     const note = `${now} ${time}: ${taskState}\n${taskCreator}\nNew task have been created`;
 
     try {
@@ -64,6 +65,7 @@ const CreateTask = ({
         taskCreator,
         taskOwner,
         note,
+        permitUser: permitCreate,
       });
       console.log(response);
       if (!response.data.error) {
@@ -94,11 +96,7 @@ const CreateTask = ({
 
   return (
     <Modal show={openAddTaskForm} onHide={closeAddTaskForm} size="lg" centered>
-      <Form
-        onSubmit={handleSubmit}
-        // style={{ backgroundColor: "#343A40", color: "white" }}
-        className="editTask"
-      >
+      <Form onSubmit={handleSubmit} className="editTask">
         <Modal.Header>
           <Modal.Title>Create a new task</Modal.Title>
         </Modal.Header>

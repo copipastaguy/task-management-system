@@ -11,7 +11,7 @@ const addupdateTask = function (app) {
   const time = new Date().toTimeString().slice(0, 8);
   const now = `${date}/${month}/${year} ${time}`;
 
-  app.post("/add-task", (req, res, next) => {
+  app.post("/add-task", async (req, res, next) => {
     // checkGroup(userid, usergroup)
     const {
       app_Rnum,
@@ -24,80 +24,97 @@ const addupdateTask = function (app) {
       taskOwner,
       taskPlan,
       note,
+      permitUser,
     } = req.body;
 
-    if (taskName) {
-      const checkTask = `SELECT task_name FROM task WHERE task_name = ? AND task_app_acronym = ?`;
-      connection.query(checkTask, [taskName, app_acronym], (error, result) => {
-        if (error) throw error;
-        else if (result.length > 0) {
-          ////////////////////////// CHECK IF TASK NAME EXIST /////////////////////////////////
-          return next(
-            errorHandler(`Task name exist for ${app_acronym}`, req, res)
-          );
-        } else {
-          //////////////////////////// GET APP ACRONYM, RUNNING NUMBER FOR TASK_ID /////////////////////////////////
-          // GET APP RUNNING NUMBER
-          const getRnum = `SELECT app_Rnum FROM application WHERE app_acronym = ?`;
-          connection.query(getRnum, [app_acronym], (error, result) => {
-            if (error) throw error;
-            else {
-              const taskId = app_acronym.concat("_", app_Rnum + 1);
-              //////////////////////////// ADD TASK /////////////////////////////////
-              const addTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_plan, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
-              connection.query(
-                addTask,
-                [
-                  app_acronym,
-                  taskId,
-                  taskName,
-                  taskDescription,
-                  taskPlan,
-                  taskState,
-                  taskCreator,
-                  taskOwner,
-                ],
-                (error, result) => {
-                  if (error) throw error;
-                  else {
-                    // ADD AUDIT NOTES
-                    const auditNotes = `${now}: ${taskState} \nDone by: ${taskCreator} \n${taskNotes}`;
-                    const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
-                    connection.query(
-                      addNote,
-                      [taskName, auditNotes],
-                      (error, result) => {
-                        if (error) throw error;
-                        else {
-                          // res.send(`Task ${taskName} created!`);
+    const permitCreate = await checkgroup({ username: taskOwner, usergroup: permitUser });
+    if (permitCreate === false) {
+      return next(errorHandler("No access!", req, res));
+    } else {
+      if (taskName) {
+        const checkTask = `SELECT task_name FROM task WHERE task_name = ? AND task_app_acronym = ?`;
+        connection.query(checkTask, [taskName, app_acronym], (error, result) => {
+          if (error) throw error;
+          else if (result.length > 0) {
+            ////////////////////////// CHECK IF TASK NAME EXIST /////////////////////////////////
+            return next(errorHandler(`Task name exist for ${app_acronym}`, req, res));
+          } else {
+            //////////////////////////// GET APP ACRONYM, RUNNING NUMBER FOR TASK_ID /////////////////////////////////
+            // GET APP RUNNING NUMBER
+            const getRnum = `SELECT app_Rnum FROM application WHERE app_acronym = ?`;
+            connection.query(getRnum, [app_acronym], (error, result) => {
+              if (error) throw error;
+              else {
+                const taskId = app_acronym.concat("_", app_Rnum + 1);
+                //////////////////////////// ADD TASK /////////////////////////////////
+
+                // FETCH PLAN COLOR FROM PLAN TABLE
+                if (taskPlan) {
+                  const getPlanColor = `SELECT plan_color FROM plan WHERE plan_mvp_name = ?`;
+                  connection.query(getPlanColor, [taskPlan], (error, result) => {
+                    if (error) throw error;
+                    else if (result.length > 0) {
+                      const taskColor = result[0].plan_color;
+                      console.log(taskColor);
+
+                      // INSERT NEW TASK
+                      const addTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_plan, task_color, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+                      connection.query(
+                        addTask,
+                        [
+                          app_acronym,
+                          taskId,
+                          taskName,
+                          taskDescription,
+                          taskPlan,
+                          taskColor,
+                          taskState,
+                          taskCreator,
+                          taskOwner,
+                        ],
+                        (error, result) => {
+                          if (error) throw error;
+                          else {
+                            // ADD AUDIT NOTES
+                            const auditNotes = `${now}: ${taskState} \nDone by: ${taskCreator} \n${taskNotes}`;
+                            const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
+                            connection.query(addNote, [taskName, auditNotes], (error, result) => {
+                              if (error) throw error;
+                            });
+
+                            // UPDATE APP RNUM
+                            const updateRnum = `UPDATE application SET app_Rnum = ? WHERE app_acronym = ?`;
+                            connection.query(updateRnum, [app_Rnum + 1, app_acronym], (error, result) => {
+                              if (error) throw error;
+                            });
+                          }
                         }
-                      }
-                    );
-                  }
+                      );
+                    }
+                  });
                 }
-              );
-              // UPDATE APP RNUM
-              const updateRnum = `UPDATE application SET app_Rnum = ? WHERE app_acronym = ?`;
-              connection.query(
-                updateRnum,
-                [app_Rnum + 1, app_acronym],
-                (error, result) => {
-                  if (error) throw error;
-                }
-              );
-            }
-          });
-          res.send(`Task ${taskName} created!`);
-        }
-      });
-    } else if (!taskName) {
-      return next(errorHandler("Input valid task name", req, res));
+              }
+            });
+            res.send(`Task ${taskName} created!`);
+          }
+        });
+      } else if (!taskName) {
+        return next(errorHandler("Input valid task name", req, res));
+      }
     }
   });
 
-  app.post("/edit-task", (req, res, next) => {
-    const { task_name, taskNotes, taskState, taskOwner, taskPlan } = req.body;
-    console.log(req.body);
+  app.post("/edit-task", async (req, res, next) => {
+    const { task_name, taskNotes, taskState, taskOwner, taskPlan, permitUser } = req.body;
+    // GET TASK STATE - GET STATE PERMIT
+    // const getPermit = ` `;
+
+    // const permitLead = await checkgroup({ username: taskOwner, usergroup: "project lead" });
+    // const permitManager = await checkgroup({ username: taskOwner, usergroup: "project manager" });
+    // if (!permitLead || !permitManager) {
+    //   return next(errorHandler("No access", req, res));
+    // } else {
+    // }
 
     if (taskNotes.length > 0) {
       // UPDATED TASK NOTES
@@ -107,38 +124,36 @@ const addupdateTask = function (app) {
       connection.query(addNote, [task_name, updateNotes], (error, result) => {
         if (error) throw error;
         else {
-          // CHCEK FOR TASK PLAN
+          // CHECK FOR TASK PLAN
+          // UPDATED TASK PLAN
           if (taskPlan) {
-            // UPDATED TASK PLAN in task
-            const updateTask = `UPDATE task SET task_plan = ?, task_owner = ? WHERE task_name = ?`;
-            connection.query(
-              updateTask,
-              [taskPlan, taskOwner, task_name],
-              (error, result) => {
-                if (error) throw error;
-                else {
-                  // INSERT INTO task_notes
-                  const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW() + 1)`;
-                  const updateNotes = `${now}: ${taskState} \n${taskOwner} \nUpdated task \n`;
-                  connection.query(
-                    addNote,
-                    [task_name, updateNotes],
-                    (error, result) => {
+            const getPlanColor = `SELECT plan_color FROM plan WHERE plan_mvp_name = ?`;
+            connection.query(getPlanColor, [taskPlan], (error, result) => {
+              if (error) throw error;
+              else if (result.length > 0) {
+                const taskColor = result[0].plan_color;
+                console.log(taskColor);
+
+                // UPDATE TASK
+                const updateTask = `UPDATE task SET task_plan = ?, task_owner = ?, task_color = ? WHERE task_name = ?`;
+                connection.query(updateTask, [taskPlan, taskOwner, taskColor, task_name], (error, result) => {
+                  if (error) throw error;
+                  else {
+                    // INSERT INTO task_notes
+                    const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW() + 1)`;
+                    const updateNotes = `${now}: ${taskState} \n${taskOwner} \nUpdated task \n`;
+                    connection.query(addNote, [task_name, updateNotes], (error, result) => {
                       if (error) throw error;
-                    }
-                  );
-                }
+                    });
+                  }
+                });
               }
-            );
+            });
           } else {
             const updateTask = `UPDATE task SET task_plan = ?, task_owner = ? WHERE task_name = ?`;
-            connection.query(
-              updateTask,
-              [taskPlan, taskOwner, task_name],
-              (error, result) => {
-                if (error) throw error;
-              }
-            );
+            connection.query(updateTask, [taskPlan, taskOwner, task_name], (error, result) => {
+              if (error) throw error;
+            });
           }
           res.send(`Updated ${task_name}`);
         }
@@ -146,41 +161,41 @@ const addupdateTask = function (app) {
     } else if (taskNotes.length == 0) {
       // NO TASK NOTES
       // UPDATED TASK PLAN
-      const updateTask = `UPDATE task SET task_plan = ?, task_owner = ? WHERE task_name = ?`;
-      connection.query(
-        updateTask,
-        [taskPlan, taskOwner, task_name],
-        (error, result) => {
-          if (error) throw error;
-          else {
-            // INSERT INTO task_notes
-            const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
-            const updateNotes = `${now}: ${taskState} \n${taskOwner} \nUpdated task plan \n`;
-            connection.query(
-              addNote,
-              [task_name, updateNotes],
-              (error, result) => {
+      const getPlanColor = `SELECT plan_color FROM plan WHERE plan_mvp_name = ?`;
+      connection.query(getPlanColor, [taskPlan], (error, result) => {
+        if (error) throw error;
+        else {
+          const taskColor = result[0].plan_color;
+          const updateTask = `UPDATE task SET task_plan = ?, task_owner = ?, task_color = ? WHERE task_name = ?`;
+          connection.query(updateTask, [taskPlan, taskOwner, taskColor, task_name], (error, result) => {
+            if (error) throw error;
+            else {
+              // INSERT INTO task_notes
+              const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
+              const updateNotes = `${now}: ${taskState} \n${taskOwner} \nUpdated task plan \n`;
+              connection.query(addNote, [task_name, updateNotes], (error, result) => {
                 if (error) throw error;
-              }
-            );
-          }
+              });
+            }
+          });
         }
-      );
+      });
       res.send(`Updated ${task_name}`);
     }
   });
 
   // PROJECT MANAGER APPROVE TASK
-  app.post("/move-task-todo", (req, res, next) => {
-    const { task_name, newState, note, taskOwner } = req.body;
-    const updateTask = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
-    connection.query(
-      updateTask,
-      [newState, taskOwner, task_name],
-      (error, result) => {
+  app.post("/move-task-todo", async (req, res, next) => {
+    const { task_name, newState, note, taskOwner, permitUser } = req.body;
+    const permitOpen = await checkgroup({ username: taskOwner, usergroup: permitUser });
+    console.log(permitOpen);
+    if (permitOpen === false) {
+      return next(errorHandler("No access!", req, res));
+    } else if (permitOpen === true) {
+      const updateTask = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
+      connection.query(updateTask, [newState, taskOwner, task_name], (error, result) => {
         if (error) throw error;
         else {
-          // res.send(result);
           const auditNote = `${now}: ${newState} \nDone by: ${taskOwner} \nUpdated task state to To-Do \n`;
           const addNote = `INSERT INTO task_notes (task_name, task_note, last_updated) VALUES (?, ?, NOW())`;
           connection.query(addNote, [task_name, auditNote], (error, result) => {
@@ -190,17 +205,18 @@ const addupdateTask = function (app) {
             }
           });
         }
-      }
-    );
+      });
+    }
   });
 
-  app.post("/move-task-doing", (req, res, next) => {
-    const { task_name, newState, taskOwner } = req.body;
-    const updateNote = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
-    connection.query(
-      updateNote,
-      [newState, taskOwner, task_name],
-      (error, result) => {
+  app.post("/move-task-doing", async (req, res, next) => {
+    const { task_name, newState, taskOwner, permitUser } = req.body;
+    const permitOpen = await checkgroup({ username: taskOwner, usergroup: permitUser });
+    if (permitOpen === false) {
+      return next(errorHandler("No access", req, res));
+    } else {
+      const updateNote = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
+      connection.query(updateNote, [newState, taskOwner, task_name], (error, result) => {
         if (error) throw error;
         else {
           const auditNote = `${now}: ${newState} \nDone by: ${taskOwner} \nUpdated task state to Doing \n`;
@@ -212,17 +228,18 @@ const addupdateTask = function (app) {
             }
           });
         }
-      }
-    );
+      });
+    }
   });
 
-  app.post("/move-task-done", (req, res, next) => {
-    const { task_name, newState, taskOwner } = req.body;
-    const updateNote = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
-    connection.query(
-      updateNote,
-      [newState, taskOwner, task_name],
-      (error, result) => {
+  app.post("/move-task-done", async (req, res, next) => {
+    const { task_name, newState, taskOwner, permitUser } = req.body;
+    const permitOpen = await checkgroup({ username: taskOwner, usergroup: permitUser });
+    if (permitOpen === false) {
+      return next(errorHandler("No access", req, res));
+    } else {
+      const updateNote = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
+      connection.query(updateNote, [newState, taskOwner, task_name], (error, result) => {
         if (error) throw error;
         else {
           const auditNote = `${now}: ${newState} \nDone by: ${taskOwner} \nUpdated task state to Done \n`;
@@ -268,17 +285,18 @@ const addupdateTask = function (app) {
             }
           });
         }
-      }
-    );
+      });
+    }
   });
 
-  app.post("/move-task-close", (req, res, next) => {
-    const { task_name, newState, taskOwner } = req.body;
-    const updateNote = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
-    connection.query(
-      updateNote,
-      [newState, taskOwner, task_name],
-      (error, result) => {
+  app.post("/move-task-close", async (req, res, next) => {
+    const { task_name, newState, taskOwner, permitUser } = req.body;
+    const permitOpen = await checkgroup({ username: taskOwner, usergroup: permitUser });
+    if (permitOpen === false) {
+      return next(errorHandler("No access", req, res));
+    } else {
+      const updateNote = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? `;
+      connection.query(updateNote, [newState, taskOwner, task_name], (error, result) => {
         if (error) throw error;
         else {
           const auditNote = `${now}: ${newState} \nDone by: ${taskOwner} \nUpdated task state to Closed \n`;
@@ -290,8 +308,8 @@ const addupdateTask = function (app) {
             }
           });
         }
-      }
-    );
+      });
+    }
   });
 };
 

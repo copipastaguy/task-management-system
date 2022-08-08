@@ -1,29 +1,13 @@
 const connection = require("../server/connection");
+
 const getTasks = function (app) {
   app.get("/get-tasks", (req, res, next) => {
     const plan_app_acronym = req.query.plan_app_acronym;
-    const getTasks = `SELECT * FROM task WHERE task_app_acronym = ?`;
+    // const getTasks = `SELECT * FROM task WHERE task_app_acronym = ?`;
+    const getTasks = `SELECT * FROM task as t JOIN plan as p ON p.plan_app_acronym = t.task_app_acronym WHERE t.task_app_acronym = ? GROUP BY t.task_name`;
     connection.query(getTasks, [plan_app_acronym], (error, result) => {
       if (error) throw error;
       else {
-        // const taskStates = ["Open", "ToDo", "Doing", "Done", "Closed"];
-        // const getCount = `SELECT COUNT(*) as count FROM task WHERE task_app_acronym = ? AND task_state = ?`;
-
-        // taskStates.forEach((state) => {
-        //   function fetchCount() {
-        //     connection.query(
-        //       getCount,
-        //       [plan_app_acronym, state],
-        //       (error, result) => {
-        //         if (error) throw error;
-        //         else {
-        //           console.log(state, result[0].count);
-        //         }
-        //       }
-        //     );
-        //   }
-        //   fetchCount();
-        // });
         res.send(result);
       }
     });

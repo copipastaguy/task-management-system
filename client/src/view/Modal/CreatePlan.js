@@ -7,15 +7,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { toast } from "react-toastify";
 
-const CreatePlan = ({
-  open,
-  onHide,
-  data,
-  now,
-  getPlans,
-  openAddPlanForm,
-  closeAddPlanForm,
-}) => {
+const CreatePlan = ({ open, onHide, data, now, getPlans, openAddPlanForm, closeAddPlanForm, taskOwner }) => {
   const app_acronym = data.app_acronym;
   const [planName, setPlanName] = useState("");
 
@@ -28,10 +20,13 @@ const CreatePlan = ({
     e.preventDefault();
     try {
       const response = await axios.post("/add-plan", {
+        taskOwner,
         app_acronym,
         planName,
         startDate,
         endDate,
+        planColor,
+        permitUser: "project manager",
       });
       console.log(response);
       if (response.data.error) {
@@ -67,6 +62,7 @@ const CreatePlan = ({
               <Form.Group>
                 <Form.Label>Plan name</Form.Label>
                 <Form.Control
+                  autoFocus
                   type="text"
                   id="plan_name"
                   value={planName}
@@ -76,18 +72,18 @@ const CreatePlan = ({
             </Col>
 
             <Col>
-              {/* <Form.Group>
-                  <Form.Label>Choose a color</Form.Label>
-                  <Form.Control
-                    type="color"
-                    defaultValue="#000000"
-                    value={planColor}
-                    onChange={(e) => {
-                      console.log(planColor);
-                      setPlanColor(e.target.value);
-                    }}
-                  />
-                </Form.Group> */}
+              <Form.Group>
+                <Form.Label>Choose a color</Form.Label>
+                <Form.Control
+                  type="color"
+                  defaultValue="#000000"
+                  value={planColor}
+                  onChange={(e) => {
+                    console.log(planColor);
+                    setPlanColor(e.target.value);
+                  }}
+                />
+              </Form.Group>
             </Col>
           </Row>
           <br />
@@ -95,20 +91,12 @@ const CreatePlan = ({
           <Row>
             <Form.Group as={Col}>
               <Form.Label>Start Date</Form.Label>
-              <Form.Control
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
+              <Form.Control type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
             </Form.Group>
 
             <Form.Group as={Col}>
               <Form.Label>End Date</Form.Label>
-              <Form.Control
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
+              <Form.Control type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
             </Form.Group>
           </Row>
           <br />

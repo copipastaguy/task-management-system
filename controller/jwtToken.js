@@ -1,3 +1,0 @@
-// ASSIGN A JWT TOKEN TO USER AFTER THEY LOGGED IN
-
-async function getJWT() {}

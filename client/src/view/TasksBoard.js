@@ -7,9 +7,8 @@ import Col from "react-bootstrap/Col";
 // import Modal from "@mui/material/Modal";
 import AllApplications from "./AllApplications";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Select from "react-select";
-// import { useApi } from "../utils/useApi";
 
 const TasksBoard = () => {
   // LOCALSTORAGE USERNAME
@@ -18,10 +17,8 @@ const TasksBoard = () => {
 
   const lead = localStorage.getItem("isLead");
   const [projectlead, setProjectLead] = useState(lead);
-  // const [projectManager, setProjectManager] = useState(false);
 
   const [applications, setApplications] = useState([]);
-  // const [tasks, setTasks] = useState([]);
   const [rNum, setRnum] = useState("");
 
   const [openCreateForm, setOpenCreateForm] = useState(false);
@@ -50,11 +47,13 @@ const TasksBoard = () => {
     const [app_startDate, setStartDate] = useState();
     const [app_endDate, setEndDate] = useState();
 
+    const [permitCreate, setPermitCreate] = useState();
     const [permitOpen, setPermitOpen] = useState();
     const [permitTodo, setPermitTodo] = useState();
     const [permitDoing, setPermitDoing] = useState();
     const [permitDone, setPermitDone] = useState();
 
+    const [selectedCreate, setSelectedCreate] = useState();
     const [selectedOpen, setSelectedOpen] = useState();
     const [selectedTodo, setSelectedTodo] = useState();
     const [selectedDoing, setSelectedDoing] = useState();
@@ -67,6 +66,11 @@ const TasksBoard = () => {
         value: value,
       };
     });
+
+    const handlePermitCreate = (selectedCreate) => {
+      const value = selectedCreate.value;
+      setPermitCreate(value);
+    };
 
     const handlePermitOpen = (selectedOpen) => {
       const value = selectedOpen.value;
@@ -98,10 +102,12 @@ const TasksBoard = () => {
           app_Rnum,
           app_startDate,
           app_endDate,
+          permitCreate,
           permitOpen,
           permitTodo,
           permitDoing,
           permitDone,
+          token: localStorage.getItem("jwtToken"),
         });
         if (response.data.error) {
           toast.error(response.data.error, {
@@ -126,6 +132,7 @@ const TasksBoard = () => {
           setAppAcronym("");
           setAppDescription("");
           setAppRnum();
+          setSelectedCreate(null);
           setSelectedOpen(null);
           setSelectedTodo(null);
           setSelectedDoing(null);
@@ -212,25 +219,28 @@ const TasksBoard = () => {
             <Row>
               <Form.Group as={Col}>
                 <Form.Label>Start Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={app_startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
+                <Form.Control type="date" value={app_startDate} onChange={(e) => setStartDate(e.target.value)} />
               </Form.Group>
 
               <Form.Group as={Col}>
                 <Form.Label>End Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={app_endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
+                <Form.Control type="date" value={app_endDate} onChange={(e) => setEndDate(e.target.value)} />
               </Form.Group>
             </Row>
             <br />
 
             <Row>
+              <Form.Group style={{ width: "400px" }} as={Col}>
+                <Form.Label>Permit Create</Form.Label>
+                <Select
+                  options={options}
+                  name="permit_create"
+                  value={selectedCreate}
+                  onChange={handlePermitCreate}
+                  getOptionValue={(option) => option.value}
+                />
+              </Form.Group>
+
               <Form.Group style={{ width: "400px" }} as={Col}>
                 <Form.Label>Permit Open</Form.Label>
                 <Select
@@ -291,7 +301,6 @@ const TasksBoard = () => {
 
   return (
     <div className="main-container tasks-board">
-      <ToastContainer />
       <h3 style={{ color: "white" }}>Applications</h3>
       {projectlead && (
         <div>

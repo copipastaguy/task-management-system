@@ -1,4 +1,5 @@
 const connection = require("../server/connection");
+const verifyToken = require("./jwt/verifyJWT");
 
 const getApplication = function (app) {
   // GET ALL ACCOUNTS

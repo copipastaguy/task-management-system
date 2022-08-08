@@ -29,10 +29,10 @@ const EditTask = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   const [app, setApp] = useState([]);
-  const [permitOpen, setPermitOpen] = useState(false);
-  const [permitTodo, setPermitTodo] = useState(false);
-  const [permitDoing, setPermitDoing] = useState(false);
-  const [permitDone, setPermitDone] = useState(false);
+  // const [permitOpen, setPermitOpen] = useState(false);
+  // const [permitTodo, setPermitTodo] = useState(false);
+  // const [permitDoing, setPermitDoing] = useState(false);
+  // const [permitDone, setPermitDone] = useState(false);
 
   // const [permitUser, setPermitUser] = useState(false);
 
@@ -96,6 +96,9 @@ const EditTask = () => {
     setTaskPlan(value);
   };
 
+  // GET PERMIT BASED ON TASK STATE
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -134,12 +137,7 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Task name</Form.Label>
-              <Form.Control
-                type="text"
-                id="app_name"
-                defaultValue={data.task_name}
-                readOnly
-              />
+              <Form.Control type="text" id="app_name" defaultValue={data.task_name} readOnly />
             </Form.Group>
           </Col>
           <Col>
@@ -170,14 +168,7 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Existing notes</Form.Label>
-              <Form.Control
-                as="textarea"
-                type="text"
-                readOnly
-                rows={7}
-                id="app_notes"
-                defaultValue={auditNotes}
-              />
+              <Form.Control as="textarea" type="text" readOnly rows={7} id="app_notes" defaultValue={auditNotes} />
             </Form.Group>
           </Col>
           <Col>

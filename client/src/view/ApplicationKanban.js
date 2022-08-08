@@ -1,13 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-// import Select from "react-select";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-// import Form from "react-bootstrap/Form";
-// import Modal from "react-bootstrap/Modal";
-// import Card from "react-bootstrap/Card";
-// import Row from "react-bootstrap/Row";
-// import Col from "react-bootstrap/Col";
 import { toast } from "react-toastify";
 import Header from "./Header";
 
@@ -25,8 +19,6 @@ import {
   AiFillEye,
   AiFillClockCircle,
 } from "react-icons/ai";
-
-import { FcClock } from "react-icons/fc";
 
 import { IoIosAddCircle } from "react-icons/io";
 
@@ -95,51 +87,6 @@ const ApplicationKanban = () => {
       },
     });
     setData(response.data[0]);
-
-    // const fetchPermitOpen = async () => {
-    //   const permitOpenUser = await axios.get("/checkgroup", {
-    //     params: {
-    //       username: taskOwner,
-    //       usergroup: response.data[0].app_permitOpen,
-    //     },
-    //   });
-    //   if (permitOpenUser.data === true) setPermitOpen(true);
-    // };
-
-    // const fetchPermitTodo = async () => {
-    //   const permitTodoUser = await axios.get("/checkgroup", {
-    //     params: {
-    //       username: taskOwner,
-    //       usergroup: response.data[0].app_permitToDo,
-    //     },
-    //   });
-    //   if (permitTodoUser.data === true) setPermitTodo(true);
-    // };
-
-    // const fetchPermitDoing = async () => {
-    //   const permitDoingUser = await axios.get("/checkgroup", {
-    //     params: {
-    //       username: taskOwner,
-    //       usergroup: response.data[0].app_permitDoing,
-    //     },
-    //   });
-    //   if (permitDoingUser.data === true) setPermitDoing(true);
-    // };
-
-    // const fetchPermitDone = async () => {
-    //   const permitDoingUser = await axios.get("/checkgroup", {
-    //     params: {
-    //       username: taskOwner,
-    //       usergroup: response.data[0].app_permitDone,
-    //     },
-    //   });
-    //   if (permitDoingUser.data === true) setPermitDone(true);
-    // };
-
-    // fetchPermitOpen();
-    // fetchPermitTodo();
-    // fetchPermitDoing();
-    // fetchPermitDone();
   };
 
   // GET PLANS ASSOCIATED WITH APPLICATION
@@ -162,29 +109,19 @@ const ApplicationKanban = () => {
     console.log(response.data);
     setTasks(response.data);
 
-    const openTask = response.data.filter(
-      (task) => task.task_state === "Open"
-    ).length;
+    const openTask = response.data.filter((task) => task.task_state === "Open").length;
     setOpenCount(openTask);
 
-    const todoTask = response.data.filter(
-      (task) => task.task_state === "ToDo"
-    ).length;
+    const todoTask = response.data.filter((task) => task.task_state === "ToDo").length;
     setTodoCount(todoTask);
 
-    const doingTask = response.data.filter(
-      (task) => task.task_state === "Doing"
-    ).length;
+    const doingTask = response.data.filter((task) => task.task_state === "Doing").length;
     setDoingCount(doingTask);
 
-    const doneTask = response.data.filter(
-      (task) => task.task_state === "Done"
-    ).length;
+    const doneTask = response.data.filter((task) => task.task_state === "Done").length;
     setDoneCount(doneTask);
 
-    const closeTask = response.data.filter(
-      (task) => task.task_state === "Closed"
-    ).length;
+    const closeTask = response.data.filter((task) => task.task_state === "Closed").length;
     setCloseCount(closeTask);
   };
 
@@ -195,15 +132,6 @@ const ApplicationKanban = () => {
   useEffect(() => {
     fetchApplication();
     getPlans();
-    // CHECK GROUP FOR DIFFERENT STATE CHANGE
-    // const userGroup = localStorage.getItem("user-group");
-    // if (userGroup === "project manager") {
-    //   setProjectManager(true);
-    // }
-
-    // if (userGroup === "project lead") {
-    //   setProjectLead(true);
-    // }
 
     const getGroups = async () => {
       const response = await axios.get("/user-groups");
@@ -224,9 +152,7 @@ const ApplicationKanban = () => {
             justifyContent: "center",
           }}
         >
-          <h2 style={{ textAlign: "center", fontSize: "40px" }}>
-            {data.app_acronym}
-          </h2>
+          <h2 style={{ textAlign: "center", fontSize: "40px" }}>{data.app_acronym}</h2>
 
           <div
             style={{
@@ -289,6 +215,7 @@ const ApplicationKanban = () => {
             onHide={closeAddPlanForm}
             data={data}
             now={now}
+            taskOwner={taskOwner}
             getPlans={getPlans}
             openAddPlanForm={openAddPlan}
             closeAddPlanForm={closeAddPlanForm}
@@ -315,11 +242,9 @@ const ApplicationKanban = () => {
           <ViewTask
             show={openViewTask}
             onHide={closeViewTaskForm}
-            // data={data}
             groups={groups}
             openViewTaskForm={openViewTaskForm}
             closeViewTaskForm={closeViewTaskForm}
-            // task_name={task_name}
           />
         )}
 
@@ -343,16 +268,28 @@ const ApplicationKanban = () => {
                   const approveTask = async () => {
                     const newState = "ToDo";
                     const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
+                    console.log(data.app_permitOpen);
                     try {
                       const response = await axios.post("/move-task-todo", {
                         task_name: task.task_name,
                         newState,
                         note,
                         taskOwner,
+                        permitUser: data.app_permitOpen,
                       });
-                      fetchTasks();
-                      if (response.data) {
+
+                      if (!response.data.error) {
                         toast.success(`Move ${task.task_name} to ToDo!`, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                        fetchTasks();
+                      }
+                      if (response.data.error) {
+                        toast.error(response.data.error, {
                           position: "top-center",
                           autoClose: 700,
                           hideProgressBar: false,
@@ -365,24 +302,18 @@ const ApplicationKanban = () => {
                     }
                   };
                   return (
-                    <div
-                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                      key={task.task_name}
-                    >
+                    <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                       <Task
                         taskName={task.task_name}
                         taskDescription={task.task_description}
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
+                        taskColor={task.task_color}
+                        taskPlan={task.task_plan}
                       />
                       {!permitOpen && (
-                        <Link
-                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
-                        >
-                          <Button
-                            style={{ width: "100%" }}
-                            onClick={openViewTaskForm}
-                          >
+                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
+                          <Button style={{ width: "100%" }} onClick={openViewTaskForm}>
                             <AiFillEye />
                           </Button>
                         </Link>
@@ -415,26 +346,39 @@ const ApplicationKanban = () => {
               <span>{todoCount}</span>
             </div>
             <div>
-              {tasks.map((task) => {
-                const MoveTaskToDoing = async () => {
-                  const newState = "Doing";
-                  const response = await axios.post("/move-task-doing", {
-                    task_name: task.task_name,
-                    newState,
-                    taskOwner,
-                  });
-                  if (response.data) {
-                    toast.success(`Move ${task.task_name} to Doing!`, {
-                      position: "top-center",
-                      autoClose: 700,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: false,
+              {tasks
+                .filter((task) => task.task_state === "ToDo")
+                .map((task) => {
+                  const MoveTaskToDoing = async () => {
+                    const newState = "Doing";
+                    const response = await axios.post("/move-task-doing", {
+                      task_name: task.task_name,
+                      newState,
+                      taskOwner,
+                      permitUser: data.app_permitTodo,
                     });
-                  }
-                  fetchTasks();
-                };
-                if (task.task_state === "ToDo") {
+                    if (!response.data.error) {
+                      toast.success(`Move ${task.task_name} to Doing!`, {
+                        position: "top-center",
+                        autoClose: 700,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                      });
+                      fetchTasks();
+                    }
+                    if (response.data.error) {
+                      toast.error(response.data.error, {
+                        position: "top-center",
+                        autoClose: 700,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                      });
+                    }
+
+                    fetchTasks();
+                  };
                   return (
                     <div
                       style={{
@@ -449,6 +393,8 @@ const ApplicationKanban = () => {
                         taskDescription={task.task_description}
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
+                        taskColor={task.task_color}
+                        taskPlan={task.task_plan}
                       />
 
                       {permitTodo ? (
@@ -458,18 +404,12 @@ const ApplicationKanban = () => {
                               <AiFillEdit />
                             </Button>
                           </Link>
-                          <Button
-                            style={{ width: "100%" }}
-                            variant="success"
-                            onClick={() => MoveTaskToDoing()}
-                          >
+                          <Button style={{ width: "100%" }} variant="success" onClick={() => MoveTaskToDoing()}>
                             <AiOutlineArrowRight />
                           </Button>
                         </div>
                       ) : (
-                        <Link
-                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
-                        >
+                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
                           <Button style={{ width: "100%" }}>
                             <AiFillEye />
                           </Button>
@@ -477,8 +417,7 @@ const ApplicationKanban = () => {
                       )}
                     </div>
                   );
-                }
-              })}
+                })}
             </div>
           </div>
 
@@ -495,8 +434,9 @@ const ApplicationKanban = () => {
                     task_name: task.task_name,
                     newState,
                     taskOwner,
+                    permitUser: data.app_permitDoing,
                   });
-                  if (response.data) {
+                  if (!response.data.error) {
                     toast.success(`Move ${task.task_name} to Done!`, {
                       position: "top-center",
                       autoClose: 700,
@@ -505,6 +445,15 @@ const ApplicationKanban = () => {
                       pauseOnHover: false,
                     });
                     fetchTasks();
+                  }
+                  if (response.data.error) {
+                    toast.error(response.data.error, {
+                      position: "top-center",
+                      autoClose: 700,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                    });
                   }
                 };
                 const MoveTaskToDo = async () => {
@@ -515,7 +464,7 @@ const ApplicationKanban = () => {
                     taskOwner,
                   });
 
-                  if (response.data) {
+                  if (!response.data.error) {
                     toast.success(`Move ${task.task_name} to To-Do!`, {
                       position: "top-center",
                       autoClose: 700,
@@ -525,18 +474,26 @@ const ApplicationKanban = () => {
                     });
                     fetchTasks();
                   }
+                  if (response.data.error) {
+                    toast.error(response.data.error, {
+                      position: "top-center",
+                      autoClose: 700,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: false,
+                    });
+                  }
                 };
                 if (task.task_state === "Doing") {
                   return (
-                    <div
-                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                      key={task.task_name}
-                    >
+                    <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                       <Task
                         taskName={task.task_name}
                         taskDescription={task.task_description}
                         taskState={task.task_state}
                         taskOwner={task.task_owner}
+                        taskColor={task.task_color}
+                        taskPlan={task.task_plan}
                       />
 
                       {permitDoing ? (
@@ -547,25 +504,17 @@ const ApplicationKanban = () => {
                             </Button>
                           </Link>
                           <div className="buttons-container">
-                            <Button
-                              variant="danger"
-                              onClick={() => MoveTaskToDo()}
-                            >
+                            <Button variant="danger" onClick={() => MoveTaskToDo()}>
                               <AiOutlineArrowLeft />
                             </Button>
 
-                            <Button
-                              variant="success"
-                              onClick={() => MoveTaskToDone()}
-                            >
+                            <Button variant="success" onClick={() => MoveTaskToDone()}>
                               <AiOutlineArrowRight />
                             </Button>
                           </div>
                         </>
                       ) : (
-                        <Link
-                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
-                        >
+                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
                           <Button style={{ width: "100%" }}>
                             <AiFillEye />
                           </Button>
@@ -590,8 +539,9 @@ const ApplicationKanban = () => {
                   task_name: task.task_name,
                   newState,
                   taskOwner,
+                  permitUser: data.app_permitDone,
                 });
-                if (response.data) {
+                if (!response.data.error) {
                   toast.success(`Move ${task.task_name} to Doing!`, {
                     position: "top-center",
                     autoClose: 700,
@@ -601,6 +551,15 @@ const ApplicationKanban = () => {
                   });
                   fetchTasks();
                 }
+                if (response.data.error) {
+                  toast.error(response.data.error, {
+                    position: "top-center",
+                    autoClose: 700,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                  });
+                }
               };
               const MoveTaskToClose = async () => {
                 const newState = "Closed";
@@ -609,7 +568,7 @@ const ApplicationKanban = () => {
                   newState,
                   taskOwner,
                 });
-                if (response.data) {
+                if (!response.data.error) {
                   toast.success(`Move ${task.task_name} to Closed!`, {
                     position: "top-center",
                     autoClose: 700,
@@ -619,20 +578,27 @@ const ApplicationKanban = () => {
                   });
                   fetchTasks();
                 }
+                if (response.data.error) {
+                  toast.error(response.data.error, {
+                    position: "top-center",
+                    autoClose: 700,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                  });
+                }
               };
 
               if (task.task_state === "Done") {
                 return (
-                  //<Card style={{ marginBottom: "10px" }} key={task.task_name}>
-                  <div
-                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                    key={task.task_name}
-                  >
+                  <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                     <Task
                       taskName={task.task_name}
                       taskDescription={task.task_description}
                       taskState={task.task_state}
                       taskOwner={task.task_owner}
+                      taskColor={task.task_color}
+                      taskPlan={task.task_plan}
                     />
                     <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                       <Button style={{ width: "100%" }}>
@@ -642,22 +608,15 @@ const ApplicationKanban = () => {
 
                     {permitDone && (
                       <div className="buttons-container">
-                        <Button
-                          variant="danger"
-                          onClick={() => MoveTaskDoing()}
-                        >
+                        <Button variant="danger" onClick={() => MoveTaskDoing()}>
                           <AiOutlineArrowLeft />
                         </Button>
-                        <Button
-                          variant="success"
-                          onClick={() => MoveTaskToClose()}
-                        >
+                        <Button variant="success" onClick={() => MoveTaskToClose()}>
                           <AiOutlineArrowRight />
                         </Button>
                       </div>
                     )}
                   </div>
-                  //</Card>
                 );
               }
             })}
@@ -671,15 +630,14 @@ const ApplicationKanban = () => {
             {tasks.map((task) => {
               if (task.task_state === "Closed") {
                 return (
-                  <div
-                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                    key={task.task_name}
-                  >
+                  <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                     <Task
                       taskName={task.task_name}
                       taskDescription={task.task_description}
                       taskState={task.task_state}
                       taskOwner={task.task_owner}
+                      taskColor={task.task_color}
+                      taskPlan={task.task_plan}
                     />
                     <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
                       <Button style={{ width: "100%" }}>

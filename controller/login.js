@@ -1,9 +1,10 @@
 const connection = require("../server/connection");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 
 const errorHandler = require("./errorHandler");
 const checkgroup = require("./checkGroup");
+const createToken = require("./jwt/createJWT");
 
 const login = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
@@ -21,39 +22,29 @@ const login = function (app) {
         username,
         usergroup: "project manager",
       });
-
-      // ACCESS TOKEN FOR USER
-      // REFRESH TOKEN
-      // ACCEPTS DATA, PRIVATE KEY AND OPTIONS
-      const accessToken = jwt.sign(
-        { username, isAdmin },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: process.env.JWT_EXPIRATION,
-        }
-      );
-      // res.send({ username, accessToken });
+      // JWT TOKEN FOR USER
+      // DATA TO STORE IN JWT AND USE TO VERIFY DURING REQUEST SENDING
+      // username, user group string, isAdmin
+      const jwtToken = await createToken({ username, isAdmin });
 
       // - - - CHECK IF USER EXIST - - -
       // - - - FETCH HASHED PASSWORD OF USER - - -
-      const query = `SELECT username, password, status FROM accounts WHERE username = ? `;
+      const query = `SELECT username, password, status, user_group FROM accounts WHERE username = ? `;
       connection.query(query, [username], (error, result) => {
         if (error) throw error;
         // - - - VALID - - -
         else if (result.length > 0) {
           const userInfo = result[0];
           const hashPassword = result[0].password;
-
           const status = result[0].status;
+
           if (status == "Inactive") {
             return next(errorHandler("Wrong login details", req, res));
           } else if (status === "Active") {
-            // fetch the exact user match
-            // compare both passwords
             bcrypt.compare(password, hashPassword, (error, correctPassword) => {
               if (error) throw error;
               else if (correctPassword) {
-                res.send({ userInfo, isAdmin, isLead, isManager, accessToken });
+                res.send({ userInfo, isAdmin, isLead, isManager, jwtToken });
               } else {
                 return next(errorHandler("Wrong login details", req, res));
               }

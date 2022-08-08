@@ -1,4 +1,5 @@
 const connection = require("../server/connection");
+const verifyJWT = require("./jwt/verifyJWT");
 
 const userGroup = function (app) {
   // GET ALL ACCOUNTS

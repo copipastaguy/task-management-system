@@ -8,7 +8,6 @@ const login = require("../controller/login");
 const add = require("../controller/add");
 const update = require("../controller/update");
 const accounts = require("../controller/accounts");
-const checkGroup = require("../controller/checkGroup");
 const userGroup = require("../controller/userGroup");
 const addGroup = require("../controller/addGroup");
 const addUserToGroup = require("../controller/addUserToGroup");
@@ -20,6 +19,7 @@ const getApplications = require("../controller/getApplications");
 const addupdateTask = require("../controller/addupdateTask");
 const getTasks = require("../controller/getTasks");
 const checkPermit = require("../controller/checkPermit");
+const verification = require("../controller/jwt/verification");
 
 const port = process.env.API_PORT;
 console.log(process.env.API_PORT);
@@ -38,6 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // - - - ALL ACCOUNTS - - -
 accounts(app);
+verification(app);
 
 //////////////////////////// PHASE 1 IDENTITY ACCESS MANAGEMENT /////////////////////////////////
 // 1. login

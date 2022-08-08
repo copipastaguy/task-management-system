@@ -25,7 +25,6 @@ function App() {
         <ToastContainer />
         <Routes>
           <Route path="/" element={<Homepage />} />
-
           {/* admin page */}
           <Route element={<AdminRoutes />}>
             <Route path="/management" element={<UserManagement />} />
@@ -44,14 +43,8 @@ function App() {
               }
             />
             <Route path="/tasks/:app_acronym" element={<ApplicationKanban />} />
-            <Route
-              path="/tasks/:app_acronym/:task_name"
-              element={<EditTask />}
-            />
-            <Route
-              path="/tasks/:app_acronym/view/:task_name"
-              element={<ViewTask />}
-            />
+            <Route path="/tasks/:app_acronym/:task_name" element={<EditTask />} />
+            <Route path="/tasks/:app_acronym/view/:task_name" element={<ViewTask />} />
           </Route>
         </Routes>
       </div>

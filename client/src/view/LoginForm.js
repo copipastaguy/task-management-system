@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -27,15 +27,18 @@ const LoginForm = () => {
           const isAdmin = response.data.isAdmin;
           const isLead = response.data.isLead;
           const isManager = response.data.isManager;
+          const usergroup = response.data.userInfo.user_group;
+          const jwtToken = response.data.jwtToken;
 
-          console.log(isAdmin);
           if (active === "Active") {
+            localStorage.setItem("isAdmin", isAdmin);
+            localStorage.setItem("username", username);
+            localStorage.setItem("usergroup", usergroup);
+            localStorage.setItem("jwtToken", jwtToken);
+
             if (isAdmin === true) {
-              localStorage.setItem("username", username);
-              localStorage.setItem("isAdmin", isAdmin);
               navigate("/management");
             } else if (isAdmin === false) {
-              localStorage.setItem("username", username);
               navigate("/tasks");
               if (isLead === true) {
                 localStorage.setItem("isLead", isLead);
@@ -85,6 +88,7 @@ const LoginForm = () => {
           <h4>Enter your details to sign in</h4>
           <Form.Group>
             <Form.Control
+              autoFocus
               type="text"
               placeholder="username"
               value={username}

@@ -357,9 +357,12 @@ a {
 }
 
 .application .color-tag {
-  width: 250px;
-  height: 20px;
-  /* background-color: #000000; */
+  width: 20px;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  left: -1px;
+  transform: translate(0%, 0%);
 }
 
 .application-kanban {
@@ -416,7 +419,7 @@ form span {
 .task {
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
   flex-direction: column;
   padding: 15px;
 }
