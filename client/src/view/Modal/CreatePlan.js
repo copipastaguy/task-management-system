@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -15,6 +15,16 @@ const CreatePlan = ({ open, onHide, data, now, getPlans, openAddPlanForm, closeA
   const [endDate, setEndDate] = useState(now);
 
   const [planColor, setPlanColor] = useState();
+
+  function generateColor() {
+    const randomHex = (Math.random() * 0xffff * 16777215).toString(16);
+    const hexCode = "#" + randomHex.slice(0, 6);
+    setPlanColor(hexCode);
+  }
+
+  useEffect(() => {
+    generateColor();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,15 +84,7 @@ const CreatePlan = ({ open, onHide, data, now, getPlans, openAddPlanForm, closeA
             <Col>
               <Form.Group>
                 <Form.Label>Choose a color</Form.Label>
-                <Form.Control
-                  type="color"
-                  defaultValue="#000000"
-                  value={planColor}
-                  onChange={(e) => {
-                    console.log(planColor);
-                    setPlanColor(e.target.value);
-                  }}
-                />
+                <Form.Control type="color" value={planColor} onChange={(e) => setPlanColor(e.target.value)} />
               </Form.Group>
             </Col>
           </Row>

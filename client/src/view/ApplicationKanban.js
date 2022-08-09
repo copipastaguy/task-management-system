@@ -86,6 +86,7 @@ const ApplicationKanban = () => {
         app_acronym: app_acronym,
       },
     });
+    // console.log(response.data[0]);
     setData(response.data[0]);
   };
 
@@ -397,7 +398,13 @@ const ApplicationKanban = () => {
                         taskPlan={task.task_plan}
                       />
 
-                      {permitTodo ? (
+                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                        <Button style={{ width: "100%" }}>
+                          <AiFillEdit />
+                        </Button>
+                      </Link>
+
+                      {/* {permitTodo ? (
                         <div>
                           <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
                             <Button style={{ width: "100%" }}>
@@ -414,7 +421,7 @@ const ApplicationKanban = () => {
                             <AiFillEye />
                           </Button>
                         </Link>
-                      )}
+                      )} */}
                     </div>
                   );
                 })}

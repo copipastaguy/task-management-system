@@ -33,7 +33,6 @@ const EditTask = () => {
   // const [permitTodo, setPermitTodo] = useState(false);
   // const [permitDoing, setPermitDoing] = useState(false);
   // const [permitDone, setPermitDone] = useState(false);
-
   // const [permitUser, setPermitUser] = useState(false);
 
   const fetchTask = async () => {
@@ -97,7 +96,6 @@ const EditTask = () => {
   };
 
   // GET PERMIT BASED ON TASK STATE
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -107,9 +105,22 @@ const EditTask = () => {
         taskState: data.task_state,
         taskOwner,
         taskPlan,
+        app_acronym,
       });
-      if (response.data) {
-        toast.success(response.data, {
+      if (!response.data.error) {
+        toast.success("Updated!", {
+          position: "top-center",
+          autoClose: 800,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+        });
+        fetchTask();
+        setTaskNotes("");
+        setSelectedPlan(null);
+      }
+      if (response.data.error) {
+        toast.error(response.data.error, {
           position: "top-center",
           autoClose: 800,
           hideProgressBar: false,

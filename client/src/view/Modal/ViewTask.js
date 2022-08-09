@@ -9,21 +9,12 @@ import Col from "react-bootstrap/Col";
 import Select from "react-select";
 import axios from "axios";
 
-const ViewTask = ({
-  show,
-  onHide,
-  groups,
-  openViewTaskForm,
-  closeViewTaskForm,
-  selectedPlan,
-  taskNotes,
-}) => {
+const ViewTask = ({ show, onHide, groups, openViewTaskForm, closeViewTaskForm, selectedPlan, taskNotes }) => {
   const [auditNotes, setAuditNotes] = useState([]);
   const [data, setData] = useState([]);
 
   const { task_name } = useParams();
   const navigate = useNavigate();
-  console.log(task_name);
 
   const fetchTask = async () => {
     const response = await axios.get("/get-task", {
@@ -58,12 +49,7 @@ const ViewTask = ({
           <Col>
             <Form.Group>
               <Form.Label>Task name</Form.Label>
-              <Form.Control
-                type="text"
-                id="app_name"
-                defaultValue={data.task_name}
-                readOnly
-              />
+              <Form.Control type="text" id="app_name" defaultValue={data.task_name} readOnly />
             </Form.Group>
           </Col>
           <Col>
@@ -78,13 +64,7 @@ const ViewTask = ({
         <Row>
           <Form.Group>
             <Form.Label>Description</Form.Label>
-            <Form.Control
-              readOnly
-              as="textarea"
-              rows={5}
-              id="app_description"
-              value={data.task_description}
-            />
+            <Form.Control readOnly as="textarea" rows={5} id="app_description" value={data.task_description} />
           </Form.Group>
         </Row>
         <br />
@@ -93,26 +73,13 @@ const ViewTask = ({
           <Col>
             <Form.Group>
               <Form.Label>Existing notes</Form.Label>
-              <Form.Control
-                as="textarea"
-                type="text"
-                readOnly
-                rows={7}
-                id="app_notes"
-                defaultValue={auditNotes}
-              />
+              <Form.Control as="textarea" type="text" readOnly rows={7} id="app_notes" defaultValue={auditNotes} />
             </Form.Group>
           </Col>
           <Col>
             <Form.Group>
               <Form.Label>Task notes</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={7}
-                id="app_notes"
-                value={taskNotes}
-                readOnly
-              />
+              <Form.Control as="textarea" rows={7} id="app_notes" value={taskNotes} readOnly />
             </Form.Group>
           </Col>
         </Row>
@@ -124,7 +91,6 @@ const ViewTask = ({
               <Form.Label>Assign a Plan</Form.Label>
               <p>Current plan assigned: {data.task_plan}</p>
               <Select
-                //   options={options}
                 name="task_plan"
                 value={selectedPlan}
                 getOptionValue={(option) => option.value}
