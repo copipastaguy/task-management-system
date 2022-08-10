@@ -1,48 +1,11 @@
-const connection = require("../server/connection");
-const bcrypt = require("bcrypt");
-// const jwt = require("jsonwebtoken");
-
 const errorHandler = require("./errorHandler");
 const checkgroup = require("./checkGroup");
 const createToken = require("./jwt/createJWT");
+const loginUser = require("./loginController");
 
 const login = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
   //    - - - ROUTING FOR LOGIN AND AUTH - - -
-
-  const loginUser = (username, password) => {
-    return new Promise((resolve, reject) => {
-      // QUERY STATEMENT
-      const query = `SELECT username, password, status, user_group FROM accounts WHERE username = ? `;
-      connection.query(query, [username], (error, result) => {
-        if (error) reject(error);
-        // - - - VALID - - -
-        else if (result.length > 0) {
-          const userInfo = result[0];
-          const hashPassword = result[0].password;
-          const status = result[0].status;
-
-          if (status == "Inactive") {
-            return resolve(false);
-          } else if (status === "Active") {
-            bcrypt.compare(password, hashPassword, (error, correctPassword) => {
-              if (error) throw error;
-              else if (correctPassword) {
-                // res.send({ userInfo, isAdmin, isLead, isManager, jwtToken });
-                resolve(userInfo);
-              } else {
-                return resolve(false);
-              }
-            });
-          }
-        } else {
-          // - - - INVALID USER - - -
-          return resolve(false);
-        }
-      });
-    });
-  };
-
   app.post("/auth", async (req, res, next) => {
     const { username, password } = req.body;
     // - - - FIELD IS NOT EMPTY - - -
@@ -58,12 +21,18 @@ const login = function (app) {
       // username, user group string, isAdmin
       const jwtToken = await createToken({ username, isAdmin });
       const login = await loginUser(username, password);
+      // console.log(login);
       if (login === false) {
         return next(
-          errorHandler({ msg: "Invalid login", code: 401 }, req, res)
+          errorHandler({ msg: "Invalid login", code: 4001 }, req, res)
         );
       } else {
-        res.send({ message: "Logged In", token: jwtToken });
+        res.send({
+          message: "Logged In",
+          token: jwtToken,
+          userInfo: login,
+          isAdmin,
+        });
       }
     } else {
       return next(errorHandler("Please fill up all fields", req, res));
