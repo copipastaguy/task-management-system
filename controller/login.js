@@ -32,6 +32,8 @@ const login = function (app) {
           token: jwtToken,
           userInfo: login,
           isAdmin,
+          isLead,
+          isManager,
         });
       }
     } else {

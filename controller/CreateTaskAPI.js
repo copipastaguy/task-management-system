@@ -7,7 +7,8 @@ const CreateTaskAPI = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
   //    - - - ROUTING FOR LOGIN AND AUTH - - -
   app.post("/createtask", async (req, res, next) => {
-    const { username, password, app_acronym, task_name } = req.body;
+    const { username, password, app_acronym, task_name, task_description } =
+      req.body;
     console.log(req.body);
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password) {
@@ -43,17 +44,31 @@ const CreateTaskAPI = function (app) {
               if (error) throw error;
               else if (result.length > 0) {
                 return next(
-                  errorHandler({ msg: "Task name exist", code: 4003 }, req, res)
+                  errorHandler(
+                    {
+                      msg: "Duplicate Task name. Choose another task name",
+                      code: 4003,
+                    },
+                    req,
+                    res
+                  )
                 );
               } else {
-                const createTask = `INSERT INTO task (task_app_acronym, task_id, task_name) VALUES (?, ?, ?)`;
+                const createTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_state, task_createDate) VALUES (?, ?, ?, ?, "Open", NOW())`;
                 connection.query(
                   createTask,
-                  [app_acronym, taskId, task_name],
+                  [app_acronym, task_Id, task_name, task_description],
                   (error, result) => {
                     if (error) throw error;
                     else {
-                      res.send({ task_Id, task_name, app_acronym, code: 200 });
+                      res.send({
+                        msg: "Task created successfully",
+                        task_Id,
+                        task_name,
+                        app_acronym,
+                        task_description,
+                        code: 200,
+                      });
                     }
                   }
                 );
