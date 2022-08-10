@@ -3,7 +3,7 @@ const errorHandler = (err, req, res, next) => {
   console.log(err);
 
   // send the response to front end
-  res.send({ error: err });
+  res.send(err);
 };
 
 module.exports = errorHandler;

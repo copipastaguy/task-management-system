@@ -11,11 +11,15 @@ const Plan = ({ planName, startDate, endDate, planColor }) => {
         height: "100px",
         width: "210px",
         boxShadow: "7px 7px 8px -6px rgba(87,87,87,0.8)",
-        borderRadius: "15px",
-        backgroundColor: planColor,
+        borderRadius: "10px",
+        border: `5px solid ${planColor}`,
+        // backgroundColor: planColor,
       }}
     >
-      {/* <span className="color-tag" style={{ backgroundColor: planColor, borderRadius: "15px" }}></span> */}
+      {/* <span
+        className="color-tag"
+        style={{ backgroundColor: planColor, borderRadius: "15px" }}
+      ></span> */}
       <p style={{ color: planColor ? "#000000" : "#FFFFFF" }}>{planName}</p>
 
       <div

@@ -59,7 +59,8 @@ const ApplicationKanban = () => {
   const taskCreator = sessionStorage.getItem("username");
   const taskOwner = sessionStorage.getItem("username");
 
-  const [permitOpen, setPermitOpen] = useState(true);
+  const group = sessionStorage.getItem("usergroup");
+  const [permitOpen, setPermitOpen] = useState(false);
   const [permitTodo, setPermitTodo] = useState(false);
   const [permitDoing, setPermitDoing] = useState(false);
   const [permitDone, setPermitDone] = useState(false);
@@ -88,6 +89,21 @@ const ApplicationKanban = () => {
     });
     // console.log(response.data[0]);
     setData(response.data[0]);
+    if (group.includes(response.data[0].app_permitOpen)) {
+      setPermitOpen(true);
+    }
+
+    if (group.includes(response.data[0].app_permitToDo)) {
+      setPermitTodo(true);
+    }
+
+    if (group.includes(response.data[0].app_permitDoing)) {
+      setPermitDoing(true);
+    }
+
+    if (group.includes(response.data[0].app_permitDone)) {
+      setPermitDone(true);
+    }
   };
 
   // GET PLANS ASSOCIATED WITH APPLICATION
@@ -110,19 +126,29 @@ const ApplicationKanban = () => {
     console.log(response.data);
     setTasks(response.data);
 
-    const openTask = response.data.filter((task) => task.task_state === "Open").length;
+    const openTask = response.data.filter(
+      (task) => task.task_state === "Open"
+    ).length;
     setOpenCount(openTask);
 
-    const todoTask = response.data.filter((task) => task.task_state === "ToDo").length;
+    const todoTask = response.data.filter(
+      (task) => task.task_state === "ToDo"
+    ).length;
     setTodoCount(todoTask);
 
-    const doingTask = response.data.filter((task) => task.task_state === "Doing").length;
+    const doingTask = response.data.filter(
+      (task) => task.task_state === "Doing"
+    ).length;
     setDoingCount(doingTask);
 
-    const doneTask = response.data.filter((task) => task.task_state === "Done").length;
+    const doneTask = response.data.filter(
+      (task) => task.task_state === "Done"
+    ).length;
     setDoneCount(doneTask);
 
-    const closeTask = response.data.filter((task) => task.task_state === "Closed").length;
+    const closeTask = response.data.filter(
+      (task) => task.task_state === "Closed"
+    ).length;
     setCloseCount(closeTask);
   };
 
@@ -153,7 +179,9 @@ const ApplicationKanban = () => {
             justifyContent: "center",
           }}
         >
-          <h2 style={{ textAlign: "center", fontSize: "40px" }}>{data.app_acronym}</h2>
+          <h2 style={{ textAlign: "center", fontSize: "40px" }}>
+            {data.app_acronym}
+          </h2>
 
           <div
             style={{
@@ -303,7 +331,10 @@ const ApplicationKanban = () => {
                     }
                   };
                   return (
-                    <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
+                    <div
+                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
+                      key={task.task_name}
+                    >
                       <Task
                         taskName={task.task_name}
                         taskDescription={task.task_description}
@@ -313,8 +344,13 @@ const ApplicationKanban = () => {
                         taskPlan={task.task_plan}
                       />
                       {!permitOpen && (
-                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
-                          <Button style={{ width: "100%" }} onClick={openViewTaskForm}>
+                        <Link
+                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
+                        >
+                          <Button
+                            style={{ width: "100%" }}
+                            onClick={openViewTaskForm}
+                          >
                             <AiFillEye />
                           </Button>
                         </Link>
@@ -352,11 +388,223 @@ const ApplicationKanban = () => {
                 .map((task) => {
                   const MoveTaskToDoing = async () => {
                     const newState = "Doing";
+                    try {
+                      const response = await axios.post("/move-task-doing", {
+                        task_name: task.task_name,
+                        newState,
+                        taskOwner,
+                        permitUser: data.app_permitToDo,
+                      });
+                      if (!response.data.error) {
+                        toast.success(`Move ${task.task_name} to Doing!`, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                        fetchTasks();
+                      }
+                      if (response.data.error) {
+                        toast.error(response.data.error, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                      }
+                    } catch (e) {
+                      console.warn(e);
+                    }
+                  };
+                  return (
+                    <div
+                      style={{
+                        marginBottom: "10px",
+                        color: "#DEE2E6",
+                        width: "100%",
+                      }}
+                      key={task.task_name}
+                    >
+                      <Task
+                        taskName={task.task_name}
+                        taskDescription={task.task_description}
+                        taskState={task.task_state}
+                        taskOwner={task.task_owner}
+                        taskColor={task.task_color}
+                        taskPlan={task.task_plan}
+                      />
+
+                      {permitTodo ? (
+                        <div>
+                          <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                            <Button style={{ width: "100%" }}>
+                              <AiFillEdit />
+                            </Button>
+                          </Link>
+                          <Button
+                            style={{ width: "100%" }}
+                            variant="success"
+                            onClick={() => MoveTaskToDoing()}
+                          >
+                            <AiOutlineArrowRight />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Link
+                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
+                        >
+                          <Button style={{ width: "100%" }}>
+                            <AiFillEye />
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
+          <div>
+            <div className="col-header">
+              <p>DOING</p>
+              <span>{doingCount}</span>
+            </div>
+            <div>
+              {tasks
+                .filter((task) => task.task_state === "Doing")
+                .map((task) => {
+                  const MoveTaskToDone = async () => {
+                    const newState = "Done";
+                    try {
+                      const response = await axios.post("/move-task-done", {
+                        task_name: task.task_name,
+                        newState,
+                        taskOwner,
+                        permitUser: data.app_permitDoing,
+                      });
+                      if (!response.data.error) {
+                        toast.success(`Move ${task.task_name} to Done!`, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                        fetchTasks();
+                      }
+                      if (response.data.error) {
+                        toast.error(response.data.error, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                      }
+                    } catch (e) {}
+                  };
+
+                  const MoveTaskToDo = async () => {
+                    const newState = "ToDo  ";
+                    try {
+                      const response = await axios.post("/move-task-todo", {
+                        task_name: task.task_name,
+                        newState,
+                        taskOwner,
+                        permitUser: data.app_permitDoing,
+                      });
+
+                      if (!response.data.error) {
+                        toast.success(`Move ${task.task_name} to To-Do!`, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                        fetchTasks();
+                      }
+                      if (response.data.error) {
+                        toast.error(response.data.error, {
+                          position: "top-center",
+                          autoClose: 700,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: false,
+                        });
+                      }
+                    } catch (e) {}
+                  };
+                  return (
+                    <div
+                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
+                      key={task.task_name}
+                    >
+                      <Task
+                        taskName={task.task_name}
+                        taskDescription={task.task_description}
+                        taskState={task.task_state}
+                        taskOwner={task.task_owner}
+                        taskColor={task.task_color}
+                        taskPlan={task.task_plan}
+                      />
+
+                      {permitDoing ? (
+                        <>
+                          <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
+                            <Button style={{ width: "100%" }}>
+                              <AiFillEdit />
+                            </Button>
+                          </Link>
+                          <div className="buttons-container">
+                            <Button
+                              variant="danger"
+                              onClick={() => MoveTaskToDo()}
+                            >
+                              <AiOutlineArrowLeft />
+                            </Button>
+
+                            <Button
+                              variant="success"
+                              onClick={() => MoveTaskToDone()}
+                            >
+                              <AiOutlineArrowRight />
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <Link
+                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
+                        >
+                          <Button style={{ width: "100%" }}>
+                            <AiFillEye />
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
+          <div>
+            <div className="col-header">
+              <p>DONE</p>
+              <span>{doneCount}</span>
+            </div>
+            {tasks
+              .filter((task) => task.task_state === "Done")
+              .map((task) => {
+                const MoveTaskDoing = async () => {
+                  const newState = "Doing";
+                  try {
                     const response = await axios.post("/move-task-doing", {
                       task_name: task.task_name,
                       newState,
                       taskOwner,
-                      permitUser: data.app_permitTodo,
+                      permitUser: data.app_permitDone,
                     });
                     if (!response.data.error) {
                       toast.success(`Move ${task.task_name} to Doing!`, {
@@ -377,228 +625,45 @@ const ApplicationKanban = () => {
                         pauseOnHover: false,
                       });
                     }
-
-                    fetchTasks();
-                  };
-                  return (
-                    <div
-                      style={{
-                        marginBottom: "10px",
-                        color: "#DEE2E6",
-                        width: "100%",
-                      }}
-                      key={task.task_name}
-                    >
-                      <Task
-                        taskName={task.task_name}
-                        taskDescription={task.task_description}
-                        taskState={task.task_state}
-                        taskOwner={task.task_owner}
-                        taskColor={task.task_color}
-                        taskPlan={task.task_plan}
-                      />
-
-                      <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                        <Button style={{ width: "100%" }}>
-                          <AiFillEdit />
-                        </Button>
-                      </Link>
-
-                      {/* {permitTodo ? (
-                        <div>
-                          <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                            <Button style={{ width: "100%" }}>
-                              <AiFillEdit />
-                            </Button>
-                          </Link>
-                          <Button style={{ width: "100%" }} variant="success" onClick={() => MoveTaskToDoing()}>
-                            <AiOutlineArrowRight />
-                          </Button>
-                        </div>
-                      ) : (
-                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
-                          <Button style={{ width: "100%" }}>
-                            <AiFillEye />
-                          </Button>
-                        </Link>
-                      )} */}
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-
-          <div>
-            <div className="col-header">
-              <p>DOING</p>
-              <span>{doingCount}</span>
-            </div>
-            <div>
-              {tasks.map((task) => {
-                const MoveTaskToDone = async () => {
-                  const newState = "Done";
-                  const response = await axios.post("/move-task-done", {
-                    task_name: task.task_name,
-                    newState,
-                    taskOwner,
-                    permitUser: data.app_permitDoing,
-                  });
-                  if (!response.data.error) {
-                    toast.success(`Move ${task.task_name} to Done!`, {
-                      position: "top-center",
-                      autoClose: 700,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: false,
-                    });
-                    fetchTasks();
-                  }
-                  if (response.data.error) {
-                    toast.error(response.data.error, {
-                      position: "top-center",
-                      autoClose: 700,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: false,
-                    });
-                  }
+                  } catch (e) {}
                 };
-                const MoveTaskToDo = async () => {
-                  const newState = "ToDo  ";
-                  const response = await axios.post("/move-task-todo", {
-                    task_name: task.task_name,
-                    newState,
-                    taskOwner,
-                  });
 
-                  if (!response.data.error) {
-                    toast.success(`Move ${task.task_name} to To-Do!`, {
-                      position: "top-center",
-                      autoClose: 700,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: false,
+                const MoveTaskToClose = async () => {
+                  const newState = "Closed";
+                  try {
+                    const response = await axios.post("/move-task-close", {
+                      task_name: task.task_name,
+                      newState,
+                      taskOwner,
+                      permitUser: data.app_permitDone,
                     });
-                    fetchTasks();
-                  }
-                  if (response.data.error) {
-                    toast.error(response.data.error, {
-                      position: "top-center",
-                      autoClose: 700,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: false,
-                    });
-                  }
+                    if (!response.data.error) {
+                      toast.success(`Move ${task.task_name} to Closed!`, {
+                        position: "top-center",
+                        autoClose: 700,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                      });
+                      fetchTasks();
+                    }
+                    if (response.data.error) {
+                      toast.error(response.data.error, {
+                        position: "top-center",
+                        autoClose: 700,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                      });
+                    }
+                  } catch (e) {}
                 };
-                if (task.task_state === "Doing") {
-                  return (
-                    <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
-                      <Task
-                        taskName={task.task_name}
-                        taskDescription={task.task_description}
-                        taskState={task.task_state}
-                        taskOwner={task.task_owner}
-                        taskColor={task.task_color}
-                        taskPlan={task.task_plan}
-                      />
 
-                      {permitDoing ? (
-                        <>
-                          <Link to={`/tasks/${app_acronym}/${task.task_name}`}>
-                            <Button style={{ width: "100%" }}>
-                              <AiFillEdit />
-                            </Button>
-                          </Link>
-                          <div className="buttons-container">
-                            <Button variant="danger" onClick={() => MoveTaskToDo()}>
-                              <AiOutlineArrowLeft />
-                            </Button>
-
-                            <Button variant="success" onClick={() => MoveTaskToDone()}>
-                              <AiOutlineArrowRight />
-                            </Button>
-                          </div>
-                        </>
-                      ) : (
-                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
-                          <Button style={{ width: "100%" }}>
-                            <AiFillEye />
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-                  );
-                }
-              })}
-            </div>
-          </div>
-
-          <div>
-            <div className="col-header">
-              <p>DONE</p>
-              <span>{doneCount}</span>
-            </div>
-            {tasks.map((task) => {
-              const MoveTaskDoing = async () => {
-                const newState = "Doing";
-                const response = await axios.post("/move-task-doing", {
-                  task_name: task.task_name,
-                  newState,
-                  taskOwner,
-                  permitUser: data.app_permitDone,
-                });
-                if (!response.data.error) {
-                  toast.success(`Move ${task.task_name} to Doing!`, {
-                    position: "top-center",
-                    autoClose: 700,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                  });
-                  fetchTasks();
-                }
-                if (response.data.error) {
-                  toast.error(response.data.error, {
-                    position: "top-center",
-                    autoClose: 700,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                  });
-                }
-              };
-              const MoveTaskToClose = async () => {
-                const newState = "Closed";
-                const response = await axios.post("/move-task-close", {
-                  task_name: task.task_name,
-                  newState,
-                  taskOwner,
-                });
-                if (!response.data.error) {
-                  toast.success(`Move ${task.task_name} to Closed!`, {
-                    position: "top-center",
-                    autoClose: 700,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                  });
-                  fetchTasks();
-                }
-                if (response.data.error) {
-                  toast.error(response.data.error, {
-                    position: "top-center",
-                    autoClose: 700,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                  });
-                }
-              };
-
-              if (task.task_state === "Done") {
                 return (
-                  <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
+                  <div
+                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
+                    key={task.task_name}
+                  >
                     <Task
                       taskName={task.task_name}
                       taskDescription={task.task_description}
@@ -615,18 +680,23 @@ const ApplicationKanban = () => {
 
                     {permitDone && (
                       <div className="buttons-container">
-                        <Button variant="danger" onClick={() => MoveTaskDoing()}>
+                        <Button
+                          variant="danger"
+                          onClick={() => MoveTaskDoing()}
+                        >
                           <AiOutlineArrowLeft />
                         </Button>
-                        <Button variant="success" onClick={() => MoveTaskToClose()}>
+                        <Button
+                          variant="success"
+                          onClick={() => MoveTaskToClose()}
+                        >
                           <AiOutlineArrowRight />
                         </Button>
                       </div>
                     )}
                   </div>
                 );
-              }
-            })}
+              })}
           </div>
 
           <div>
@@ -634,10 +704,14 @@ const ApplicationKanban = () => {
               <p>CLOSE</p>
               <span>{closeCount}</span>
             </div>
-            {tasks.map((task) => {
-              if (task.task_state === "Closed") {
+            {tasks
+              .filter((task) => task.task_state === "Closed")
+              .map((task) => {
                 return (
-                  <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
+                  <div
+                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
+                    key={task.task_name}
+                  >
                     <Task
                       taskName={task.task_name}
                       taskDescription={task.task_description}
@@ -653,8 +727,7 @@ const ApplicationKanban = () => {
                     </Link>
                   </div>
                 );
-              }
-            })}
+              })}
           </div>
         </div>
       </div>

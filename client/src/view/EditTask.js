@@ -29,11 +29,6 @@ const EditTask = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   const [app, setApp] = useState([]);
-  // const [permitOpen, setPermitOpen] = useState(false);
-  // const [permitTodo, setPermitTodo] = useState(false);
-  // const [permitDoing, setPermitDoing] = useState(false);
-  // const [permitDone, setPermitDone] = useState(false);
-  // const [permitUser, setPermitUser] = useState(false);
 
   const fetchTask = async () => {
     const response = await axios.get("/get-task", {
@@ -42,6 +37,16 @@ const EditTask = () => {
       },
     });
     setData(response.data[0]);
+
+    // Set default
+    const currentPlan = () => {
+      const value = response.data[0].task_plan;
+      return {
+        label: value,
+        value: value,
+      };
+    };
+    setSelectedPlan(currentPlan);
 
     // GET AUDIT NOTES
     const notes = await axios.get("/get-task-notes", {
@@ -147,7 +152,12 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Task name</Form.Label>
-              <Form.Control type="text" id="app_name" defaultValue={data.task_name} readOnly />
+              <Form.Control
+                type="text"
+                id="app_name"
+                defaultValue={data.task_name}
+                readOnly
+              />
             </Form.Group>
           </Col>
           <Col>
@@ -178,7 +188,14 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Existing notes</Form.Label>
-              <Form.Control as="textarea" type="text" readOnly rows={7} id="app_notes" defaultValue={auditNotes} />
+              <Form.Control
+                as="textarea"
+                type="text"
+                readOnly
+                rows={7}
+                id="app_notes"
+                defaultValue={auditNotes}
+              />
             </Form.Group>
           </Col>
           <Col>
@@ -201,10 +218,10 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Assign a Plan</Form.Label>
-              <p>Current plan assigned: {data.task_plan}</p>
               <Select
                 options={options}
                 name="task_plan"
+                // defaultValue={{ label: data.task_plan, value: data.task_plan }}
                 value={selectedPlan}
                 onChange={handleTaskPlan}
                 getOptionValue={(option) => option.value}

@@ -75,7 +75,7 @@ userUpdate(app);
 
 //////////////////////////// PHASE 2 TASK FLOW MANAGEMENT /////////////////////////////////
 
-checkPermit(app);
+// checkPermit(app);
 
 addupdateApp(app);
 
