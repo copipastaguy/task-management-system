@@ -20,7 +20,7 @@ const addupdateTask = require("../controller/addupdateTask");
 const getTasks = require("../controller/getTasks");
 const checkPermit = require("../controller/checkPermit");
 const verification = require("../controller/jwt/verification");
-const CreateTaskAPI = require("../controller/CreateTaskAPI");
+const CreateTaskAPI = require("../controller/API/CreateTaskAPI");
 
 const port = process.env.API_PORT;
 console.log(process.env.API_PORT);
