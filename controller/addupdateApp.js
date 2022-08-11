@@ -28,17 +28,7 @@ const addupdateApp = function (app) {
           const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
           connection.query(
             addNewApp,
-            [
-              app_acronym,
-              app_description,
-              app_Rnum,
-              app_startDate,
-              app_endDate,
-              permitOpen,
-              permitTodo,
-              permitDoing,
-              permitDone,
-            ],
+            [app_acronym, app_description, app_Rnum, app_startDate, app_endDate, permitOpen, permitTodo, permitDoing, permitDone],
             (error, result) => {
               if (error) throw error;
               else {

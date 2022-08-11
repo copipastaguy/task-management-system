@@ -18,9 +18,11 @@ const addGetPlan = require("../controller/addGetPlan");
 const getApplications = require("../controller/getApplications");
 const addupdateTask = require("../controller/addupdateTask");
 const getTasks = require("../controller/getTasks");
-const checkPermit = require("../controller/checkPermit");
 const verification = require("../controller/jwt/verification");
+
 const CreateTaskAPI = require("../controller/API/CreateTaskAPI");
+const GetTaskByStateAPI = require("../controller/API/GetTaskbyStateAPI");
+const PromoteTask2Done = require("../controller/API/PromoteTask2Done");
 
 const port = process.env.API_PORT;
 console.log(process.env.API_PORT);
@@ -88,7 +90,11 @@ addupdateTask(app);
 
 getTasks(app);
 
+//////////////////////////// PHASE 3 API MANAGEMENT /////////////////////////////////
+
 CreateTaskAPI(app);
+GetTaskByStateAPI(app);
+PromoteTask2Done(app);
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);

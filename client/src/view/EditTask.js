@@ -152,12 +152,7 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Task name</Form.Label>
-              <Form.Control
-                type="text"
-                id="app_name"
-                defaultValue={data.task_name}
-                readOnly
-              />
+              <Form.Control type="text" id="app_name" defaultValue={data.task_name} readOnly />
             </Form.Group>
           </Col>
           <Col>
@@ -188,14 +183,7 @@ const EditTask = () => {
           <Col>
             <Form.Group>
               <Form.Label>Existing notes</Form.Label>
-              <Form.Control
-                as="textarea"
-                type="text"
-                readOnly
-                rows={7}
-                id="app_notes"
-                defaultValue={auditNotes}
-              />
+              <Form.Control as="textarea" type="text" readOnly rows={7} id="app_notes" defaultValue={auditNotes} />
             </Form.Group>
           </Col>
           <Col>
@@ -221,7 +209,7 @@ const EditTask = () => {
               <Select
                 options={options}
                 name="task_plan"
-                // defaultValue={{ label: data.task_plan, value: data.task_plan }}
+                defaultValue={selectedPlan}
                 value={selectedPlan}
                 onChange={handleTaskPlan}
                 getOptionValue={(option) => option.value}

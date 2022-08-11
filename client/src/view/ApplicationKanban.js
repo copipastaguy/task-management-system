@@ -126,29 +126,19 @@ const ApplicationKanban = () => {
     console.log(response.data);
     setTasks(response.data);
 
-    const openTask = response.data.filter(
-      (task) => task.task_state === "Open"
-    ).length;
+    const openTask = response.data.filter((task) => task.task_state === "OPEN").length;
     setOpenCount(openTask);
 
-    const todoTask = response.data.filter(
-      (task) => task.task_state === "ToDo"
-    ).length;
+    const todoTask = response.data.filter((task) => task.task_state === "TODO").length;
     setTodoCount(todoTask);
 
-    const doingTask = response.data.filter(
-      (task) => task.task_state === "Doing"
-    ).length;
+    const doingTask = response.data.filter((task) => task.task_state === "DOING").length;
     setDoingCount(doingTask);
 
-    const doneTask = response.data.filter(
-      (task) => task.task_state === "Done"
-    ).length;
+    const doneTask = response.data.filter((task) => task.task_state === "DONE").length;
     setDoneCount(doneTask);
 
-    const closeTask = response.data.filter(
-      (task) => task.task_state === "Closed"
-    ).length;
+    const closeTask = response.data.filter((task) => task.task_state === "CLOSED").length;
     setCloseCount(closeTask);
   };
 
@@ -179,9 +169,7 @@ const ApplicationKanban = () => {
             justifyContent: "center",
           }}
         >
-          <h2 style={{ textAlign: "center", fontSize: "40px" }}>
-            {data.app_acronym}
-          </h2>
+          <h2 style={{ textAlign: "center", fontSize: "40px" }}>{data.app_acronym}</h2>
 
           <div
             style={{
@@ -295,7 +283,7 @@ const ApplicationKanban = () => {
                 .filter((task) => task.task_state === "Open")
                 .map((task) => {
                   const approveTask = async () => {
-                    const newState = "ToDo";
+                    const newState = "TODO";
                     const note = `${now} ${time}: ${newState} \n${taskCreator} \nTask has been approved`;
                     console.log(data.app_permitOpen);
                     try {
@@ -331,10 +319,7 @@ const ApplicationKanban = () => {
                     }
                   };
                   return (
-                    <div
-                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                      key={task.task_name}
-                    >
+                    <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                       <Task
                         taskName={task.task_name}
                         taskDescription={task.task_description}
@@ -344,13 +329,8 @@ const ApplicationKanban = () => {
                         taskPlan={task.task_plan}
                       />
                       {!permitOpen && (
-                        <Link
-                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
-                        >
-                          <Button
-                            style={{ width: "100%" }}
-                            onClick={openViewTaskForm}
-                          >
+                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
+                          <Button style={{ width: "100%" }} onClick={openViewTaskForm}>
                             <AiFillEye />
                           </Button>
                         </Link>
@@ -387,7 +367,7 @@ const ApplicationKanban = () => {
                 .filter((task) => task.task_state === "ToDo")
                 .map((task) => {
                   const MoveTaskToDoing = async () => {
-                    const newState = "Doing";
+                    const newState = "DOING";
                     try {
                       const response = await axios.post("/move-task-doing", {
                         task_name: task.task_name,
@@ -443,18 +423,12 @@ const ApplicationKanban = () => {
                               <AiFillEdit />
                             </Button>
                           </Link>
-                          <Button
-                            style={{ width: "100%" }}
-                            variant="success"
-                            onClick={() => MoveTaskToDoing()}
-                          >
+                          <Button style={{ width: "100%" }} variant="success" onClick={() => MoveTaskToDoing()}>
                             <AiOutlineArrowRight />
                           </Button>
                         </div>
                       ) : (
-                        <Link
-                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
-                        >
+                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
                           <Button style={{ width: "100%" }}>
                             <AiFillEye />
                           </Button>
@@ -476,7 +450,7 @@ const ApplicationKanban = () => {
                 .filter((task) => task.task_state === "Doing")
                 .map((task) => {
                   const MoveTaskToDone = async () => {
-                    const newState = "Done";
+                    const newState = "DONE";
                     try {
                       const response = await axios.post("/move-task-done", {
                         task_name: task.task_name,
@@ -507,7 +481,7 @@ const ApplicationKanban = () => {
                   };
 
                   const MoveTaskToDo = async () => {
-                    const newState = "ToDo  ";
+                    const newState = "TODO  ";
                     try {
                       const response = await axios.post("/move-task-todo", {
                         task_name: task.task_name,
@@ -538,10 +512,7 @@ const ApplicationKanban = () => {
                     } catch (e) {}
                   };
                   return (
-                    <div
-                      style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                      key={task.task_name}
-                    >
+                    <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                       <Task
                         taskName={task.task_name}
                         taskDescription={task.task_description}
@@ -559,25 +530,17 @@ const ApplicationKanban = () => {
                             </Button>
                           </Link>
                           <div className="buttons-container">
-                            <Button
-                              variant="danger"
-                              onClick={() => MoveTaskToDo()}
-                            >
+                            <Button variant="danger" onClick={() => MoveTaskToDo()}>
                               <AiOutlineArrowLeft />
                             </Button>
 
-                            <Button
-                              variant="success"
-                              onClick={() => MoveTaskToDone()}
-                            >
+                            <Button variant="success" onClick={() => MoveTaskToDone()}>
                               <AiOutlineArrowRight />
                             </Button>
                           </div>
                         </>
                       ) : (
-                        <Link
-                          to={`/tasks/${app_acronym}/view/${task.task_name}`}
-                        >
+                        <Link to={`/tasks/${app_acronym}/view/${task.task_name}`}>
                           <Button style={{ width: "100%" }}>
                             <AiFillEye />
                           </Button>
@@ -598,7 +561,7 @@ const ApplicationKanban = () => {
               .filter((task) => task.task_state === "Done")
               .map((task) => {
                 const MoveTaskDoing = async () => {
-                  const newState = "Doing";
+                  const newState = "DOING";
                   try {
                     const response = await axios.post("/move-task-doing", {
                       task_name: task.task_name,
@@ -629,7 +592,7 @@ const ApplicationKanban = () => {
                 };
 
                 const MoveTaskToClose = async () => {
-                  const newState = "Closed";
+                  const newState = "CLOSED";
                   try {
                     const response = await axios.post("/move-task-close", {
                       task_name: task.task_name,
@@ -660,10 +623,7 @@ const ApplicationKanban = () => {
                 };
 
                 return (
-                  <div
-                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                    key={task.task_name}
-                  >
+                  <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                     <Task
                       taskName={task.task_name}
                       taskDescription={task.task_description}
@@ -680,16 +640,10 @@ const ApplicationKanban = () => {
 
                     {permitDone && (
                       <div className="buttons-container">
-                        <Button
-                          variant="danger"
-                          onClick={() => MoveTaskDoing()}
-                        >
+                        <Button variant="danger" onClick={() => MoveTaskDoing()}>
                           <AiOutlineArrowLeft />
                         </Button>
-                        <Button
-                          variant="success"
-                          onClick={() => MoveTaskToClose()}
-                        >
+                        <Button variant="success" onClick={() => MoveTaskToClose()}>
                           <AiOutlineArrowRight />
                         </Button>
                       </div>
@@ -708,10 +662,7 @@ const ApplicationKanban = () => {
               .filter((task) => task.task_state === "Closed")
               .map((task) => {
                 return (
-                  <div
-                    style={{ marginBottom: "10px", color: "#DEE2E6" }}
-                    key={task.task_name}
-                  >
+                  <div style={{ marginBottom: "10px", color: "#DEE2E6" }} key={task.task_name}>
                     <Task
                       taskName={task.task_name}
                       taskDescription={task.task_description}

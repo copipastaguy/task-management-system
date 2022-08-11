@@ -5,7 +5,7 @@ const getTasks = function (app) {
     const plan_app_acronym = req.query.plan_app_acronym;
     // console.log(plan_app_acronym);
     // const getTasks = `SELECT * FROM task WHERE task_app_acronym = ?`;
-    const getTasks = `SELECT * FROM task as t JOIN plan as p ON p.plan_app_acronym = t.task_app_acronym WHERE t.task_app_acronym = ? GROUP BY t.task_name`;
+    const getTasks = `SELECT * FROM task as t WHERE t.task_app_acronym = ? GROUP BY t.task_name`;
     connection.query(getTasks, [plan_app_acronym], (error, result) => {
       if (error) throw error;
       else {
