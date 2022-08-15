@@ -1,6 +1,5 @@
 const express = require("express");
 const session = require("express-session");
-const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -25,7 +24,6 @@ const GetTaskByStateAPI = require("../controller/API/GetTaskbyStateAPI");
 const PromoteTask2Done = require("../controller/API/PromoteTask2Done");
 
 const port = process.env.API_PORT;
-console.log(process.env.API_PORT);
 
 const app = express();
 app.use(
@@ -41,7 +39,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // - - - ALL ACCOUNTS - - -
 accounts(app);
-verification(app);
 
 //////////////////////////// PHASE 1 IDENTITY ACCESS MANAGEMENT /////////////////////////////////
 // 1. login

@@ -11,7 +11,7 @@ const e = require("cors");
 const CreateTaskAPI = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
   //    - - - ROUTING FOR LOGIN AND AUTH - - -
-  app.post("/createtask", async (req, res, next) => {
+  app.post("/api/createtask", async (req, res, next) => {
     const { username, password, app_acronym, task_name, task_description } = req.body;
     // console.log(req.body);
 
@@ -19,10 +19,13 @@ const CreateTaskAPI = function (app) {
     if (username && password && task_name && app_acronym) {
       const login = await loginUser(username, password);
       if (login === false) {
+        console.warn({
+          message: "Unauthorized",
+          code: 4001,
+        });
         return next(
           errorHandler(
             {
-              //   msg: "Unauthorized",
               code: 4001,
             },
             req,
@@ -33,7 +36,7 @@ const CreateTaskAPI = function (app) {
         // CHECK IF APP EXIST
         const app = await checkAppController(app_acronym);
         if (app === false) {
-          return next(errorHandler({ message: "App not found", code: 4005 }, req, res));
+          return next(errorHandler({ code: 4005 }, req, res));
         } else {
           // CHECK USER GROUP WITH APP PERMIT CREATE
           // FETCH PERMIT CREATE GROUP
@@ -57,10 +60,14 @@ const CreateTaskAPI = function (app) {
                 connection.query(checkTask, [task_name, app_acronym], (error, result) => {
                   if (error) throw error;
                   else if (result.length > 0) {
+                    console.log({
+                      message: "Duplicated task",
+                      code: 4003,
+                    });
                     return next(
                       errorHandler(
                         {
-                          //   message: "Duplicate Task name. Choose another task name",
+                          // message: "💀x7  ごめんなさい I am sorry",
                           code: 4003,
                         },
                         req,
@@ -70,20 +77,21 @@ const CreateTaskAPI = function (app) {
                   } else {
                     //	NEW TASK
                     const createTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, "OPEN", ?, ?, NOW())`;
-                    connection.query(
-                      createTask,
-                      [app_acronym, task_Id, task_name, task_description, username, username],
-                      (error, result) => {
-                        if (error) throw error;
-                        else {
-                          res.send({
-                            //   message: "Task created successfully",
-                            task_Id,
-                            code: 200,
-                          });
-                        }
+                    connection.query(createTask, [app_acronym, task_Id, task_name, task_description, username, username], (error, result) => {
+                      if (error) throw error;
+                      else {
+                        console.warn({
+                          message: "Task created successfully",
+                          task_Id,
+                          code: 200,
+                        });
+                        res.send({
+                          // message: "ありがとう Arigato",
+                          task_Id,
+                          code: 200,
+                        });
                       }
-                    );
+                    });
                   }
                   const updateRnum = `UPDATE application SET app_Rnum = ? WHERE app_acronym = ?`;
                   connection.query(updateRnum, [rNum + 1, app_acronym], (error, result) => {
@@ -94,6 +102,10 @@ const CreateTaskAPI = function (app) {
               }
             });
           } else {
+            console.warn({
+              message: "Forbidden",
+              code: 4002,
+            });
             return next(
               errorHandler(
                 {
@@ -108,7 +120,11 @@ const CreateTaskAPI = function (app) {
         }
       }
     } else {
-      return next(errorHandler({ message: "Invalid fields", code: 4005 }, req, res));
+      console.warn({
+        message: "Invalid field",
+        code: 4005,
+      });
+      return next(errorHandler({ code: 4005 }, req, res));
     }
   });
 };

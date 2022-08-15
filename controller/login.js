@@ -23,12 +23,9 @@ const login = function (app) {
       const login = await loginUser(username, password);
       // console.log(login);
       if (login === false) {
-        return next(
-          errorHandler({ msg: "Invalid login", code: 4001 }, req, res)
-        );
+        return next(errorHandler({ error: "Invalid login", code: 4001 }, req, res));
       } else {
         res.send({
-          message: "Logged In",
           token: jwtToken,
           userInfo: login,
           isAdmin,
@@ -37,7 +34,7 @@ const login = function (app) {
         });
       }
     } else {
-      return next(errorHandler("Please fill up all fields", req, res));
+      return next(errorHandler({ error: "Please fill up all fields" }, req, res));
     }
   });
 };

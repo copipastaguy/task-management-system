@@ -12,13 +12,13 @@ const time = new Date().toTimeString().slice(0, 8);
 const now = `${date}/${month}/${year} ${time}`;
 
 const PromoteTask2Done = function (app) {
-  app.post("/promote-task", async (req, res, next) => {
+  app.post("/api/promote-task", async (req, res, next) => {
     const { username, password, app_acronym, task_name } = req.body;
     // console.log(req.body);
 
     if (username && password) {
       const login = await loginUser(username, password);
-      if (login === false) return next(errorHandler({ message: "Unauthorized", code: 4001 }, req, res));
+      if (login === false) return next(errorHandler({ code: 4001 }, req, res));
 
       //   CHECK DOING PERMIT (APPLICATION ACRONYM)
       const permitDoing = await permitDoingController(app_acronym);
@@ -28,8 +28,9 @@ const PromoteTask2Done = function (app) {
         username: username,
         usergroup: permitDoing,
       });
+
       //   console.log(user);
-      if (user === false) return next(errorHandler({ message: "Forbidden", code: 4002 }, req, res));
+      if (user === false) return next(errorHandler({ code: 4002 }, req, res));
       //   FETCH TASK
       const getTask = `SELECT task_name, task_state FROM task WHERE task_name = ? AND task_app_acronym = ?`;
       connection.query(getTask, [task_name, app_acronym], (error, result) => {
@@ -37,7 +38,7 @@ const PromoteTask2Done = function (app) {
         else if (result.length > 0) {
           // CHECK TASK STATE IF IS IN DOING
           if (result[0].task_state != "Doing") {
-            res.send({ message: `Invalid state (${result[0].task_state}) to promote to Done`, code: 4005 }, req, res);
+            res.send({ code: 4005 }, req, res);
           } else {
             // PROMOTE TASK
             const task_state = "DONE";
@@ -52,7 +53,6 @@ const PromoteTask2Done = function (app) {
                   else if (result.length > 0) {
                     //   console.log(result);
                     result.forEach((user) => {
-                      console.log(`Sending email to ${user.email}`);
                       function sendEmail() {
                         let transporter = nodemailer.createTransport({
                           host: process.env.MAILTRAP_HOST,
@@ -80,11 +80,11 @@ const PromoteTask2Done = function (app) {
             });
           }
         } else {
-          res.send({ message: "Invalid task", code: 4005 }, req, res);
+          res.send({ code: 4005 }, req, res);
         }
       });
     } else {
-      return next(errorHandler({ message: "Unauthorized", code: 4001 }, req, res));
+      return next(errorHandler({ code: 4001 }, req, res));
     }
   });
 };
