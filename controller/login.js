@@ -21,7 +21,7 @@ const login = function (app) {
       // username, user group string, isAdmin
       const jwtToken = await createToken({ username, isAdmin });
       const login = await loginUser(username, password);
-      // console.log(login);
+
       if (login === false) {
         return next(errorHandler({ error: "Invalid login", code: 4001 }, req, res));
       } else {

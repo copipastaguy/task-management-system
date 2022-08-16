@@ -18,11 +18,12 @@ const CreateTaskAPI = function (app) {
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password && task_name && app_acronym) {
       const login = await loginUser(username, password);
+
       if (login === false) {
-        console.warn({
-          message: "Unauthorized",
-          code: 4001,
-        });
+        // console.warn({
+        //   message: "Unauthorized",
+        //   code: 4001,
+        // });
         return next(
           errorHandler(
             {
@@ -60,10 +61,6 @@ const CreateTaskAPI = function (app) {
                 connection.query(checkTask, [task_name, app_acronym], (error, result) => {
                   if (error) throw error;
                   else if (result.length > 0) {
-                    console.log({
-                      message: "Duplicated task",
-                      code: 4003,
-                    });
                     return next(
                       errorHandler(
                         {
@@ -80,11 +77,6 @@ const CreateTaskAPI = function (app) {
                     connection.query(createTask, [app_acronym, task_Id, task_name, task_description, username, username], (error, result) => {
                       if (error) throw error;
                       else {
-                        console.warn({
-                          message: "Task created successfully",
-                          task_Id,
-                          code: 200,
-                        });
                         res.send({
                           // message: "ありがとう Arigato",
                           task_Id,
@@ -102,10 +94,6 @@ const CreateTaskAPI = function (app) {
               }
             });
           } else {
-            console.warn({
-              message: "Forbidden",
-              code: 4002,
-            });
             return next(
               errorHandler(
                 {
@@ -120,10 +108,6 @@ const CreateTaskAPI = function (app) {
         }
       }
     } else {
-      console.warn({
-        message: "Invalid field",
-        code: 4005,
-      });
       return next(errorHandler({ code: 4005 }, req, res));
     }
   });

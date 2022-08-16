@@ -29,13 +29,11 @@ const LoginForm = () => {
           const isManager = response.data.isManager;
           const usergroup = response.data.userInfo.user_group;
           const jwtToken = response.data.jwtToken;
-
           if (active === "Active") {
             sessionStorage.setItem("isAdmin", isAdmin);
             sessionStorage.setItem("username", username);
             sessionStorage.setItem("usergroup", usergroup);
             sessionStorage.setItem("jwtToken", jwtToken);
-
             if (isAdmin === true) {
               navigate("/management");
             } else if (isAdmin === false) {
@@ -87,23 +85,10 @@ const LoginForm = () => {
         <Form onSubmit={login} className="login-form form">
           <h4>Enter your details to sign in</h4>
           <Form.Group>
-            <Form.Control
-              autoFocus
-              type="text"
-              placeholder="username"
-              value={username}
-              id="username"
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            <Form.Control autoFocus type="text" placeholder="username" value={username} id="username" onChange={(e) => setUsername(e.target.value)} />
           </Form.Group>
           <Form.Group>
-            <Form.Control
-              type="password"
-              placeholder="password"
-              value={password}
-              id="password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <Form.Control type="password" placeholder="password" value={password} id="password" onChange={(e) => setPassword(e.target.value)} />
           </Form.Group>
 
           <Button
