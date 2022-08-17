@@ -60,8 +60,6 @@ addUserToGroup(app);
 removeUserFromGroup(app);
 userUpdate(app);
 
-// checkGroup(app);
-
 //////////////////////////// PHASE 2 TASK FLOW MANAGEMENT /////////////////////////////////
 
 addupdateApp(app);

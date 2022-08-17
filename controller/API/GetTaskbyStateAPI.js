@@ -6,6 +6,7 @@ const GetTaskByStateAPI = function (app) {
   app.get("/api/get-task-by-state", async (req, res, next) => {
     const { username, password, task_state } = req.body;
     const state = task_state.toUpperCase();
+    // console.log(task_state);
 
     const login = await loginUser(username, password);
     if (login === false) return next(errorHandler({ code: 4001 }, req, res));
