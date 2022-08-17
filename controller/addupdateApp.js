@@ -1,21 +1,10 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 const errorHandler = require("./errorHandler");
 const verifyJWT = require("./jwt/verifyJWT");
 
 const addupdateApp = function (app) {
   app.post("/add-application", async (req, res, next) => {
-    const {
-      app_acronym,
-      app_description,
-      app_Rnum,
-      app_startDate,
-      app_endDate,
-      permitOpen,
-      permitTodo,
-      permitDoing,
-      permitDone,
-      token,
-    } = req.body;
+    const { app_acronym, app_description, app_Rnum, app_startDate, app_endDate, permitOpen, permitTodo, permitDoing, permitDone, token } = req.body;
     console.log(req.body);
 
     if (app_acronym && app_description && app_Rnum) {

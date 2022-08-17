@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("./server/connection");
 const bcrypt = require("bcrypt");
 
 const loginUser = (username, password) => {

@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -28,26 +28,10 @@ const add = function (app) {
             console.log("Checking password");
 
             ///////////////////////////// CHECK PASSWORD ////////////////////////////
-            if (
-              password.length < 8 ||
-              password.length > 10 ||
-              /\s/.test(password)
-            ) {
-              return next(
-                errorHandler(
-                  "Password needs to be 8-10 characters and no space",
-                  req,
-                  res
-                )
-              );
+            if (password.length < 8 || password.length > 10 || /\s/.test(password)) {
+              return next(errorHandler("Password needs to be 8-10 characters and no space", req, res));
             } else if (!validator.isStrongPassword(password)) {
-              return next(
-                errorHandler(
-                  "Password requires 1 lowercase, 1 uppercase, 1 symbol and numbers",
-                  req,
-                  res
-                )
-              );
+              return next(errorHandler("Password requires 1 lowercase, 1 uppercase, 1 symbol and numbers", req, res));
             } else {
               ///////////////////////////// CHECK EMAIL ////////////////////////////
               if (email) {
@@ -89,30 +73,22 @@ const add = function (app) {
                 else {
                   console.log("valid password format, hashing now");
                   console.log(hashPassword);
-                  connection.query(
-                    addUser,
-                    [username, hashPassword, email, groupStr],
-                    (error, result) => {
-                      if (error) throw error;
+                  connection.query(addUser, [username, hashPassword, email, groupStr], (error, result) => {
+                    if (error) throw error;
 
-                      // THIS HAS TO PASS FIRST BEFORE ADDING USER INTO USERGROUP
-                      console.log(`${username} added into DB `);
-                    }
-                  );
+                    // THIS HAS TO PASS FIRST BEFORE ADDING USER INTO USERGROUP
+                    console.log(`${username} added into DB `);
+                  });
                 }
 
                 ///////////////////////////// ADD USER INTO USERGROUP  ////////////////////////////
                 addUserWithGroup = `INSERT INTO usergroup (username, user_group, last_updated) VALUES (?, ?, NOW())`;
                 // USER GROUP IS AN ARRAY
                 userGroup.forEach((group) => {
-                  connection.query(
-                    addUserWithGroup,
-                    [username, group],
-                    (error, result) => {
-                      if (error) throw error;
-                      console.log(`Added ${username} into ${group}`);
-                    }
-                  );
+                  connection.query(addUserWithGroup, [username, group], (error, result) => {
+                    if (error) throw error;
+                    console.log(`Added ${username} into ${group}`);
+                  });
                 });
 
                 ///////////////////////////// SUCCESSFULLY ADDED INTO DB WITH ALL CONDITIONS FILLED  ////////////////////////////

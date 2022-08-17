@@ -1,5 +1,5 @@
 const { response } = require("express");
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 
 const errorHandler = require("./errorHandler");
 
@@ -45,16 +45,12 @@ const removeUserFromGroup = function (app) {
                     console.log(`REMOVING ${username} FROM ${group} group`);
                     // UPDATE ACCOUNTS USER GROUP
                     const removeUserFromGroup = `UPDATE accounts SET user_group = ?, timestamp = NOW() WHERE username = ?`;
-                    connection.query(
-                      removeUserFromGroup,
-                      [groupStr, username],
-                      (error, result) => {
-                        if (error) throw error;
-                        else {
-                          console.log(`UPDATED ${username}`);
-                        }
+                    connection.query(removeUserFromGroup, [groupStr, username], (error, result) => {
+                      if (error) throw error;
+                      else {
+                        console.log(`UPDATED ${username}`);
                       }
-                    );
+                    });
                   } else {
                   }
                 });

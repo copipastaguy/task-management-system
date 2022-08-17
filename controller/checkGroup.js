@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("./server/connection");
 
 // const checkGroup = (app, username, usergroup) => {
 //   app.get("/checkgroup", (req, res) => {

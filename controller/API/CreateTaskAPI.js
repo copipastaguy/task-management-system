@@ -5,8 +5,7 @@ const checkGroup = require("../checkGroup");
 const { permitCreateController } = require("../permitController");
 const checkAppController = require("../checkAppController");
 
-const connection = require("../../server/connection");
-const e = require("cors");
+const connection = require("../../controller/server/connection");
 
 const CreateTaskAPI = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
@@ -36,6 +35,8 @@ const CreateTaskAPI = function (app) {
       } else {
         // CHECK IF APP EXIST
         const app = await checkAppController(app_acronym);
+
+        // APP DONT EXIST
         if (app === false) {
           return next(errorHandler({ code: 4005 }, req, res));
         } else {
@@ -64,7 +65,6 @@ const CreateTaskAPI = function (app) {
                     return next(
                       errorHandler(
                         {
-                          // message: "💀x7  ごめんなさい I am sorry",
                           code: 4003,
                         },
                         req,
@@ -97,7 +97,6 @@ const CreateTaskAPI = function (app) {
             return next(
               errorHandler(
                 {
-                  //   message: "Forbidden",
                   code: 4002,
                 },
                 req,
@@ -108,7 +107,7 @@ const CreateTaskAPI = function (app) {
         }
       }
     } else {
-      return next(errorHandler({ code: 4005 }, req, res));
+      return next(errorHandler({ code: 4006 }, req, res));
     }
   });
 };

@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 const errorHandler = require("./errorHandler");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
@@ -12,19 +12,7 @@ const addupdateTask = function (app) {
   const now = `${date}/${month}/${year} ${time}`;
 
   app.post("/add-task", async (req, res, next) => {
-    const {
-      app_Rnum,
-      app_acronym,
-      taskName,
-      taskDescription,
-      taskNotes,
-      taskState,
-      taskCreator,
-      taskOwner,
-      taskPlan,
-      note,
-      permitUser,
-    } = req.body;
+    const { app_Rnum, app_acronym, taskName, taskDescription, taskNotes, taskState, taskCreator, taskOwner, taskPlan, note, permitUser } = req.body;
 
     const permitCreate = await checkgroup({
       username: taskOwner,

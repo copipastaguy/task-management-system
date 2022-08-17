@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("./server/connection");
 
 const permitCreateController = (app_acronym) => {
   return new Promise((resolve, reject) => {

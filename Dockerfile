@@ -1,0 +1,15 @@
+FROM node
+
+# WORKDIR IN CONTAINER
+WORKDIR /app
+
+# COPY ALL SERVER FILES INTO /app 
+COPY ./server /app
+
+# INSTALL DEPENDENCIES FROM PACKAGE.JSON
+RUN npm install
+
+EXPOSE 3002:80
+
+# RUN NODE SERVER/INDEX.JS 
+CMD ["node", "server/index.js"]

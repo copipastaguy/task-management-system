@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -22,14 +22,10 @@ const userUpdate = function (app) {
 
           ///////////////////////////// ADD EXISTING EMAIL ////////////////////////////
           updateEmail = `UPDATE accounts SET email = ?, timestamp = NOW() WHERE username = ?`;
-          connection.query(
-            updateEmail,
-            [oldEmail, username],
-            (error, result) => {
-              if (error) throw error;
-              console.log("NO CHANGE IN EMAIL . . .");
-            }
-          );
+          connection.query(updateEmail, [oldEmail, username], (error, result) => {
+            if (error) throw error;
+            console.log("NO CHANGE IN EMAIL . . .");
+          });
         } else {
           ///////////////////////////// NEW EMAIL ENTERED ////////////////////////////
           ///////////////////////////// VALIDATE EMAIL ////////////////////////////
@@ -38,14 +34,10 @@ const userUpdate = function (app) {
 
             ///////////////////////////// UPDATE EMAIL ////////////////////////////
             updateEmail = `UPDATE accounts SET email = ?, timestamp = NOW() WHERE username = ?`;
-            connection.query(
-              updateEmail,
-              [email, username],
-              (error, result) => {
-                if (error) throw error;
-                console.log("UPDATING EMAIL . . .");
-              }
-            );
+            connection.query(updateEmail, [email, username], (error, result) => {
+              if (error) throw error;
+              console.log("UPDATING EMAIL . . .");
+            });
           } else {
             return next(errorHandler("Invalid email format", req, res));
           }
@@ -55,52 +47,28 @@ const userUpdate = function (app) {
           const oldPassword = result[0].password;
           ///////////////////////////// DO NOT HASH PASSWORD AGAIN ////////////////////////////
           updatePassword = `UPDATE accounts SET password = ?, timestamp = NOW() WHERE username = ?`;
-          connection.query(
-            updatePassword,
-            [oldPassword, username],
-            (error, result) => {
-              if (error) throw error;
-              console.log("NO CHANGE IN PASSWORD . . .");
-            }
-          );
+          connection.query(updatePassword, [oldPassword, username], (error, result) => {
+            if (error) throw error;
+            console.log("NO CHANGE IN PASSWORD . . .");
+          });
         } else {
           ///////////////////////////// NEW PASSWORD ENTERED ////////////////////////////
           ///////////////////////////// VALIDATE PASSWORD ////////////////////////////
-          if (
-            password.length < 8 ||
-            password.length > 10 ||
-            /\s/.test(password)
-          ) {
-            return next(
-              errorHandler(
-                "Password needs to be 8-10 characters and no space",
-                req,
-                res
-              )
-            );
+          if (password.length < 8 || password.length > 10 || /\s/.test(password)) {
+            return next(errorHandler("Password needs to be 8-10 characters and no space", req, res));
           } else if (!validator.isStrongPassword(password)) {
-            return next(
-              errorHandler(
-                "Password requires 1 lowercase, 1 uppercase, 1 symbol and numbers",
-                req,
-                res
-              )
-            );
+            return next(errorHandler("Password requires 1 lowercase, 1 uppercase, 1 symbol and numbers", req, res));
           } else {
             ///////////////////////////// HASH PASSWORD ////////////////////////////
             bcrypt.hash(password, saltRounds, (error, hashPassword) => {
               if (error) throw error;
               updatePassword = `UPDATE accounts SET password = ?, timestamp = NOW() WHERE username = ?`;
-              connection.query(
-                updatePassword,
-                [hashPassword, username],
-                (error, result) => {
-                  if (error) throw error;
-                  console.log(hashPassword);
-                  console.log("UPDATING PASSWORD . . .");
-                  res.send();
-                }
-              );
+              connection.query(updatePassword, [hashPassword, username], (error, result) => {
+                if (error) throw error;
+                console.log(hashPassword);
+                console.log("UPDATING PASSWORD . . .");
+                res.send();
+              });
             });
           }
         }

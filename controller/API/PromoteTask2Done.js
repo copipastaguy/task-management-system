@@ -1,4 +1,4 @@
-const connection = require("../../server/connection");
+const connection = require("../../controller/server/connection");
 const checkGroup = require("../checkGroup");
 const errorHandler = require("../errorHandler");
 const { permitDoingController, permitDoneController } = require("../permitController");
@@ -16,7 +16,7 @@ const PromoteTask2Done = function (app) {
     const { username, password, app_acronym, task_name } = req.body;
     // console.log(req.body);
 
-    if (username && password) {
+    if (username && password && app_acronym && task_name) {
       const login = await loginUser(username, password);
       if (login === false) return next(errorHandler({ code: 4001 }, req, res));
 
@@ -84,7 +84,8 @@ const PromoteTask2Done = function (app) {
         }
       });
     } else {
-      return next(errorHandler({ code: 4001 }, req, res));
+      console.log("hi");
+      return next(errorHandler({ code: 4006 }, req, res));
     }
   });
 };

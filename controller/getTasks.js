@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 
 const getTasks = function (app) {
   app.get("/get-tasks", (req, res, next) => {

@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 
 const errorHandler = require("./errorHandler");
 
@@ -37,47 +37,29 @@ const addUserToGroup = function (app) {
                     console.log(groupStr);
                     /////////////////////////// UPDATE USERGROUP IN ACCOUNTS  ////////////////////////////
                     const updateUserGroup = `UPDATE accounts SET user_group = ?, timestamp = NOW() WHERE username = ?`;
-                    connection.query(
-                      updateUserGroup,
-                      [groupStr, username],
-                      (error, result) => {
-                        if (error) throw error;
-                        else {
-                          console.log("added user to group");
-                          console.log(
-                            `UPDATED ${username} TO ${currentGroupArray} WITH NO REPEATED GROUPS`
-                          );
-                          //   CREATE COMPOSITE KEY
-                          checkCompositeKey = `SELECT * FROM usergroup WHERE username = ? AND user_group = ?`;
-                          connection.query(
-                            checkCompositeKey,
-                            [username, group],
-                            (error, result) => {
+                    connection.query(updateUserGroup, [groupStr, username], (error, result) => {
+                      if (error) throw error;
+                      else {
+                        console.log("added user to group");
+                        console.log(`UPDATED ${username} TO ${currentGroupArray} WITH NO REPEATED GROUPS`);
+                        //   CREATE COMPOSITE KEY
+                        checkCompositeKey = `SELECT * FROM usergroup WHERE username = ? AND user_group = ?`;
+                        connection.query(checkCompositeKey, [username, group], (error, result) => {
+                          if (error) throw error;
+                          else if (result.length > 0) {
+                            // COMPOSITE KEY EXIST IN TABLE
+                            console.log(`EXISTING COMPOSITE KEY OF ${username} AND ${group}`);
+                          } else {
+                            // NEW COMPOSITE KEY ENTRY
+                            addCompositeKey = `INSERT INTO usergroup (user_group, username, last_updated) VALUES (?, ?, NOW())`;
+                            connection.query(addCompositeKey, [group, username], (error, result) => {
                               if (error) throw error;
-                              else if (result.length > 0) {
-                                // COMPOSITE KEY EXIST IN TABLE
-                                console.log(
-                                  `EXISTING COMPOSITE KEY OF ${username} AND ${group}`
-                                );
-                              } else {
-                                // NEW COMPOSITE KEY ENTRY
-                                addCompositeKey = `INSERT INTO usergroup (user_group, username, last_updated) VALUES (?, ?, NOW())`;
-                                connection.query(
-                                  addCompositeKey,
-                                  [group, username],
-                                  (error, result) => {
-                                    if (error) throw error;
-                                    console.log(
-                                      `NEW COMPOSITE KEY OF ${username} AND ${group}`
-                                    );
-                                  }
-                                );
-                              }
-                            }
-                          );
-                        }
+                              console.log(`NEW COMPOSITE KEY OF ${username} AND ${group}`);
+                            });
+                          }
+                        });
                       }
-                    );
+                    });
                   }
                 });
                 console.log("sending add");

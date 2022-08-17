@@ -1,4 +1,4 @@
-const connection = require("../../server/connection");
+const connection = require("../../controller/server/connection");
 const errorHandler = require("../errorHandler");
 const loginUser = require("../loginController");
 
@@ -9,6 +9,10 @@ const GetTaskByStateAPI = function (app) {
 
     const login = await loginUser(username, password);
     if (login === false) return next(errorHandler({ code: 4001 }, req, res));
+
+    if (!state) {
+      res.send({ code: 4006 }, req, res);
+    }
 
     if (state == "OPEN" || state == "TODO" || state == "DOING" || state == "DONE" || state == "CLOSED") {
       const getTasks = `SELECT task_id, task_name FROM task WHERE task_state = ?`;

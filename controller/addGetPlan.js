@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 const errorHandler = require("./errorHandler");
 const checkgroup = require("./checkGroup");
 

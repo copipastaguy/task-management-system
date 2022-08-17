@@ -1,4 +1,4 @@
-const connection = require("../server/connection");
+const connection = require("../controller/server/connection");
 
 const getApplication = function (app) {
   // GET ALL ACCOUNTS
