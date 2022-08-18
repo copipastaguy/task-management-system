@@ -14,15 +14,13 @@ const CreateTaskAPI = function (app) {
     const { username, password, app_acronym, task_name, task_description } = req.body;
     // console.log(req.body);
 
+    //
+
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password && task_name && app_acronym) {
       const login = await loginUser(username, password);
 
       if (login === false) {
-        // console.warn({
-        //   message: "Unauthorized",
-        //   code: 4001,
-        // });
         return next(
           errorHandler(
             {

@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  docker:
+    build: .
+    context: ./Path
+    dockerfile: Dockerfile
+    ports:
+      - "3002:8080"
+  mysql:
+    container_name: mysqldocker
+    image: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_PASSWORD=admin123
+      - MYSQL_USER=root
+      - MYSQL_DATABASE=nodelogin

@@ -24,7 +24,7 @@ const PromoteTask2Done = require("../API/PromoteTask2Done");
 
 const invalidRoute = require("../invalidRoute");
 
-const port = process.env.API_PORT;
+const port = 3002;
 
 const app = express();
 app.use(
