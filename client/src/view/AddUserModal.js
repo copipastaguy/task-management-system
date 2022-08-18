@@ -123,52 +123,27 @@ const AddUserModal = () => {
         <h3>UPDATE USER</h3>
         <Form.Group style={{ width: "400px" }}>
           <Form.Label>Username</Form.Label>
-          <Select
-            value={selectedUser}
-            onChange={handleUsername}
-            options={userOptions}
-          />
+          <Select value={selectedUser} onChange={handleUsername} options={userOptions} />
         </Form.Group>
 
         <Form.Group>
           <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="new password"
-            value={password}
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <Form.Control type="password" placeholder="new password" value={password} id="password" onChange={(e) => setPassword(e.target.value)} />
         </Form.Group>
 
         <Form.Group>
           <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="new email"
-            value={email}
-            id="email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <Form.Control type="text" placeholder="new email" value={email} id="email" onChange={(e) => setEmail(e.target.value)} />
         </Form.Group>
 
         <Form.Group style={{ width: "400px" }}>
           <Form.Label>Status</Form.Label>
-          <Select
-            value={selectedActive}
-            onChange={handleActive}
-            options={activeOptions}
-          />
+          <Select value={selectedActive} onChange={handleActive} options={activeOptions} />
         </Form.Group>
 
         <Form.Group style={{ width: "400px" }}>
           <Form.Label>User Group</Form.Label>
-          <CreatableSelect
-            isMulti={true}
-            value={selectedOption}
-            onChange={handleUserGroup}
-            options={groups}
-          />
+          <CreatableSelect isMulti={true} value={selectedOption} onChange={handleUserGroup} options={groups} />
         </Form.Group>
 
         <Button className="submitButton" variant="success" type="submit">
