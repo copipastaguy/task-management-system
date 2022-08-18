@@ -1,12 +1,12 @@
 # BASE IMAGE 
-FROM node
+FROM node:16-alpine
 
 # WORKDIR IN CONTAINER
-WORKDIR /app/controller
+WORKDIR /app
 
 # OPTIMISE BY COPYING PACKAGE.JSON FIRST
 # CHECKS FOR DIFFERENCE IN PACKAGE.JSON BEFORE RUNNING NPM INSTALL 
-COPY package.json /app/controller
+COPY package.json /app
 
 # INSTALL DEPENDENCIES FROM PACKAGE.JSON
 RUN npm install
@@ -14,8 +14,10 @@ RUN npm install
 # COPY ALL SOURCE FILES INTO WORKDIR
 COPY . /app/controller
 
+# ENV PORT 8080
+
 # EXPOSE PORT FROM LOCAL TO CONTAINER
 EXPOSE 8080
 
 # RUN NODE SERVER/INDEX.JS 
-CMD ["node", "server/index.js"]
+CMD ["node", "controller/server/index.js"] 
