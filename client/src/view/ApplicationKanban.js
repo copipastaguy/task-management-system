@@ -11,14 +11,7 @@ import EditApp from "./Modal/EditApp";
 import CreatePlan from "./Modal/CreatePlan";
 import ViewTask from "./Modal/ViewTask";
 
-import {
-  AiOutlineArrowRight,
-  AiOutlineArrowLeft,
-  AiFillEdit,
-  AiFillCheckCircle,
-  AiFillEye,
-  AiFillClockCircle,
-} from "react-icons/ai";
+import { AiOutlineArrowRight, AiOutlineArrowLeft, AiFillEdit, AiFillCheckCircle, AiFillEye, AiFillClockCircle } from "react-icons/ai";
 
 import { IoIosAddCircle } from "react-icons/io";
 
@@ -126,19 +119,20 @@ const ApplicationKanban = () => {
     console.log(response.data);
     setTasks(response.data);
 
-    const openTask = response.data.filter((task) => task.task_state === "OPEN").length;
+    const openTask = response.data.filter((task) => task.task_state === "Open").length;
     setOpenCount(openTask);
 
-    const todoTask = response.data.filter((task) => task.task_state === "TODO").length;
+    const todoTask = response.data.filter((task) => task.task_state === "ToDo").length;
     setTodoCount(todoTask);
 
-    const doingTask = response.data.filter((task) => task.task_state === "DOING").length;
+    const doingTask = response.data.filter((task) => task.task_state === "Doing").length;
+    console.log(doingTask);
     setDoingCount(doingTask);
 
-    const doneTask = response.data.filter((task) => task.task_state === "DONE").length;
+    const doneTask = response.data.filter((task) => task.task_state === "Done").length;
     setDoneCount(doneTask);
 
-    const closeTask = response.data.filter((task) => task.task_state === "CLOSED").length;
+    const closeTask = response.data.filter((task) => task.task_state === "Closed").length;
     setCloseCount(closeTask);
   };
 

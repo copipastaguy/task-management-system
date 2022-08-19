@@ -11,15 +11,33 @@ const CreateTaskAPI = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
   //    - - - ROUTING FOR LOGIN AND AUTH - - -
   app.post("/api/createtask", async (req, res, next) => {
-    const { username, password, app_acronym, task_name, task_description } = req.body;
-    // console.log(req.body);
+    // const { username, password, app_acronym, task_name, task_description } = req.body;
+    const jsonData = req.body;
+    const createTaskInfo = {};
 
-    //
+    for (let key in jsonData) {
+      createTaskInfo[key.toLowerCase()] = jsonData[key];
+    }
+
+    if (
+      !createTaskInfo.hasOwnProperty("username") ||
+      !createTaskInfo.hasOwnProperty("password") ||
+      !createTaskInfo.hasOwnProperty("task_name") ||
+      !createTaskInfo.hasOwnProperty("app_acronym") ||
+      !createTaskInfo.hasOwnProperty("task_description")
+    ) {
+      return res.send({ code: 4008 });
+    }
+
+    const username = createTaskInfo.username;
+    const password = createTaskInfo.password;
+    const task_name = createTaskInfo.task_name;
+    const app_acronym = createTaskInfo.app_acronym;
+    const task_description = createTaskInfo.task_description;
 
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password && task_name && app_acronym) {
       const login = await loginUser(username, password);
-
       if (login === false) {
         return next(
           errorHandler(
@@ -76,7 +94,6 @@ const CreateTaskAPI = function (app) {
                       if (error) throw error;
                       else {
                         res.send({
-                          // message: "ありがとう Arigato",
                           task_Id,
                           code: 200,
                         });
@@ -86,7 +103,6 @@ const CreateTaskAPI = function (app) {
                   const updateRnum = `UPDATE application SET app_Rnum = ? WHERE app_acronym = ?`;
                   connection.query(updateRnum, [rNum + 1, app_acronym], (error, result) => {
                     if (error) throw error;
-                    else console.log(result);
                   });
                 });
               }

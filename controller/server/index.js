@@ -24,7 +24,7 @@ const PromoteTask2Done = require("../API/PromoteTask2Done");
 
 const invalidRoute = require("../invalidRoute");
 
-const port = 3002;
+const port = process.env.API_PORT;
 
 const app = express();
 app.use(
@@ -74,6 +74,8 @@ GetTaskByStateAPI(app);
 PromoteTask2Done(app);
 
 invalidRoute(app);
+
+
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);
