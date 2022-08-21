@@ -70,7 +70,7 @@ const CreateTask = ({
       });
       console.log(response);
       if (!response.data.error) {
-        toast.success(response.data, {
+        toast.success("Created new task", {
           position: "top-center",
           autoClose: 800,
           hideProgressBar: false,

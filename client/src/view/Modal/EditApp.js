@@ -108,7 +108,7 @@ const EditApp = ({ show, onHide, data, groups, fetchApplication, openEditForm, c
         permitDoing,
         permitDone,
       });
-      console.log(response);
+      // console.log(response);
 
       if (!response.data.error) {
         toast.success(`Updated ${app_acronym}!`, {
