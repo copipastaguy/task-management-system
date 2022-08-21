@@ -9,11 +9,9 @@
 <h3>Setting up environment</h3>
 
 - [x] mySQL MODEL
-- [ ] Expressjs CONTROLLER
-- [ ] Reactjs VIEW
+- [x] Expressjs CONTROLLER
+- [x] Reactjs VIEW
 - [x] Nodejs SERVER
-
-- import connection module into every CONTROLLER file
 
 PHASE 1 IDENTITY ACCESS MANAGEMENT
 
@@ -91,7 +89,7 @@ OPEN state:
 
 - Project lead able to edit description
 
-- [] MYSQL MODEL
+- [x] MYSQL MODEL
 - PRIMARY KEY: app_acronym, plan_app_acronym, task_app_acronym
 
 - Create App
@@ -119,36 +117,36 @@ OPEN state:
 
 ==============================================
 
-- [] Project Lead
+- [x] Project Lead
 - [x] create new apps
 - [x] create new open tasks
 - [x] assign permits
 - [x] close tasks, demote tasks to doing
 
-- [] Edit Application
-- [] description
-- [] deadline
-- [] permits check
+- [x] Edit Application
+- [x] description
+- [x] deadline
+- [x] permits check
 
-- [] Edit Task (OPEN - DOING)
+- [x] Edit Task (OPEN - DOING)
 - [x] new notes
-- [] assign plan
+- [x] assign plan
 
 ==============================================
 
-- [] Project Manager
+- [x] Project Manager
 - [x] view tasks
-- [] approve tasks
-- [] assign task to plan
-- [] approve done to close task
+- [x] approve tasks
+- [x] assign task to plan
+- [x] approve done to close task
 
-- [] Edit tasks (OPEN - DOING)
-- [] new notes
-- [] assign plan
+- [x] Edit tasks (OPEN - DOING)
+- [x] new notes
+- [x] assign plan
 
 ==============================================
 
-- [] Team Member
+- [x] Team Member
 - [x] complete tasks
 - [x] add notes
 
@@ -156,3 +154,26 @@ OPEN state:
 - Email notification when team member complete tasks
 - SYSTEM GENERATED: task_id = app_acronym + app_runningNumber
 - audit trail of read-only notes
+
+PHASE 3 API
+All API requires login auth before any action
+[x] CreateTask API
+[x] GetTaskbyState
+[x] PromoteTaskToDone
+
+PHASE 4 CONTAINERIZE BACKEND
+
+Done with docker-compose:
+
+- Get mySQL image
+- Build mySQL image and run detached
+
+- Build Dockerfile
+
+commands:
+|command | description |
+|----------------------|------------|
+|`docker-compose up -d` | run and build services in docker-compose|
+|`docker exec -it mysql-container mysql -p`| exec interactive mysql terminal|
+|`use nodelogin` `show tables`| use database and show tables of db|
+|`docker exec mysql-container /usr/bin/mysqldump -u root --password= nodelogin > file.sql` | dump mysql schema into a file|

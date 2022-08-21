@@ -9,19 +9,7 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const CreateTask = ({
-  open,
-  onHide,
-  plans,
-  data,
-  now,
-  time,
-  taskCreator,
-  taskOwner,
-  fetchTasks,
-  openAddTaskForm,
-  closeAddTaskForm,
-}) => {
+const CreateTask = ({ open, onHide, plans, data, now, time, taskCreator, taskOwner, fetchTasks, openAddTaskForm, closeAddTaskForm }) => {
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [taskNotes, setTaskNotes] = useState("");
@@ -107,13 +95,7 @@ const CreateTask = ({
             <Col>
               <Form.Group>
                 <Form.Label>Task name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Task name"
-                  id="app_name"
-                  value={taskName}
-                  onChange={(e) => setTaskName(e.target.value)}
-                />
+                <Form.Control type="text" placeholder="Task name" id="app_name" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
               </Form.Group>
             </Col>
           </Row>
@@ -122,14 +104,7 @@ const CreateTask = ({
           <Row>
             <Form.Group>
               <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Some descriptions"
-                id="app_description"
-                value={taskDescription}
-                onChange={(e) => setTaskDescription(e.target.value)}
-              />
+              <Form.Control as="textarea" rows={3} placeholder="Some descriptions" id="app_description" value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)} />
             </Form.Group>
           </Row>
           <br />
@@ -138,14 +113,7 @@ const CreateTask = ({
             <Col>
               <Form.Group>
                 <Form.Label>Task notes</Form.Label>
-                <Form.Control
-                  placeholder="Some notes"
-                  as="textarea"
-                  rows={3}
-                  id="app_notes"
-                  value={taskNotes}
-                  onChange={(e) => setTaskNotes(e.target.value)}
-                />
+                <Form.Control placeholder="Some notes" as="textarea" rows={3} id="app_notes" value={taskNotes} onChange={(e) => setTaskNotes(e.target.value)} />
               </Form.Group>
             </Col>
           </Row>

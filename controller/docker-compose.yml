@@ -1,11 +1,14 @@
 version: "3.8"
 services:
-  docker:
+  api:
+    container_name: api-container
+    image: tms-api
+    # network_mode: host
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "4002:8080"
+      - "4000:4000"
     depends_on:
       - db
     environment:
@@ -19,20 +22,24 @@ services:
       - db
     volumes:
       - ./:/src
-
+    
   db:
-    container_name: mysqldocker
+    container_name: mysql-container
     image: mysql
     ports:
       - "3307:3306"
     restart: always
     volumes:
-      - db:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    # persistent data
+      - mysql-container:/var/lib/mysql
+    # init database schema with sql file
+      - ./server:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_ROOT_PASSWORD=admin123
       - MYSQL_PASSWORD=admin123
       - MYSQL_DATABASE=nodelogin
 volumes:
-  db:
+  mysql-container:
     driver: local
+
+

@@ -1,3 +1,5 @@
+-- CREATE DATABASE AND TABLES
+
 CREATE DATABASE IF NOT EXISTS nodelogin;
 USE nodelogin;
 
@@ -55,7 +57,7 @@ CREATE TABLE IF NOT EXISTS plan (
   KEY plan_app_acronym (plan_app_acronym),
   KEY plan_color (plan_color),
   CONSTRAINT plan_app_acronym FOREIGN KEY (plan_app_acronym) REFERENCES application (app_acronym)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 CREATE TABLE IF NOT EXISTS task (
   task_app_acronym varchar(45) NOT NULL,
@@ -76,7 +78,7 @@ CREATE TABLE IF NOT EXISTS task (
   CONSTRAINT task_app_acronym FOREIGN KEY (task_app_acronym) REFERENCES application (app_acronym),
   CONSTRAINT task_color FOREIGN KEY (task_color) REFERENCES plan (plan_color),
   CONSTRAINT task_plan FOREIGN KEY (task_plan) REFERENCES plan (plan_mvp_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 CREATE TABLE IF NOT EXISTS task_notes (
   task_name varchar(255) NOT NULL,
@@ -84,4 +86,7 @@ CREATE TABLE IF NOT EXISTS task_notes (
   last_updated datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (task_name,last_updated),
   CONSTRAINT task_name FOREIGN KEY (task_name) REFERENCES task (task_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- ADD DATA INTO DATABASE
+INSERT INTO accounts (username, password, user_group, admin_privilege, timestamp) VALUES ("admin", "$2b$10$0hH2X8x0ON.d7f9TMY1GcO4UfT6hpVMcvAvLyktjmYrg/zCM4WQtO", "admin", "1", NOW());  
