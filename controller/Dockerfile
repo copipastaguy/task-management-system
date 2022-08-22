@@ -16,10 +16,8 @@ RUN npm install
 # COPY ALL SOURCE FILES INTO WORKDIR
 COPY . ./controller
 
-ENV PORT 8080
-
 # EXPOSE PORT FROM LOCAL TO CONTAINER
-EXPOSE $PORT
+# EXPOSE 4000
 
 # RUN NODE SERVER/INDEX.JS 
-CMD ["node", "controller/server/index.js"] 
+CMD ["npm", "start"] 

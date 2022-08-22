@@ -2,44 +2,52 @@ version: "3.8"
 services:
   api:
     container_name: api-container
-    image: tms-api
+    image: tms-api:latest
     # network_mode: host
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "4000:4000"
+    restart: always
     depends_on:
       - db
     environment:
       NODE_ENV: production
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: admin123
-      DB_NAME: nodelogin
+      # DB_HOST: db
+      # DB_PORT: 3306
+      # DB_USER: root
+      # DB_PASSWORD: admin123
+      # DB_NAME: nodelogin
+      API_PORT: 4000
+      SERVER_HOST: db
+      SERVER_USER: root
+      SERVER_PASSWORD: admin123
+      SERVER_DATABASE: nodelogin
     links:
       - db
     volumes:
       - ./:/src
-    
+        # - ./controller:/app
+        # - /app/controller
+
   db:
     container_name: mysql-container
-    image: mysql
+    image: mysql:5.7
     ports:
       - "3307:3306"
     restart: always
     volumes:
-    # persistent data
+      # persistent data
       - mysql-container:/var/lib/mysql
-    # init database schema with sql file
+      # - ./storage
+
+      # init database schema with sql file
       - ./server:/docker-entrypoint-initdb.d
     environment:
-      - MYSQL_ROOT_PASSWORD=admin123
-      - MYSQL_PASSWORD=admin123
-      - MYSQL_DATABASE=nodelogin
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_PASSWORD: admin123
+      MYSQL_DATABASE: nodelogin
 volumes:
   mysql-container:
     driver: local
-
-

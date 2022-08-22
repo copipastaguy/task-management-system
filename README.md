@@ -172,7 +172,7 @@ Done with docker-compose:
 
 commands:
 |command | description |
-|----------------------|------------|
+|---------------------- |------------|
 |`docker-compose up -d` | run and build services in docker-compose|
 |`docker exec -it mysql-container mysql -p`| exec interactive mysql terminal|
 |`use nodelogin` `show tables`| use database and show tables of db|
