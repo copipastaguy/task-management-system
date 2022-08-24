@@ -19,5 +19,15 @@ COPY . ./controller
 # EXPOSE PORT FROM LOCAL TO CONTAINER
 # EXPOSE 4000
 
+# CREATE NON ROOT USER GROUP IN CONTAINER
+# CREATE A DEFAULT USER AND ADD USER TO GROUP
+RUN addgroup -S nonroot && adduser -S default -G nonroot
+
+# CREATE A DEFAULT USER IN GROUP
+# RUN adduser -S default -g nonroot
+
+# START DOCKER AS THIS USER
+USER default
+
 # RUN NODE SERVER/INDEX.JS 
 CMD ["npm", "start"] 
