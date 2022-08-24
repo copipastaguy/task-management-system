@@ -177,3 +177,9 @@ commands:
 |`docker exec -it mysql-container mysql -p`| exec interactive mysql terminal|
 |`use nodelogin` `show tables`| use database and show tables of db|
 |`docker exec mysql-container /usr/bin/mysqldump -u root --password= nodelogin > file.sql` | dump mysql schema into a file|
+
+If Invoke-WebRequest error:
+`Remove-Item alias:curl`
+
+Send POST request with POSTMAN
+View data with mysql docker command
