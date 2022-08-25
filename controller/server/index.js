@@ -73,9 +73,15 @@ CreateTaskAPI(app);
 GetTaskByStateAPI(app);
 PromoteTask2Done(app);
 
-invalidRoute(app);
+app.use((req, res, next) => {
+  next();
+});
 
-// console.log("bye");
+// ERROR HANDLER MIDDLEWARE FOR INVALID ROUTES
+app.use("*", (req, res, next) => {
+  res.send({ code: 4004 });
+  return;
+});
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);

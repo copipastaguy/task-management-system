@@ -10,7 +10,7 @@ const add = function (app) {
   app.post("/add", (req, res, next) => {
     //  - - - INPUT - - -
     const { username, password, email, userGroup, active } = req.body;
-    // console.log(req.body);
+    console.log(req.body);
 
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password) {
@@ -82,7 +82,7 @@ const add = function (app) {
                 }
 
                 ///////////////////////////// ADD USER INTO USERGROUP  ////////////////////////////
-                addUserWithGroup = `INSERT INTO usergroup (username, user_group, last_updated) VALUES (?, ?, NOW())`;
+                addUserWithGroup = `INSERT INTO usergroup (username, user_group) VALUES (?, ?)`;
                 // USER GROUP IS AN ARRAY
                 userGroup.forEach((group) => {
                   connection.query(addUserWithGroup, [username, group], (error, result) => {

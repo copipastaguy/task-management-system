@@ -33,9 +33,6 @@ CREATE TABLE IF NOT EXISTS application (
 CREATE TABLE IF NOT EXISTS usergroup (
   username varchar(255) NOT NULL,
   user_group varchar(255) NOT NULL,
-  task varchar(255) DEFAULT NULL,
-  task_description text,
-  last_updated datetime DEFAULT NULL,
   PRIMARY KEY (user_group,username),
   KEY username_idx (username),
   KEY groupname_idx (user_group),

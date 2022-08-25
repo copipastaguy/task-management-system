@@ -4,7 +4,19 @@ const verifyJWT = require("./jwt/verifyJWT");
 
 const addupdateApp = function (app) {
   app.post("/add-application", async (req, res, next) => {
-    const { app_acronym, app_description, app_Rnum, app_startDate, app_endDate, permitOpen, permitTodo, permitDoing, permitDone, token } = req.body;
+    const {
+      app_acronym,
+      app_description,
+      app_Rnum,
+      app_startDate,
+      app_endDate,
+      permitCreate,
+      permitOpen,
+      permitTodo,
+      permitDoing,
+      permitDone,
+      token,
+    } = req.body;
     console.log(req.body);
 
     if (app_acronym && app_description && app_Rnum) {
@@ -14,10 +26,10 @@ const addupdateApp = function (app) {
         else if (result.length > 0) {
           return next(errorHandler("Application name exist!", req, res));
         } else {
-          const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+          const addNewApp = `INSERT INTO application (app_acronym, app_description, app_Rnum, app_startDate, app_endDate, app_permitCreate, app_permitOpen, app_permitTodo, app_permitDoing, app_permitDone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
           connection.query(
             addNewApp,
-            [app_acronym, app_description, app_Rnum, app_startDate, app_endDate, permitOpen, permitTodo, permitDoing, permitDone],
+            [app_acronym, app_description, app_Rnum, app_startDate, app_endDate, permitCreate, permitOpen, permitTodo, permitDoing, permitDone],
             (error, result) => {
               if (error) throw error;
               else {

@@ -12,7 +12,7 @@ const time = new Date().toTimeString().slice(0, 8);
 const now = `${date}/${month}/${year} ${time}`;
 
 const PromoteTask2Done = function (app) {
-  app.post("/api/promote-task", async (req, res, next) => {
+  app.post("/api/promote-task-to-done", async (req, res, next) => {
     // const { username, password, task_name } = req.body;
 
     const jsonData = req.body;
@@ -32,7 +32,23 @@ const PromoteTask2Done = function (app) {
 
     if (username && password && task_name) {
       const login = await loginUser(username, password);
-      if (login === false) return next(errorHandler({ code: 4001 }, req, res));
+      if (login === false) return res.send({ code: 4001 });
+
+      const checkTask = (task_name) => {
+        return new Promise((resolve, reject) => {
+          const getTask = `SELECT task_name FROM task WHERE task_name = ?`;
+          connection.query(getTask, [task_name], (error, result) => {
+            if (error) reject(error);
+            else if (result.length > 0) {
+              return resolve(true);
+            } else {
+              return resolve(false);
+            }
+          });
+        });
+      };
+      const checkTaskExist = await checkTask(task_name);
+      if (checkTaskExist === false) return res.send({ code: 4005 });
 
       const getAppAcronym = (task_name) => {
         // FETCH APP ACRONYM WITH TASK NAME
@@ -55,7 +71,11 @@ const PromoteTask2Done = function (app) {
         username: username,
         usergroup: permitDoing,
       });
-      if (user === false) return next(errorHandler({ code: 4002 }, req, res));
+      if (user === false) {
+        console.log("hi1");
+        return res.send({ code: 4002 });
+      }
+
       // // FETCH TASK
       const getTask = `SELECT task_name, task_state FROM task WHERE task_name = ? AND task_app_acronym = ?`;
       connection.query(getTask, [task_name, app_acronym], (error, result) => {
@@ -63,7 +83,8 @@ const PromoteTask2Done = function (app) {
         else if (result.length > 0) {
           // CHECK TASK STATE IF IS IN DOING
           if (result[0].task_state != "Doing") {
-            res.send({ code: 4007 }, req, res);
+            console.log("hi");
+            return res.send({ code: 4007 }, req, res);
           } else {
             // PROMOTE TASK
             const task_state = "DONE";
@@ -80,7 +101,6 @@ const PromoteTask2Done = function (app) {
                   connection.query(fetchEmail, [permitDone], (error, result) => {
                     if (error) throw error;
                     else if (result.length > 0) {
-                      //   console.log(result);
                       result.forEach((user) => {
                         function sendEmail() {
                           let transporter = nodemailer.createTransport({
@@ -102,6 +122,7 @@ const PromoteTask2Done = function (app) {
                         }
                         sendEmail();
                       });
+                      console.log("sending email. . . ");
                       res.send({ code: 200 }, req, res);
                     }
                   });
@@ -110,7 +131,7 @@ const PromoteTask2Done = function (app) {
             });
           }
         } else {
-          res.send({ code: 4005 }, req, res);
+          // res.send({ code: 4005 }, req, res);
         }
       });
     } else {

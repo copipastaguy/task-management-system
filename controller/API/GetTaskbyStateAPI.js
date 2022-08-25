@@ -26,21 +26,21 @@ const GetTaskByStateAPI = function (app) {
     if (login === false) return next(errorHandler({ code: 4001 }, req, res));
 
     if (!state) {
-      res.send({ code: 4006 }, req, res);
-    }
-
-    if (state == "OPEN" || state == "TODO" || state == "DOING" || state == "DONE" || state == "CLOSED") {
-      const getTasks = `SELECT * FROM task WHERE task_state = ?`;
-      connection.query(getTasks, [state], (error, result) => {
-        if (error) throw error;
-        else if (result.length > 0) {
-          res.send(result);
-        } else {
-          res.send([]);
-        }
-      });
+      return res.send({ code: 4006 }, req, res);
     } else {
-      res.send({ code: 4005 }, req, res);
+      if (state == "OPEN" || state == "TODO" || state == "DOING" || state == "DONE" || state == "CLOSED") {
+        const getTasks = `SELECT * FROM task WHERE task_state = ?`;
+        connection.query(getTasks, [state], (error, result) => {
+          if (error) throw error;
+          else if (result.length > 0) {
+            res.send(result);
+          } else {
+            res.send([]);
+          }
+        });
+      } else {
+        return res.send({ code: 4005 }, req, res);
+      }
     }
   });
 };

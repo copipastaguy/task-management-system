@@ -1,14 +1,14 @@
 const invalidRoute = function (app) {
   app.get("/api/*", (req, res, next) => {
+    // console.log("invalid route");
     res.status(404).send({ code: 4004 });
-    // console.log("invalid url");
-    next();
+    // next();
   });
 
-  app.post("/api/*", (req, res, next) => {
+  app.use((req, res, next) => {
+    console.log("invalid route");
     res.status(404).send({ code: 4004 });
-    // console.log("invalid url");
-    next();
+    // next();
   });
 };
 

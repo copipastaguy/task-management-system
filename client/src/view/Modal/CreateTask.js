@@ -38,8 +38,6 @@ const CreateTask = ({ open, onHide, plans, data, now, time, taskCreator, taskOwn
     const app_acronym = data.app_acronym;
     const app_Rnum = data.app_Rnum;
     const permitCreate = data.app_permitCreate;
-    console.log(permitCreate);
-    console.log(permitCreate);
     const note = `${now} ${time}: ${taskState}\n${taskCreator}\nNew task have been created`;
 
     try {
@@ -104,7 +102,14 @@ const CreateTask = ({ open, onHide, plans, data, now, time, taskCreator, taskOwn
           <Row>
             <Form.Group>
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Some descriptions" id="app_description" value={taskDescription} onChange={(e) => setTaskDescription(e.target.value)} />
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Some descriptions"
+                id="app_description"
+                value={taskDescription}
+                onChange={(e) => setTaskDescription(e.target.value)}
+              />
             </Form.Group>
           </Row>
           <br />
@@ -113,7 +118,14 @@ const CreateTask = ({ open, onHide, plans, data, now, time, taskCreator, taskOwn
             <Col>
               <Form.Group>
                 <Form.Label>Task notes</Form.Label>
-                <Form.Control placeholder="Some notes" as="textarea" rows={3} id="app_notes" value={taskNotes} onChange={(e) => setTaskNotes(e.target.value)} />
+                <Form.Control
+                  placeholder="Some notes"
+                  as="textarea"
+                  rows={3}
+                  id="app_notes"
+                  value={taskNotes}
+                  onChange={(e) => setTaskNotes(e.target.value)}
+                />
               </Form.Group>
             </Col>
           </Row>

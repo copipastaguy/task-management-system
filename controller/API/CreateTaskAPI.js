@@ -39,15 +39,7 @@ const CreateTaskAPI = function (app) {
     if (username && password && task_name && app_acronym) {
       const login = await loginUser(username, password);
       if (login === false) {
-        return next(
-          errorHandler(
-            {
-              code: 4001,
-            },
-            req,
-            res
-          )
-        );
+        return res.send({ code: 4001 });
       } else {
         // CHECK IF APP EXIST
         const app = await checkAppController(app_acronym);
@@ -78,15 +70,7 @@ const CreateTaskAPI = function (app) {
                 connection.query(checkTask, [task_name, app_acronym], (error, result) => {
                   if (error) throw error;
                   else if (result.length > 0) {
-                    return next(
-                      errorHandler(
-                        {
-                          code: 4003,
-                        },
-                        req,
-                        res
-                      )
-                    );
+                    return res.send({ code: 4003 });
                   } else {
                     //	NEW TASK
                     const createTask = `INSERT INTO task (task_app_acronym, task_id, task_name, task_description, task_state, task_creator, task_owner, task_createDate) VALUES (?, ?, ?, ?, "OPEN", ?, ?, NOW())`;
@@ -108,20 +92,14 @@ const CreateTaskAPI = function (app) {
               }
             });
           } else {
-            return next(
-              errorHandler(
-                {
-                  code: 4002,
-                },
-                req,
-                res
-              )
-            );
+            console.log("Forbidden");
+            return res.send({ code: 4002 });
           }
         }
       }
     } else {
-      return next(errorHandler({ code: 4006 }, req, res));
+      console.log("Fill in all fields");
+      return res.send({ code: 4006 });
     }
   });
 };

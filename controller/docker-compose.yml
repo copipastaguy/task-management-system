@@ -18,6 +18,13 @@ services:
       SERVER_USER: root
       SERVER_PASSWORD: admin123
       SERVER_DATABASE: nodelogin
+
+      # MAILTRAP ENV
+      MAILTRAP_HOST: smtp.mailtrap.io
+      MAILTRAP_PORT: 2525
+      MAILTRAP_USER: cb54ffdc01d3d4
+      MAILTRAP_PASS: 998e56d9d549da
+
     links:
       - db
     volumes:
