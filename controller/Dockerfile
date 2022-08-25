@@ -23,9 +23,6 @@ COPY . ./controller
 # CREATE A DEFAULT USER AND ADD USER TO GROUP
 RUN addgroup -S nonroot && adduser -S default -G nonroot
 
-# CREATE A DEFAULT USER IN GROUP
-# RUN adduser -S default -G nonroot
-
 # START DOCKER AS THIS USER
 USER default
 

@@ -87,3 +87,8 @@ CREATE TABLE IF NOT EXISTS task_notes (
 
 -- ADD DATA INTO DATABASE
 INSERT INTO accounts (username, password, user_group, admin_privilege, timestamp) VALUES ("admin", "$2b$10$0hH2X8x0ON.d7f9TMY1GcO4UfT6hpVMcvAvLyktjmYrg/zCM4WQtO", "admin", "1", NOW());  
+
+-- CREATE NON ROOT USER WITH LIMITED PERMISSIONS
+USE mysql;
+CREATE USER 'default'@'%' IDENTIFIED BY 'default123';
+GRANT INSERT, SELECT on nodelogin.* TO 'default'@'localhost';

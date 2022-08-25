@@ -181,5 +181,25 @@ commands:
 If Invoke-WebRequest error:
 `Remove-Item alias:curl`
 
-Send POST request with POSTMAN
-View data with mysql docker command
+Create non root user for Docker container
+
+- Prevents security vulnerabilities
+- Different permissions compared to root user
+- addgroup && adduser
+
+mySQL container
+
+- create new user in mysql db
+- GRANT permissions: INSERT FILE SELECT
+- start mysql as non root
+  `docker exec -it mysql-container mysql -u default -p`
+
+`CREATE USER 'default'@'localhost' IDENTIFIED BY 'default123';`
+`GRANT FILE, INSERT, SELECT on nodelogin.* TO 'default'@'localhost';`
+
+non root user:
+default
+default123
+
+check user
+docker exec -it <container name> sh
