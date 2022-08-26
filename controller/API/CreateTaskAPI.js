@@ -10,7 +10,7 @@ const connection = require("../../controller/server/connection");
 const CreateTaskAPI = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
   //    - - - ROUTING FOR LOGIN AND AUTH - - -
-  app.post("/api/createtask", async (req, res, next) => {
+  app.post("/api/create-new-task", async (req, res, next) => {
     // const { username, password, app_acronym, task_name, task_description } = req.body;
     const jsonData = req.body;
     const createTaskInfo = {};

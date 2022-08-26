@@ -86,9 +86,22 @@ CREATE TABLE IF NOT EXISTS task_notes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- ADD DATA INTO DATABASE
-INSERT INTO accounts (username, password, user_group, admin_privilege, timestamp) VALUES ("admin", "$2b$10$0hH2X8x0ON.d7f9TMY1GcO4UfT6hpVMcvAvLyktjmYrg/zCM4WQtO", "admin", "1", NOW());  
+INSERT INTO groupnames VALUES ("admin"), ("project lead"), ("project manager"), ("team member");
+
+-- PRESET USERS
+INSERT INTO accounts (username, password, email, user_group, admin_privilege, timestamp) VALUES 
+("admin", "$2b$10$0hH2X8x0ON.d7f9TMY1GcO4UfT6hpVMcvAvLyktjmYrg/zCM4WQtO", "admin@tms.com", "admin", "1", NOW()),
+("alfred", "$2b$10$TSwPXUEjHFrlfTNog42zweKW3uDzzxUs3OO5EQAX/SnTINdGyxTQ.", "alfred@tms.com", "team member", "0", NOW()),
+("project lead", "$2b$10$NTDCfrOIJnADNnoz9bJwsOejeiIVUdvI/Dos1FPthSGjldEN8POFy", "project_lead@tms.com", "project lead", "0", NOW()), 
+("project manager", "$2b$10$lLppFnLFwH7DOh5Ld2aaK.aGqMccvvCh71oZ9L7SQrTvJPWUiS7pO", "project_manager@tms.com", "project manager", "0", NOW());  
+
+INSERT INTO usergroup (username, user_group) VALUES 
+("alfred", "team member"),
+("project_lead", "project lead"),
+("project_manager", "project manager");
 
 -- CREATE NON ROOT USER WITH LIMITED PERMISSIONS
 USE mysql;
 CREATE USER 'default'@'%' IDENTIFIED BY 'default123';
-GRANT INSERT, SELECT on nodelogin.* TO 'default'@'localhost';
+GRANT INSERT, SELECT, UPDATE on nodelogin.* TO 'default'@'%';
+FLUSH PRIVILEGES;

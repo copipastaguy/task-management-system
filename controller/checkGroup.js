@@ -3,12 +3,13 @@ const connection = require("./server/connection");
 const checkGroup = ({ username, usergroup }) => {
   // console.log(username, usergroup);
   return new Promise((resolve, reject) => {
-    const checkIsAdmin = `SELECT * FROM usergroup WHERE username = ? AND user_group = ? `;
-    connection.query(checkIsAdmin, [username, usergroup], (error, result) => {
+    const checkUsergroup = `SELECT user_group FROM accounts WHERE username = ?`;
+    connection.query(checkUsergroup, [username], (error, result) => {
       if (error) reject(error);
       else {
         if (result.length > 0) {
-          return resolve(true);
+          const group = result[0].user_group;
+          if (group.includes(usergroup)) return resolve(true);
         } else {
           return resolve(false);
         }

@@ -72,7 +72,6 @@ const PromoteTask2Done = function (app) {
         usergroup: permitDoing,
       });
       if (user === false) {
-        console.log("hi1");
         return res.send({ code: 4002 });
       }
 

@@ -11,6 +11,9 @@ services:
     restart: always
     depends_on:
       - db
+    links:
+      - db
+
     environment:
       NODE_ENV: production
       API_PORT: 4000
@@ -25,12 +28,13 @@ services:
       MAILTRAP_USER: cb54ffdc01d3d4
       MAILTRAP_PASS: 998e56d9d549da
 
-    links:
-      - db
     volumes:
       - ./:/src
         # - ./controller:/app
         # - /app/controller
+
+    # networks:
+    #   - container-network
 
   db:
     container_name: mysql-container
@@ -38,6 +42,14 @@ services:
     ports:
       - "3307:3306"
     restart: always
+
+    environment:
+      # ROOT USER PASSWORD
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: nodelogin
+      # MYSQL_USER: admin123
+      # MYSQL_PASSWORD: admin123
+
     volumes:
       # persistent data
       - mysql-container:/var/lib/mysql
@@ -45,13 +57,15 @@ services:
 
       # init database schema with sql file
       - ./server:/docker-entrypoint-initdb.d
-    environment:
-      MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin123
-      MYSQL_DATABASE: nodelogin
+
+    # networks:
+    #   - container-network
+
 volumes:
   mysql-container:
     driver: local
 
-# networks:
+networks:
+  default:
+    name: container-network
+    driver: bridge

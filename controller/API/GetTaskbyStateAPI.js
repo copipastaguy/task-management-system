@@ -8,6 +8,7 @@ const GetTaskByStateAPI = function (app) {
     // const state = task_state.toUpperCase();
 
     const jsonData = req.body;
+    console.log(jsonData);
     const getTaskInfo = {};
 
     for (let key in jsonData) {
@@ -16,7 +17,7 @@ const GetTaskByStateAPI = function (app) {
 
     const username = getTaskInfo.username;
     const password = getTaskInfo.password;
-    const state = getTaskInfo.task_state.toUpperCase();
+    const state = getTaskInfo.task_state;
 
     if (!getTaskInfo.hasOwnProperty("username") || !getTaskInfo.hasOwnProperty("password") || !getTaskInfo.hasOwnProperty("task_state")) {
       return res.send({ code: 4008 });
@@ -28,12 +29,14 @@ const GetTaskByStateAPI = function (app) {
     if (!state) {
       return res.send({ code: 4006 }, req, res);
     } else {
-      if (state == "OPEN" || state == "TODO" || state == "DOING" || state == "DONE" || state == "CLOSED") {
+      const currentState = state.toUpperCase();
+      console.log(currentState);
+      if (currentState == "OPEN" || currentState == "TODO" || currentState == "DOING" || currentState == "DONE" || currentState == "CLOSED") {
         const getTasks = `SELECT * FROM task WHERE task_state = ?`;
-        connection.query(getTasks, [state], (error, result) => {
+        connection.query(getTasks, [currentState], (error, result) => {
           if (error) throw error;
           else if (result.length > 0) {
-            res.send(result);
+            res.send({ code: 200, data: result });
           } else {
             res.send([]);
           }
