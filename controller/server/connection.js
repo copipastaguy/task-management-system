@@ -8,12 +8,4 @@ const connection = mysql.createConnection({
   database: process.env.SERVER_DATABASE,
 });
 
-// const connection = mysql.createConnection({
-//   host: "db",
-//   user: "root",
-//   password: "admin123",
-//   database: "nodelogin",
-//   port: "3306",
-// });
-
 module.exports = connection;

@@ -32,7 +32,7 @@ const CreateTaskAPI = function (app) {
     const username = createTaskInfo.username;
     const password = createTaskInfo.password;
     const task_name = createTaskInfo.task_name;
-    const app_acronym = createTaskInfo.app_acronym;
+    const app_acronym = createTaskInfo.app_acronym.trim();
     const task_description = createTaskInfo.task_description;
 
     // - - - FIELD IS NOT EMPTY - - -

@@ -9,7 +9,9 @@ const checkGroup = ({ username, usergroup }) => {
       else {
         if (result.length > 0) {
           const group = result[0].user_group;
+          console.log("bye");
           if (group.includes(usergroup)) return resolve(true);
+          return resolve(false);
         } else {
           return resolve(false);
         }

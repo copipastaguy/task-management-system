@@ -78,10 +78,10 @@ app.use((req, res, next) => {
 });
 
 // ERROR HANDLER MIDDLEWARE FOR INVALID ROUTES
-app.use("*", (req, res, next) => {
-  res.send({ code: 4004 });
-  return;
-});
+// app.use("*", (req, res, next) => {
+//   res.send({ code: 4004 });
+//   return;
+// });
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);

@@ -10,21 +10,25 @@ const login = function (app) {
     const { username, password } = req.body;
     // - - - FIELD IS NOT EMPTY - - -
     if (username && password) {
-      const isAdmin = await checkgroup({ username, usergroup: "Admin" });
-      const isLead = await checkgroup({ username, usergroup: "project lead" });
-      const isManager = await checkgroup({
-        username,
-        usergroup: "project manager",
-      });
-      // JWT TOKEN FOR USER
-      // DATA TO STORE IN JWT AND USE TO VERIFY DURING REQUEST SENDING
-      // username, user group string, isAdmin
-      const jwtToken = await createToken({ username, isAdmin });
       const login = await loginUser(username, password);
-
       if (login === false) {
         return next(errorHandler({ error: "Invalid login", code: 4001 }, req, res));
       } else {
+        // console.log("hi");
+        // JWT TOKEN FOR USER
+        // DATA TO STORE IN JWT AND USE TO VERIFY DURING REQUEST SENDING
+        // username, user group string, isAdmin
+
+        const isAdmin = await checkgroup({ username, usergroup: "admin" });
+        const isLead = await checkgroup({ username, usergroup: "project lead" });
+
+        const isManager = await checkgroup({
+          username,
+          usergroup: "project manager",
+        });
+
+        const jwtToken = await createToken({ username, isAdmin });
+
         res.send({
           token: jwtToken,
           userInfo: login,

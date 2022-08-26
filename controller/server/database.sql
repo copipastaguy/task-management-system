@@ -92,13 +92,13 @@ INSERT INTO groupnames VALUES ("admin"), ("project lead"), ("project manager"), 
 INSERT INTO accounts (username, password, email, user_group, admin_privilege, timestamp) VALUES 
 ("admin", "$2b$10$0hH2X8x0ON.d7f9TMY1GcO4UfT6hpVMcvAvLyktjmYrg/zCM4WQtO", "admin@tms.com", "admin", "1", NOW()),
 ("alfred", "$2b$10$TSwPXUEjHFrlfTNog42zweKW3uDzzxUs3OO5EQAX/SnTINdGyxTQ.", "alfred@tms.com", "team member", "0", NOW()),
-("project lead", "$2b$10$NTDCfrOIJnADNnoz9bJwsOejeiIVUdvI/Dos1FPthSGjldEN8POFy", "project_lead@tms.com", "project lead", "0", NOW()), 
-("project manager", "$2b$10$lLppFnLFwH7DOh5Ld2aaK.aGqMccvvCh71oZ9L7SQrTvJPWUiS7pO", "project_manager@tms.com", "project manager", "0", NOW());  
+("project_lead", "$2b$10$NTDCfrOIJnADNnoz9bJwsOejeiIVUdvI/Dos1FPthSGjldEN8POFy", "project_lead@tms.com", "project lead", "0", NOW()), 
+("project_manager", "$2b$10$lLppFnLFwH7DOh5Ld2aaK.aGqMccvvCh71oZ9L7SQrTvJPWUiS7pO", "project_manager@tms.com", "project manager", "0", NOW());  
 
-INSERT INTO usergroup (username, user_group) VALUES 
-("alfred", "team member"),
-("project_lead", "project lead"),
-("project_manager", "project manager");
+INSERT INTO usergroup (username, user_group) VALUES ("admin", "admin");
+INSERT INTO usergroup (username, user_group) VALUES ("alfred", "team member");
+INSERT INTO usergroup (username, user_group) VALUES ("project_lead", "project lead");
+INSERT INTO usergroup (username, user_group) VALUES ("project_manager", "project manager");
 
 -- CREATE NON ROOT USER WITH LIMITED PERMISSIONS
 USE mysql;

@@ -5,10 +5,8 @@ const loginUser = require("../loginController");
 const GetTaskByStateAPI = function (app) {
   app.get("/api/get-task-by-state", async (req, res, next) => {
     // const { username, password, task_state } = req.body;
-    // const state = task_state.toUpperCase();
 
     const jsonData = req.body;
-    console.log(jsonData);
     const getTaskInfo = {};
 
     for (let key in jsonData) {
@@ -30,7 +28,6 @@ const GetTaskByStateAPI = function (app) {
       return res.send({ code: 4006 }, req, res);
     } else {
       const currentState = state.toUpperCase();
-      console.log(currentState);
       if (currentState == "OPEN" || currentState == "TODO" || currentState == "DOING" || currentState == "DONE" || currentState == "CLOSED") {
         const getTasks = `SELECT * FROM task WHERE task_state = ?`;
         connection.query(getTasks, [currentState], (error, result) => {
@@ -38,7 +35,7 @@ const GetTaskByStateAPI = function (app) {
           else if (result.length > 0) {
             res.send({ code: 200, data: result });
           } else {
-            res.send([]);
+            res.send({ code: 200, data: [] });
           }
         });
       } else {
