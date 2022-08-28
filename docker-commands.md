@@ -1,4 +1,10 @@
 commands:
+dockerfile
+`docker build -t api .` build image
+`docker run --name api-container api` run and name container with image   
+
+
+docker-compose
 |command | description |
 |---------------------- |------------|
 |`docker-compose up -d` | run and build services in docker-compose|
