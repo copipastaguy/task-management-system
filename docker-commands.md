@@ -49,10 +49,10 @@ whoami
 TRANSFER FILE VIA AIRGAP SITUATION
 MD5 checksum
 `docker save -o backend.tar tms-backed:latest` save image as tar file
-`Get-FileHash backend.tar -Algorithm MD5`get hash of tar file
+`Get-FileHash backend.tar -Algorithm MD5 | Format-List` get hash of tar file
 
 Load tar file in docker image
 `docker load -i tms-backend`
 
 INCLUDE ENV VARIABLES IN DOCKER RUN CMD
-`docker run -p 4000:4000 --rm -e --name backend-container tms-backend`
+`docker run -p 4000:4000 --rm --env-file ../.env --name backend-container tms-backend`
