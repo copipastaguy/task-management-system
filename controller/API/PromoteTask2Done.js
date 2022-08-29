@@ -22,46 +22,48 @@ const PromoteTask2Done = function (app) {
       promoteTaskInfo[key.toLowerCase()] = jsonData[key];
     }
 
-    if (!promoteTaskInfo.hasOwnProperty("username") || !promoteTaskInfo.hasOwnProperty("password") || !promoteTaskInfo.hasOwnProperty("task_name")) {
+    if (!promoteTaskInfo.hasOwnProperty("username") || !promoteTaskInfo.hasOwnProperty("password") || !promoteTaskInfo.hasOwnProperty("task_id")) {
       return res.send({ code: 4008 });
     }
 
     const username = promoteTaskInfo.username;
     const password = promoteTaskInfo.password;
-    const task_name = promoteTaskInfo.task_name;
+    const task_id = promoteTaskInfo.task_id;
 
-    if (username && password && task_name) {
+    if (username && password && task_id) {
       const login = await loginUser(username, password);
       if (login === false) return res.send({ code: 4001 });
 
-      const checkTask = (task_name) => {
+      const checkTask = (task_id) => {
         return new Promise((resolve, reject) => {
-          const getTask = `SELECT task_name FROM task WHERE task_name = ?`;
-          connection.query(getTask, [task_name], (error, result) => {
+          const getTask = `SELECT task_id, task_name FROM task WHERE task_id = ?`;
+          connection.query(getTask, [task_id], (error, result) => {
             if (error) reject(error);
             else if (result.length > 0) {
-              return resolve(true);
+              return resolve(result);
             } else {
               return resolve(false);
             }
           });
         });
       };
-      const checkTaskExist = await checkTask(task_name);
+      const checkTaskExist = await checkTask(task_id);
+      const task_name = checkTaskExist[0].task_name;
+
       if (checkTaskExist === false) return res.send({ code: 4005 });
 
-      const getAppAcronym = (task_name) => {
+      const getAppAcronym = (task_id) => {
         // FETCH APP ACRONYM WITH TASK NAME
         return new Promise((resolve, reject) => {
-          const getApp = `SELECT task_app_acronym FROM task WHERE task_name = ?`;
-          connection.query(getApp, [task_name], (error, result) => {
+          const getApp = `SELECT task_app_acronym FROM task WHERE task_id = ?`;
+          connection.query(getApp, [task_id], (error, result) => {
             if (error) reject(error);
             const app_acronym = result[0].task_app_acronym;
             return resolve(app_acronym);
           });
         });
       };
-      const app_acronym = await getAppAcronym(task_name);
+      const app_acronym = await getAppAcronym(task_id);
 
       //   CHECK DOING PERMIT (APPLICATION ACRONYM)
       const permitDoing = await permitDoingController(app_acronym);
@@ -76,19 +78,18 @@ const PromoteTask2Done = function (app) {
       }
 
       // // FETCH TASK
-      const getTask = `SELECT task_name, task_state FROM task WHERE task_name = ? AND task_app_acronym = ?`;
-      connection.query(getTask, [task_name, app_acronym], (error, result) => {
+      const getTask = `SELECT task_id, task_state FROM task WHERE task_id = ?`;
+      connection.query(getTask, [task_id], (error, result) => {
         if (error) throw error;
         else if (result.length > 0) {
           // CHECK TASK STATE IF IS IN DOING
           if (result[0].task_state != "Doing") {
-            console.log("hi");
             return res.send({ code: 4007 }, req, res);
           } else {
             // PROMOTE TASK
             const task_state = "DONE";
-            const updateTask = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_name = ? AND task_app_acronym = ? `;
-            connection.query(updateTask, [task_state, username, task_name, app_acronym], (error, result) => {
+            const updateTask = `UPDATE task SET task_state = ?, task_owner = ? WHERE task_id = ? AND task_app_acronym = ? `;
+            connection.query(updateTask, [task_state, username, task_id, app_acronym], (error, result) => {
               if (error) throw error;
               else {
                 const auditNote = `${now}: ${task_state} \nDone by: ${username} \nUpdated task state to Done \n`;

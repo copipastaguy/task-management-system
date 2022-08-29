@@ -1,14 +1,9 @@
-const invalidRoute = function (app) {
-  app.get("/api/*", (req, res, next) => {
-    // console.log("invalid route");
-    res.status(404).send({ code: 4004 });
-    // next();
-  });
+const errorHandler = require("./errorHandler");
 
-  app.use((req, res, next) => {
-    console.log("invalid route");
-    res.status(404).send({ code: 4004 });
-    // next();
+const invalidRoute = function (app) {
+  app.use("*", (req, res, next) => {
+    // console.log("invalid route");
+    return next(errorHandler({ code: 4004 }, req, res));
   });
 };
 

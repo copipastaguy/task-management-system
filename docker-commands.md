@@ -1,8 +1,9 @@
 commands:
 dockerfile
-`docker build -t api .` build image
-`docker run --name api-container api` run and name container with image   
+`docker build -t tms-backend .` build image
+`docker run -p 4000:4000 --rm --name backend-container tms-backend` run and name container with image
 
+`docker-compose up --build` check for image changes and run build again
 
 docker-compose
 |command | description |
@@ -44,3 +45,14 @@ default123
 check user
 docker exec -it <container name> sh
 whoami
+
+TRANSFER FILE VIA AIRGAP SITUATION
+MD5 checksum
+`docker save -o backend.tar tms-backed:latest` save image as tar file
+`Get-FileHash backend.tar -Algorithm MD5`get hash of tar file
+
+Load tar file in docker image
+`docker load -i tms-backend`
+
+INCLUDE ENV VARIABLES IN DOCKER RUN CMD
+`docker run -p 4000:4000 --rm -e --name backend-container tms-backend`

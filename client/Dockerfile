@@ -13,21 +13,18 @@ COPY package.json .
 # INSTALL DEPENDENCIES FROM PACKAGE.JSON
 RUN npm install
 
-# COPY ENV FILE INTO WORKDIR
-COPY .env .
-
 # COPY ALL SOURCE FILES INTO WORKDIR
-COPY . ./controller
+COPY . ./frontend
 
 # EXPOSE PORT FROM LOCAL TO CONTAINER
-EXPOSE 4000
+EXPOSE 3000
 
 # CREATE NON ROOT SYSTEM GROUP IN CONTAINER
 # CREATE A DEFAULT USER AND ADD USER TO GROUP
-RUN addgroup -S nonroot && adduser -S default -G nonroot
+# RUN addgroup -S nonroot && adduser -S default -G nonroot
 
 # START DOCKER AS THIS USER
-USER default
+# USER default
 
 # RUN NODE SERVER/INDEX.JS 
-CMD ["npm", "start"] 
+# CMD ["npm", "start"] 

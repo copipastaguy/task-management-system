@@ -39,7 +39,8 @@ const CreateTaskAPI = function (app) {
     if (username && password && task_name && app_acronym) {
       const login = await loginUser(username, password);
       if (login === false) {
-        return res.send({ code: 4001 });
+        // return res.send({ code: 4001 });
+        return next(errorHandler({ code: 4001 }, req, res));
       } else {
         // CHECK IF APP EXIST
         const app = await checkAppController(app_acronym);

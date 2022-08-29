@@ -3,6 +3,8 @@ const session = require("express-session");
 const cors = require("cors");
 require("dotenv").config();
 
+const errorHandler = require("../errorHandler");
+
 const login = require("../login");
 const add = require("../add");
 const update = require("../update");
@@ -73,15 +75,12 @@ CreateTaskAPI(app);
 GetTaskByStateAPI(app);
 PromoteTask2Done(app);
 
-app.use((req, res, next) => {
-  next();
-});
-
 // ERROR HANDLER MIDDLEWARE FOR INVALID ROUTES
 // app.use("*", (req, res, next) => {
-//   res.send({ code: 4004 });
-//   return;
+//   return next(errorHandler({ code: 4004 }, req, res));
 // });
+
+invalidRoute(app);
 
 app.listen(port, () => {
   console.log(`App listening on ${port}`);

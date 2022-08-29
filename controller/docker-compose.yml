@@ -1,23 +1,19 @@
 version: "3.8"
 services:
-  api:
-    container_name: api-container
-    image: tms-api:latest
+  backend:
+    container_name: backend-container
+    image: tms-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "4001:4001"
+      - "4000:4000"
     restart: always
-    depends_on:
-      - db
-    links:
-      - db
 
     environment:
       NODE_ENV: production
       API_PORT: 4000
-      SERVER_HOST: db
+      SERVER_HOST: host.docker.internal
       SERVER_USER: root
       SERVER_PASSWORD: admin123
       SERVER_DATABASE: nodelogin
@@ -33,39 +29,55 @@ services:
         # - ./controller:/app
         # - /app/controller
 
-    # networks:
-    #   - container-network
+    # depends_on:
+    #   - db
+    # links:
+    #   - db
 
-  db:
-    container_name: mysql-container
-    image: mysql:5.7
-    ports:
-      - "3307:3306"
-    restart: always
+    networks:
+      - tms-network
 
-    environment:
-      # ROOT USER PASSWORD
-      MYSQL_ROOT_PASSWORD: admin123
-      MYSQL_DATABASE: nodelogin
-      # MYSQL_USER: admin123
-      # MYSQL_PASSWORD: admin123
+  # frontend:
+  #   container_name: frontend-container
+  #   image: tms-frontend:latest
+  #   build:
+  #     context: .
+  #     dockerfile: ../client/Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   restart: always
+  #   networks:
+  #     - tms-network
+#   db:
+#     container_name: mysql-container
+#     image: mysql:5.7
+#     ports:
+#       - "3307:3306"
+#     restart: always
 
-    volumes:
-      # persistent data
-      - mysql-container:/var/lib/mysql
-      # - ./storage
+#     environment:
+#       # ROOT USER PASSWORD
+#       MYSQL_ROOT_PASSWORD: admin123
+#       MYSQL_DATABASE: nodelogin
+#       # MYSQL_USER: admin123
+#       # MYSQL_PASSWORD: admin123
 
-      # init database schema with sql file
-      - ./server:/docker-entrypoint-initdb.d
+#     volumes:
+#       # persistent data
+#       - mysql-container:/var/lib/mysql
+#       # - ./storage
 
-    # networks:
-    #   - container-network
+#       # init database schema with sql file
+#       - ./server:/docker-entrypoint-initdb.d
 
-volumes:
-  mysql-container:
-    driver: local
+#     # networks:
+#     #   - container-network
+
+# volumes:
+#   mysql-container:
+#     driver: local
 
 networks:
-  default:
-    name: container-network
+  tms-network:
+    name: tms-network
     driver: bridge
