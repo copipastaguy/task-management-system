@@ -2,6 +2,7 @@ const errorHandler = require("./errorHandler");
 const checkgroup = require("./checkGroup");
 const createToken = require("./jwt/createJWT");
 const loginUser = require("./loginController");
+const verifyJWT = require("./jwt/verifyJWT");
 
 const login = function (app) {
   //    - - - CONTROLLER LOGIC FOR LOGIN AND AUTH - - -
@@ -14,7 +15,6 @@ const login = function (app) {
       if (login === false) {
         return next(errorHandler({ error: "Invalid login", code: 4001 }, req, res));
       } else {
-        // console.log("hi");
         // JWT TOKEN FOR USER
         // DATA TO STORE IN JWT AND USE TO VERIFY DURING REQUEST SENDING
         // username, user group string, isAdmin

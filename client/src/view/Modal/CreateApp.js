@@ -112,13 +112,7 @@ const CreateApp = ({ show, onHide, groups, getApplications, openCreateForm, clos
   };
 
   return (
-    <Modal
-      show={openCreateForm}
-      onHide={closeCreateApp}
-      size="xl"
-      centered
-      style={{ margin: "auto", border: "1px solid" }}
-    >
+    <Modal show={openCreateForm} onHide={closeCreateApp} size="xl" centered style={{ margin: "auto", border: "1px solid" }}>
       <Form
         className=""
         onSubmit={handleSubmit}

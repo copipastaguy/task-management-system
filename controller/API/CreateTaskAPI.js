@@ -1,5 +1,5 @@
 const loginUser = require("../loginController");
-const createToken = require("../jwt/createJWT");
+const verifyJWT = require("../jwt/verifyJWT");
 const errorHandler = require("../errorHandler");
 const checkGroup = require("../checkGroup");
 const { permitCreateController } = require("../permitController");
@@ -13,6 +13,11 @@ const CreateTaskAPI = function (app) {
   app.post("/api/create-new-task", async (req, res, next) => {
     // const { username, password, app_acronym, task_name, task_description } = req.body;
     const jsonData = req.body;
+
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    console.log(token);
+
     const createTaskInfo = {};
 
     for (let key in jsonData) {
