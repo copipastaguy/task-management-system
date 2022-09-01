@@ -16,7 +16,10 @@ const CreateTaskAPI = function (app) {
 
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    console.log(token);
+
+    const verify = await verifyJWT(token);
+    if (verify == false) return res.send({ message: "Not authenticated" });
+    if (verify == "Please Login") return res.send({ message: "Please Login" });
 
     const createTaskInfo = {};
 
@@ -24,13 +27,7 @@ const CreateTaskAPI = function (app) {
       createTaskInfo[key.toLowerCase()] = jsonData[key];
     }
 
-    if (
-      !createTaskInfo.hasOwnProperty("username") ||
-      !createTaskInfo.hasOwnProperty("password") ||
-      !createTaskInfo.hasOwnProperty("task_name") ||
-      !createTaskInfo.hasOwnProperty("app_acronym") ||
-      !createTaskInfo.hasOwnProperty("task_description")
-    ) {
+    if (!createTaskInfo.hasOwnProperty("username") || !createTaskInfo.hasOwnProperty("password") || !createTaskInfo.hasOwnProperty("task_name") || !createTaskInfo.hasOwnProperty("app_acronym") || !createTaskInfo.hasOwnProperty("task_description")) {
       return res.send({ code: 4008 });
     }
 

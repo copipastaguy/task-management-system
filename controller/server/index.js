@@ -77,8 +77,8 @@ PromoteTask2Done(app);
 
 // ERROR HANDLER MIDDLEWARE FOR INVALID ROUTES
 app.use("*", (req, res, next) => {
-  // return next(errorHandler({ code: 4004 }, req, res));
-  return res.send({ code: 4004 }, req, res);
+  return next(errorHandler({ code: 4004 }, req, res));
+  // return res.send({ code: 4004 });
 });
 
 // invalidRoute(app);
