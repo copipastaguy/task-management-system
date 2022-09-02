@@ -16,6 +16,7 @@ const PromoteTask2Done = function (app) {
     // const { username, password, task_name } = req.body;
 
     const jsonData = req.body;
+    console.log(jsonData);
     const promoteTaskInfo = {};
 
     for (let key in jsonData) {
