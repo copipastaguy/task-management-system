@@ -165,6 +165,7 @@ PHASE 4 CONTAINERIZE BACKEND
 
 Changing to Dockers:
 .env update SERVER_HOST to "host.docker.internal"
+
 client/package.json update proxy to "http://host.docker.internal:4000"
 
 Done with docker-compose:
