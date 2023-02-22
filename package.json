@@ -12,7 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
     "concurrently": "^7.2.2",
     "nodemon": "^2.0.18"
+=======
+    "concurrently": "^7.5.0"
+>>>>>>> eaedc58bb7d199b415dcb5931db854be9131beb3
   }
 }

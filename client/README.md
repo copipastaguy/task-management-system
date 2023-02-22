@@ -9,8 +9,8 @@
 <h3>Setting up environment</h3>
 
 - [x] mySQL MODEL
-- [ ] Expressjs CONTROLLER
-- [ ] Reactjs VIEW
+- [x] Expressjs CONTROLLER
+- [x] Reactjs VIEW
 - [x] Nodejs SERVER
 
 - import connection module into every CONTROLLER file
@@ -56,31 +56,31 @@ route: /update
 
 <h2>Privilege User Management & Security</h2>
 
-- [] admin account
+- [x] admin account
 
-  - [] create user
-  - [] map out user groups and insert into db
+  - [x] create user
+  - [x] map out user groups and insert into db
 
-  - [] disable user == no login
-  - [] update account password, email, group details
+  - [x] disable user == no login
+  - [x] update account password, email, group details
   - [x] display users
 
-- [] enable/disable users (POST request to update)
-- [] password validation
+- [x] enable/disable users (POST request to update)
+- [x] password validation
 - [x] bcrypt password encryption
 - [x] decrypt password for compare
-- [] 8-10 characters (numbers, alphabets, special characters)
+- [x] 8-10 characters (numbers, alphabets, special characters)
 
 <h2>Conditional Rendering based on user group</h2>
 
 admin:
 
-- [] management page
+- [x] management page
 - change password
 - change email
 - disable account
 
 user:
 
-- [] view tasks
-- [] manage tasks
+- [x] view tasks
+- [x] manage tasks
