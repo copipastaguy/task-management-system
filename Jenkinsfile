@@ -1,4 +1,5 @@
 pipeline {
+    agent none
     stages {
         stage("Fetch repo") {
             steps {
