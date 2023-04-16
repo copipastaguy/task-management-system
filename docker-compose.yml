@@ -1,4 +1,4 @@
-network:
+networks:
   tms: 
     driver: bridge
     
