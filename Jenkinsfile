@@ -5,7 +5,6 @@ pipeline {
             steps {
                 checkout scm
                 echo "Checking out repository"
-                sh 'node --version'
             }
         }
 

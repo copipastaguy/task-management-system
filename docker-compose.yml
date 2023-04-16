@@ -9,10 +9,10 @@ services:
     ports:
       - 3000:3000
       
-  controller:
-    container_name: controller
-    build: ./controller
-    ports:
-      - 3001:3001
+  # controller:
+  #   container_name: controller
+  #   build: ./controller
+  #   ports:
+  #     - 3001:3001
     
     
