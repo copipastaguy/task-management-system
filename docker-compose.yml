@@ -6,8 +6,13 @@ services:
   client:
     container_name: client
     build: ./client
+    restart: always
     ports:
       - 3000:3000
+    volumes:
+      - ./:/var/client
+    networks:
+      - tms
       
   # controller:
   #   container_name: controller

@@ -1,19 +1,20 @@
-USER root
-
 # BASE IMAGE 
 FROM alpine
+
+USER root
 
 # WORKDIR IN CONTAINER
 WORKDIR /app
 
 RUN apk update
+RUN apk add npm
 
 # OPTIMISE BY COPYING PACKAGE.JSON FIRST
 # CHECKS FOR DIFFERENCE IN PACKAGE.JSON BEFORE RUNNING NPM INSTALL 
 COPY package.json .
 
 # INSTALL DEPENDENCIES FROM PACKAGE.JSON
-RUN yarn install
+RUN npm install
 
 # COPY ALL SOURCE FILES INTO WORKDIR
 COPY . ./frontend
@@ -29,4 +30,5 @@ EXPOSE 3000
 # USER default
 
 # RUN NODE SERVER/INDEX.JS 
-# CMD ["npm", "start"] 
+RUN cd frontend
+CMD ["npm", "start"] 
